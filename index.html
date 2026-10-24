@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3d4fb5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Семья">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Семейные расходы</title>
+<style>
+/* Layout: одна колонка до 720px, нижнее меню из четырёх разделов (Главная, Бюджет, Планы, Копия). Без внешних шрифтов и скриптов, чтобы всё работало без интернета. */
+:root {
+  --bg: #f1f4f6;
+  --surface: #ffffff;
+  --ink: #14212b;
+  --muted: #5a6975;
+  --line: #dbe2e8;
+  --accent: #3d4fb5;
+  --accent-ink: #ffffff;
+  --in: #0f8559;
+  --out: #c24132;
+  --warn: #a86a00;
+  --c1: #3d4fb5; --c2: #e07a1f; --c3: #138a5e; --c4: #c24132; --c5: #8a4fb8;
+  --c6: #0f8aa8; --c7: #b89a1f; --c8: #d0558a; --c9: #5f6b76; --c10: #6a9c2c;
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --mono: ui-monospace, 'SF Mono', Consolas, 'Roboto Mono', monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e151b; --surface: #16202a; --ink: #e7eef3; --muted: #93a3b1; --line: #26333f;
+    --accent: #8a9bf0; --accent-ink: #0b1220; --in: #4cc79a; --out: #f08b78; --warn: #e8b04a;
+    --c1: #8a9bf0; --c2: #f0a05a; --c3: #4cc79a; --c4: #f08b78; --c5: #c79bf0;
+    --c6: #5cc4e0; --c7: #e6cc5a; --c8: #f08cb4; --c9: #a9b6c2; --c10: #a3d65e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e151b; --surface: #16202a; --ink: #e7eef3; --muted: #93a3b1; --line: #26333f;
+  --accent: #8a9bf0; --accent-ink: #0b1220; --in: #4cc79a; --out: #f08b78; --warn: #e8b04a;
+  --c1: #8a9bf0; --c2: #f0a05a; --c3: #4cc79a; --c4: #f08b78; --c5: #c79bf0;
+  --c6: #5cc4e0; --c7: #e6cc5a; --c8: #f08cb4; --c9: #a9b6c2; --c10: #a3d65e;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font);
+  font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.top { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; justify-content: space-between; }
+.top h1 { margin: 0; font-size: 1.4rem; line-height: 1.15; letter-spacing: -0.01em; }
+.top-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.months { display: flex; align-items: center; gap: 4px; }
+.months .label { min-width: 8.5rem; text-align: center; font-weight: 600; }
+.icon-btn { width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 1.1rem; line-height: 1; }
+.icon-btn:hover { border-color: var(--accent); }
+.cur-select { width: auto; padding: 8px 10px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.panel h2 { margin: 0; font-size: 1.05rem; font-weight: 650; }
+.panel h3 { margin: 0; font-size: 0.92rem; font-weight: 650; color: var(--muted); }
+.hint { margin: 0; color: var(--muted); font-size: 0.86rem; }
+.empty { margin: 0; color: var(--muted); }
+
+.summary { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.summary > div { padding: 14px 14px; min-width: 0; }
+.summary > div + div { border-left: 1px solid var(--line); }
+.cap { margin: 0; color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.val { margin: 4px 0 0; font-weight: 700; font-size: 1rem; overflow-wrap: anywhere; }
+.val.big { font-size: 1.3rem; }
+.in { color: var(--in); } .out { color: var(--out); } .warn { color: var(--warn); }
+
+.wallets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wallet { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { text-align: center; padding: 10px; cursor: pointer; font-weight: 600; color: var(--muted); }
+.seg input:checked + label { background: var(--accent); color: var(--accent-ink); }
+.seg input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: -4px; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field.wide { grid-column: 1 / -1; }
+.field label { font-size: 0.8rem; color: var(--muted); }
+input[type="text"], input[type="date"], input[type="number"], select {
+  font-size: 16px; background: var(--bg); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 8px; padding: 10px 12px; width: 100%; min-width: 0;
+}
+.check { display: flex; align-items: center; gap: 8px; min-height: 40px; }
+.check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.btn { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: 11px 18px; font-weight: 600; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.btn.small { padding: 7px 12px; font-size: 0.88rem; }
+.btn:hover { filter: brightness(1.08); }
+.row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.msg { margin: 0; font-size: 0.88rem; color: var(--muted); }
+.msg.err { color: var(--out); }
+
+.quick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 0.9rem; }
+.chip:hover { border-color: var(--accent); }
+.chip .x { margin-left: 8px; color: var(--out); font-weight: 700; }
+.link-btn { background: none; border: 0; padding: 6px 4px; cursor: pointer; color: var(--muted); font-size: 0.84rem; border-radius: 6px; text-align: left; }
+.link-btn:hover { color: var(--accent); }
+.link-btn.danger { color: var(--out); font-weight: 600; }
+
+.pie-wrap { display: grid; grid-template-columns: 170px 1fr; gap: 16px; align-items: center; }
+.pie { position: relative; width: 170px; height: 170px; }
+.pie svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.pie-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 34px; }
+.pie-center .num { font-size: 0.82rem; font-weight: 700; overflow-wrap: anywhere; }
+.pie-center span { color: var(--muted); font-size: 0.7rem; }
+.legend { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.leg { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 0.86rem; }
+.dot { width: 12px; height: 12px; border-radius: 3px; }
+.leg .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.list { display: flex; flex-direction: column; }
+.row { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) auto; gap: 4px 10px; padding: 10px 0; border-top: 1px solid var(--line); align-items: start; }
+.row:first-child { border-top: 0; }
+.rd { color: var(--muted); font-size: 0.82rem; padding-top: 2px; }
+.rc { font-weight: 550; overflow-wrap: anywhere; }
+.tag { display: inline-block; font-size: 0.7rem; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); margin-left: 6px; vertical-align: middle; }
+.tag.extra { border-color: var(--warn); color: var(--warn); }
+.rn { color: var(--muted); font-size: 0.85rem; overflow-wrap: anywhere; }
+.ra { font-weight: 700; text-align: right; font-size: 0.9rem; }
+.rx { grid-column: 2 / -1; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.edit-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.edit-row input { flex: 1 1 10rem; }
+
+.bud { display: grid; gap: 4px; padding: 10px 0; border-top: 1px solid var(--line); }
+.bud:first-of-type { border-top: 0; }
+.bud-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.track { height: 9px; background: var(--line); border-radius: 5px; overflow: hidden; }
+.fill { height: 100%; border-radius: 5px; background: var(--in); }
+.fill.mid { background: var(--warn); } .fill.over { background: var(--out); }
+.bud input { max-width: 11rem; }
+.bud-set { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.84rem; color: var(--muted); }
+
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+th, td { text-align: right; padding: 8px 6px; border-top: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+th { color: var(--muted); font-weight: 600; font-size: 0.78rem; border-top: 0; }
+tfoot td { font-weight: 700; }
+
+.item { padding: 10px 0; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+.item:first-child { border-top: 0; }
+.item-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.item .name { font-weight: 600; overflow-wrap: anywhere; }
+.item.done .name { text-decoration: line-through; color: var(--muted); }
+.inline { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.inline input { flex: 1 1 8rem; max-width: 12rem; }
+
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+nav.tabs button { background: none; border: 0; padding: 14px 4px; cursor: pointer; font-weight: 600; color: var(--muted); border-top: 3px solid transparent; }
+nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: var(--accent); }
+
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; z-index: 30; font-size: 0.9rem; max-width: 90vw;
+}
+
+@media (max-width: 560px) {
+  .summary { grid-template-columns: 1fr 1fr; }
+  .summary > div:first-child { grid-column: 1 / -1; border-bottom: 1px solid var(--line); }
+  .summary > div:nth-child(3) { border-left: 0; border-top: 0; }
+  .summary > div:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .summary > div:nth-child(4) { border-left: 1px solid var(--line); }
+  .fields { grid-template-columns: 1fr; }
+  .pie-wrap { grid-template-columns: 1fr; justify-items: center; }
+  .legend { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Семейные расходы</h1>
+    <div class="top-right">
+      <select id="cur" class="cur-select" aria-label="Валюта">
+        <option value="UZS">Сум</option>
+        <option value="RUB">Рубль</option>
+        <option value="TJS">Сомони</option>
+      </select>
+      <div class="months" role="group" aria-label="Месяц">
+        <button class="icon-btn" id="prev" type="button" aria-label="Предыдущий месяц">‹</button>
+        <span class="label" id="month-label"></span>
+        <button class="icon-btn" id="next" type="button" aria-label="Следующий месяц">›</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ГЛАВНАЯ -->
+  <main id="tab-home" class="tab" style="display:contents">
+    <section class="summary" aria-label="Итоги">
+      <div><p class="cap">Остаток всего</p><p class="val big num" id="balance"></p></div>
+      <div><p class="cap">Доходы</p><p class="val in num" id="income"></p></div>
+      <div><p class="cap">Расходы</p><p class="val out num" id="expense"></p></div>
+      <div><p class="cap">Лишнее</p><p class="val warn num" id="extra"></p></div>
+    </section>
+
+    <section class="panel" aria-label="Кошельки">
+      <div class="wallets">
+        <div class="wallet"><p class="cap">Наличные</p><p class="val num" id="w-cash"></p></div>
+        <div class="wallet"><p class="cap">Карта</p><p class="val num" id="w-card"></p></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="add-title">
+      <h2 id="add-title">Новая запись</h2>
+      <div class="quick" id="quick" aria-label="Быстрый ввод"></div>
+      <form id="form" autocomplete="off">
+        <div class="seg" role="radiogroup" aria-label="Тип записи">
+          <input type="radio" name="type" id="t-out" value="out" checked>
+          <label for="t-out">Расход</label>
+          <input type="radio" name="type" id="t-in" value="in">
+          <label for="t-in">Доход</label>
+        </div>
+        <div class="fields" style="margin-top:12px">
+          <div class="field"><label for="amount">Сумма</label><input type="text" id="amount" inputmode="decimal" placeholder="например, 25 000"></div>
+          <div class="field"><label for="cat">Категория</label><select id="cat"></select></div>
+          <div class="field"><label for="wallet">Кошелёк</label><select id="wallet"><option value="card">Карта</option><option value="cash">Наличные</option></select></div>
+          <div class="field"><label for="date">Дата</label><input type="date" id="date"></div>
+          <div class="field wide"><label for="note">Комментарий</label><input type="text" id="note" maxlength="140" placeholder="например, мазь для малыша"></div>
+          <div class="field wide check" id="extra-row"><input type="checkbox" id="extra-flag"><label for="extra-flag" style="font-size:0.95rem;color:var(--ink)">Лишняя трата, можно было не покупать</label></div>
+        </div>
+        <div class="row-actions" style="margin-top:12px">
+          <button class="btn" type="submit">Добавить</button>
+          <button class="btn ghost small" type="button" id="save-quick">Сохранить как быстрый ввод</button>
+          <p class="msg" id="msg" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" aria-labelledby="pie-title">
+      <h2 id="pie-title">Куда уходят деньги</h2>
+      <div id="pie"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="list-title">
+      <h2 id="list-title">Записи за месяц</h2>
+      <div class="list" id="list"></div>
+    </section>
+  </main>
+
+  <!-- БЮДЖЕТ -->
+  <main id="tab-budget" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="bud-title">
+      <h2 id="bud-title">Бюджет на месяц</h2>
+      <p class="hint">Задайте лимит на каждую категорию. Лимит действует на каждый месяц, пока вы его не измените.</p>
+      <div id="bud-list"></div>
+    </section>
+    <section class="panel" aria-labelledby="cmp-title">
+      <h2 id="cmp-title">Сравнение с прошлым месяцем</h2>
+      <div class="tbl-wrap" id="cmp"></div>
+    </section>
+  </main>
+
+  <!-- ПЛАНЫ -->
+  <main id="tab-plans" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="rec-title">
+      <h2 id="rec-title">Регулярные платежи</h2>
+      <p class="hint">Аренда, интернет, связь. Запишите один раз, а каждый месяц нажимайте «Внести».</p>
+      <form id="rec-form" autocomplete="off">
+        <div class="fields">
+          <div class="field"><label for="rt">Название</label><input type="text" id="rt" maxlength="60" placeholder="Аренда квартиры"></div>
+          <div class="field"><label for="ra">Сумма</label><input type="text" id="ra" inputmode="decimal"></div>
+          <div class="field"><label for="rc">Категория</label><select id="rc"></select></div>
+          <div class="field"><label for="rw">Кошелёк</label><select id="rw"><option value="card">Карта</option><option value="cash">Наличные</option></select></div>
+          <div class="field"><label for="rday">День месяца</label><input type="number" id="rday" min="1" max="31" value="1"></div>
+        </div>
+        <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Добавить платёж</button><p class="msg" id="rec-msg" role="status" aria-live="polite"></p></div>
+      </form>
+      <div id="rec-list"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="goal-title">
+      <h2 id="goal-title">Цели и накопления</h2>
+      <form id="goal-form" autocomplete="off">
+        <div class="fields">
+          <div class="field"><label for="gn">На что копим</label><input type="text" id="gn" maxlength="60" placeholder="Отпуск"></div>
+          <div class="field"><label for="gt">Нужная сумма</label><input type="text" id="gt" inputmode="decimal"></div>
+        </div>
+        <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Добавить цель</button><p class="msg" id="goal-msg" role="status" aria-live="polite"></p></div>
+      </form>
+      <div id="goal-list"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="debt-title">
+      <h2 id="debt-title">Долги</h2>
+      <form id="debt-form" autocomplete="off">
+        <div class="fields">
+          <div class="field"><label for="dw">Кто</label><input type="text" id="dw" maxlength="60" placeholder="Имя"></div>
+          <div class="field"><label for="da">Сумма</label><input type="text" id="da" inputmode="decimal"></div>
+          <div class="field"><label for="ddir">Чей долг</label><select id="ddir"><option value="owe">Я должен</option><option value="owed">Мне должны</option></select></div>
+          <div class="field"><label for="ddue">Вернуть до</label><input type="date" id="ddue"></div>
+          <div class="field wide"><label for="dnote">Комментарий</label><input type="text" id="dnote" maxlength="140"></div>
+        </div>
+        <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Добавить долг</button><p class="msg" id="debt-msg" role="status" aria-live="polite"></p></div>
+      </form>
+      <div id="debt-list"></div>
+    </section>
+  </main>
+
+  <!-- КОПИЯ -->
+  <main id="tab-backup" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="bk-title">
+      <h2 id="bk-title">Резервная копия</h2>
+      <p class="hint">Записи хранятся только в памяти этого телефона. Если очистить браузер или сменить телефон, они пропадут. Сохраняйте копию в файл раз в неделю и отправляйте себе в мессенджер.</p>
+      <p class="msg" id="bk-last"></p>
+      <div class="row-actions">
+        <button class="btn" type="button" id="bk-export">Сохранить копию в файл</button>
+        <label class="btn ghost" for="bk-file" style="cursor:pointer">Загрузить из файла</label>
+        <input type="file" id="bk-file" accept="application/json,.json" hidden>
+      </div>
+      <div id="bk-confirm"></div>
+      <p class="msg" id="bk-msg" role="status" aria-live="polite"></p>
+    </section>
+    <section class="panel" aria-labelledby="cur-title">
+      <h2 id="cur-title">Про валюты</h2>
+      <p class="hint">Каждая валюта ведёт отдельный учёт. Записи в сумах не пересчитываются в рубли или сомони при переключении. Выберите валюту вверху страницы.</p>
+    </section>
+  </main>
+</div>
+
+<nav class="tabs" aria-label="Разделы">
+  <button type="button" data-tab="home" aria-current="page">Главная</button>
+  <button type="button" data-tab="budget">Бюджет</button>
+  <button type="button" data-tab="plans">Планы</button>
+  <button type="button" data-tab="backup">Копия</button>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var CUR = { UZS: 'сум', RUB: '₽', TJS: 'сомони' };
+  var OUT = ['Аренда квартиры', 'Питание', 'Транспорт', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Одежда', 'Ребёнок', 'Развлечения', 'Лишние траты'];
+  var INC = ['Зарплата', 'Подработка', 'Прочий доход'];
+  var WALLET = { cash: 'Наличные', card: 'Карта' };
+  var KEY = 'semya-rashody-v1';
+
+  function fresh() {
+    return {
+      v: 1, cur: 'UZS', entries: [], budgets: {}, recurring: [], goals: [], debts: [], lastBackup: 0,
+      quick: [
+        { label: 'Хлеб', cat: 'Питание', note: 'Хлеб' },
+        { label: 'Продукты', cat: 'Питание', note: 'Продукты' },
+        { label: 'Такси', cat: 'Транспорт', note: 'Такси' },
+        { label: 'Памперсы', cat: 'Ребёнок', note: 'Памперсы' }
+      ]
+    };
+  }
+  function normalize(d) {
+    var f = fresh();
+    if (!d || d.v !== 1) return f;
+    ['entries', 'recurring', 'goals', 'debts', 'quick'].forEach(function (k) { if (Array.isArray(d[k])) f[k] = d[k]; });
+    if (d.budgets && typeof d.budgets === 'object') f.budgets = d.budgets;
+    if (CUR[d.cur]) f.cur = d.cur;
+    f.lastBackup = +d.lastBackup || 0;
+    return f;
+  }
+  function load() {
+    try { return normalize(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return fresh(); }
+  }
+  var db = load();
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(db)); return true; }
+    catch (e) { toast('Не удалось сохранить в память телефона. Сделайте копию в файл.'); return false; }
+  }
+
+  var now = new Date();
+  var state = { tab: 'home', month: ym(now), type: 'out', pd: null, editC: null, editQuick: false, pendingImport: null };
+
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function ym(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+  function ds(d) { return ym(d) + '-' + pad(d.getDate()); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function fmt(n) { return Math.round(n).toLocaleString('ru-RU') + ' ' + CUR[db.cur]; }
+  function signed(n) { return (n < 0 ? '−' : '') + fmt(Math.abs(n)); }
+  function parseAmount(s) { return parseFloat(String(s).replace(/\s/g, '').replace(',', '.')); }
+  function shiftMonth(key, delta) { var p = key.split('-'); var d = new Date(+p[0], +p[1] - 1 + delta, 1); return ym(d); }
+  function monthTitle(key) {
+    var p = key.split('-');
+    var s = new Date(+p[0], +p[1] - 1, 1).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }).replace(/\s*г\.?$/, '');
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  function daysIn(key) { var p = key.split('-'); return new Date(+p[0], +p[1], 0).getDate(); }
+
+  function h(tag, props) {
+    var e = document.createElement(tag);
+    if (props) for (var k in props) {
+      var v = props[k];
+      if (k === 'class') e.className = v;
+      else if (k === 'text') e.textContent = v;
+      else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+      else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v);
+    }
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i];
+      if (c == null || c === false) continue;
+      if (Array.isArray(c)) c.forEach(function (x) { if (x) e.appendChild(typeof x === 'string' ? document.createTextNode(x) : x); });
+      else e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+    return e;
+  }
+  function clear(el) { el.textContent = ''; return el; }
+
+  var toastTimer = null;
+  function toast(t) {
+    var el = $('toast'); el.textContent = t; el.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.hidden = true; }, 3200);
+  }
+  function setMsg(id, text, isErr) { var m = $(id); m.textContent = text || ''; m.className = 'msg' + (isErr ? ' err' : ''); }
+
+  function ents() { return db.entries.filter(function (e) { return e.cur === db.cur; }); }
+  function isExtra(e) { return e.type === 'out' && (e.extra || e.cat === 'Лишние траты'); }
+  function monthEnts(key) { return ents().filter(function (e) { return e.date.slice(0, 7) === key; }); }
+  function sumOut(list) { return list.filter(function (e) { return e.type === 'out'; }).reduce(function (a, e) { return a + e.amount; }, 0); }
+  function byCat(list) {
+    var m = {};
+    list.forEach(function (e) { if (e.type === 'out') m[e.cat] = (m[e.cat] || 0) + e.amount; });
+    return m;
+  }
+  function budgets() { return db.budgets[db.cur] || {}; }
+
+  function delBtn(key, fn, label) {
+    if (state.pd === key) {
+      return [
+        h('button', { type: 'button', class: 'link-btn danger', text: 'Точно удалить', onclick: function () { state.pd = null; fn(); } }),
+        h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.pd = null; render(); } })
+      ];
+    }
+    return [h('button', { type: 'button', class: 'link-btn', text: 'Удалить', 'aria-label': 'Удалить: ' + (label || ''), onclick: function () { state.pd = key; render(); } })];
+  }
+
+  /* ---------- ГЛАВНАЯ ---------- */
+  function renderHome() {
+    var all = ents(), list = monthEnts(state.month);
+    var total = 0, wc = 0, wd = 0;
+    all.forEach(function (e) {
+      var v = e.type === 'in' ? e.amount : -e.amount;
+      total += v;
+      if (e.wallet === 'cash') wc += v; else wd += v;
+    });
+    var inM = 0, outM = 0, exM = 0;
+    list.forEach(function (e) {
+      if (e.type === 'in') inM += e.amount; else outM += e.amount;
+      if (isExtra(e)) exM += e.amount;
+    });
+    $('balance').textContent = signed(total);
+    $('income').textContent = fmt(inM);
+    $('expense').textContent = fmt(outM);
+    $('extra').textContent = fmt(exM);
+    $('w-cash').textContent = signed(wc);
+    $('w-card').textContent = signed(wd);
+
+    // быстрый ввод
+    var q = clear($('quick'));
+    db.quick.forEach(function (it, i) {
+      var chip = h('button', { type: 'button', class: 'chip', onclick: function () {
+        if (state.editQuick) return;
+        setType('out'); $('cat').value = it.cat; $('note').value = it.note || ''; $('amount').focus();
+      } }, it.label);
+      if (state.editQuick) chip.appendChild(h('span', { class: 'x', text: '×', 'aria-label': 'Убрать ' + it.label, onclick: function (ev) {
+        ev.stopPropagation(); db.quick.splice(i, 1); save(); render();
+      } }));
+      q.appendChild(chip);
+    });
+    q.appendChild(h('button', { type: 'button', class: 'link-btn', text: state.editQuick ? 'Готово' : 'Изменить', onclick: function () { state.editQuick = !state.editQuick; render(); } }));
+
+    renderPie(list, outM);
+
+    // список
+    var el = clear($('list'));
+    if (!list.length) { el.appendChild(h('p', { class: 'empty', text: 'За этот месяц записей нет. Добавьте первую в форме выше.' })); return; }
+    list.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : (b.ts || 0) - (a.ts || 0); }).forEach(function (e) {
+      var p = e.date.split('-');
+      var dd = new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', '');
+      var head = h('div', { class: 'rc' }, e.cat, h('span', { class: 'tag', text: WALLET[e.wallet] || 'Карта' }), isExtra(e) ? h('span', { class: 'tag extra', text: 'лишнее' }) : null);
+      var mid = h('div', null, head);
+      var actions = h('div', { class: 'rx' });
+      if (state.editC === e.id) {
+        var inp = h('input', { type: 'text', maxlength: '140', value: e.note || '', 'aria-label': 'Комментарий' });
+        inp.value = e.note || '';
+        var saveC = function () { e.note = inp.value.trim(); state.editC = null; save(); render(); };
+        inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') saveC(); });
+        mid.appendChild(h('div', { class: 'edit-row' }, inp,
+          h('button', { type: 'button', class: 'btn small', text: 'Сохранить', onclick: saveC }),
+          h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.editC = null; render(); } })));
+        setTimeout(function () { inp.focus(); }, 0);
+      } else {
+        if (e.note) mid.appendChild(h('div', { class: 'rn', text: e.note }));
+        actions.appendChild(h('button', { type: 'button', class: 'link-btn', text: e.note ? 'Изменить комментарий' : '+ Комментарий', onclick: function () { state.editC = e.id; render(); } }));
+        delBtn('e' + e.id, function () { db.entries = db.entries.filter(function (x) { return x.id !== e.id; }); save(); render(); }, e.cat).forEach(function (b) { actions.appendChild(b); });
+      }
+      el.appendChild(h('div', { class: 'row' },
+        h('div', { class: 'rd', text: dd }), mid,
+        h('div', { class: 'ra num ' + e.type, text: (e.type === 'in' ? '+' : '−') + fmt(e.amount) }),
+        actions));
+    });
+  }
+
+  function renderPie(list, outM) {
+    var box = clear($('pie'));
+    var m = byCat(list);
+    var cats = Object.keys(m).sort(function (a, b) { return m[b] - m[a]; });
+    if (!cats.length) { box.appendChild(h('p', { class: 'empty', text: 'За этот месяц расходов нет.' })); return; }
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 42 42'); svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Диаграмма расходов по категориям');
+    var bg = document.createElementNS(NS, 'circle');
+    bg.setAttribute('cx', 21); bg.setAttribute('cy', 21); bg.setAttribute('r', 15.9155); bg.setAttribute('fill', 'none');
+    bg.setAttribute('stroke-width', 7); bg.style.stroke = 'var(--line)';
+    svg.appendChild(bg);
+    var offset = 0;
+    var legend = h('div', { class: 'legend' });
+    cats.forEach(function (c) {
+      var idx = OUT.indexOf(c); if (idx < 0) idx = 9;
+      var color = 'var(--c' + (idx + 1) + ')';
+      var pct = m[c] / outM * 100;
+      var seg = document.createElementNS(NS, 'circle');
+      seg.setAttribute('cx', 21); seg.setAttribute('cy', 21); seg.setAttribute('r', 15.9155); seg.setAttribute('fill', 'none');
+      seg.setAttribute('stroke-width', 7);
+      seg.setAttribute('stroke-dasharray', pct.toFixed(3) + ' ' + (100 - pct).toFixed(3));
+      seg.setAttribute('stroke-dashoffset', (-offset).toFixed(3));
+      seg.style.stroke = color;
+      svg.appendChild(seg);
+      offset += pct;
+      var dot = h('div', { class: 'dot' }); dot.style.background = color;
+      legend.appendChild(h('div', { class: 'leg' }, dot, h('div', { class: 'name', text: c, title: c }),
+        h('div', { class: 'num', text: Math.round(pct) + '% · ' + fmt(m[c]) })));
+    });
+    var pie = h('div', { class: 'pie' }, svg, h('div', { class: 'pie-center' }, h('div', { class: 'num', text: fmt(outM) }), h('span', { text: 'всего расходов' })));
+    box.appendChild(h('div', { class: 'pie-wrap' }, pie, legend));
+  }
+
+  /* ---------- БЮДЖЕТ ---------- */
+  function renderBudget() {
+    var spent = byCat(monthEnts(state.month));
+    var b = budgets();
+    var el = clear($('bud-list'));
+    OUT.forEach(function (c) {
+      var lim = +b[c] || 0, s = spent[c] || 0;
+      var head = h('div', { class: 'bud-head' }, h('strong', { text: c }), h('span', { class: 'num', text: fmt(s) + (lim ? ' из ' + fmt(lim) : '') }));
+      var node = h('div', { class: 'bud' }, head);
+      if (lim) {
+        var ratio = s / lim;
+        var fill = h('div', { class: 'fill' + (ratio > 1 ? ' over' : ratio > 0.8 ? ' mid' : '') });
+        fill.style.width = Math.min(100, ratio * 100) + '%';
+        node.appendChild(h('div', { class: 'track' }, fill));
+        node.appendChild(h('div', { class: 'num ' + (ratio > 1 ? 'out' : ''), text: ratio > 1 ? 'Превышено на ' + fmt(s - lim) : 'Осталось ' + fmt(lim - s) }));
+      }
+      var inp = h('input', { type: 'text', inputmode: 'decimal', id: 'bl-' + OUT.indexOf(c), placeholder: 'без лимита', 'aria-label': 'Лимит: ' + c });
+      inp.value = lim ? String(lim) : '';
+      inp.addEventListener('change', function () {
+        var v = parseAmount(inp.value);
+        if (!db.budgets[db.cur]) db.budgets[db.cur] = {};
+        if (v > 0) db.budgets[db.cur][c] = v; else delete db.budgets[db.cur][c];
+        save(); render();
+      });
+      node.appendChild(h('div', { class: 'bud-set' }, 'Лимит на месяц:', inp));
+      el.appendChild(node);
+    });
+
+    // сравнение
+    var prevKey = shiftMonth(state.month, -1);
+    var cur = byCat(monthEnts(state.month)), prev = byCat(monthEnts(prevKey));
+    var rows = OUT.filter(function (c) { return (cur[c] || 0) || (prev[c] || 0); });
+    var wrap = clear($('cmp'));
+    if (!rows.length) { wrap.appendChild(h('p', { class: 'empty', text: 'Пока нечего сравнивать. Добавьте расходы за этот и прошлый месяц.' })); return; }
+    var tb = h('tbody'), tp = 0, tc = 0;
+    rows.forEach(function (c) {
+      var a = prev[c] || 0, d = cur[c] || 0; tp += a; tc += d;
+      var diff = d - a;
+      tb.appendChild(h('tr', null, h('td', { text: c }), h('td', { class: 'num', text: fmt(a) }), h('td', { class: 'num', text: fmt(d) }),
+        h('td', { class: 'num ' + (diff > 0 ? 'out' : diff < 0 ? 'in' : ''), text: (diff > 0 ? '+' : diff < 0 ? '−' : '') + fmt(Math.abs(diff)) })));
+    });
+    var diffT = tc - tp;
+    wrap.appendChild(h('table', null,
+      h('thead', null, h('tr', null, h('th', { text: 'Категория' }), h('th', { text: monthTitle(prevKey) }), h('th', { text: monthTitle(state.month) }), h('th', { text: 'Разница' }))),
+      tb,
+      h('tfoot', null, h('tr', null, h('td', { text: 'Всего' }), h('td', { class: 'num', text: fmt(tp) }), h('td', { class: 'num', text: fmt(tc) }),
+        h('td', { class: 'num ' + (diffT > 0 ? 'out' : diffT < 0 ? 'in' : ''), text: (diffT > 0 ? '+' : diffT < 0 ? '−' : '') + fmt(Math.abs(diffT)) })))));
+  }
+
+  /* ---------- ПЛАНЫ ---------- */
+  function addEntry(o) {
+    var e = { id: uid(), cur: db.cur, type: o.type, amount: o.amount, cat: o.cat, wallet: o.wallet || 'card', date: o.date, note: o.note || '', extra: !!o.extra, rec: o.rec || null, ts: Date.now() };
+    db.entries.push(e);
+    return e;
+  }
+  function recDone(r) {
+    return db.entries.some(function (e) { return e.rec === r.id && e.date.slice(0, 7) === state.month; });
+  }
+  function postRec(r) {
+    var day = Math.min(Math.max(1, +r.day || 1), daysIn(state.month));
+    addEntry({ type: 'out', amount: r.amount, cat: r.cat, wallet: r.wallet, date: state.month + '-' + pad(day), note: r.title, rec: r.id });
+  }
+
+  function renderPlans() {
+    // регулярные
+    var rl = clear($('rec-list'));
+    var recs = db.recurring.filter(function (r) { return r.cur === db.cur; });
+    if (!recs.length) rl.appendChild(h('p', { class: 'empty', text: 'Регулярных платежей пока нет.' }));
+    else {
+      var pending = recs.filter(function (r) { return !recDone(r); });
+      recs.forEach(function (r) {
+        var done = recDone(r);
+        var acts = h('div', { class: 'inline' });
+        if (done) acts.appendChild(h('span', { class: 'in', text: 'Внесено за ' + monthTitle(state.month).toLowerCase() }));
+        else acts.appendChild(h('button', { type: 'button', class: 'btn small', text: 'Внести', onclick: function () { postRec(r); save(); render(); toast('Платёж внесён'); } }));
+        delBtn('r' + r.id, function () { db.recurring = db.recurring.filter(function (x) { return x.id !== r.id; }); save(); render(); }, r.title).forEach(function (b) { acts.appendChild(b); });
+        rl.appendChild(h('div', { class: 'item' },
+          h('div', { class: 'item-head' }, h('span', { class: 'name', text: r.title }), h('span', { class: 'num', text: fmt(r.amount) })),
+          h('div', { class: 'hint', text: r.cat + ' · ' + (WALLET[r.wallet] || 'Карта') + ' · каждое ' + r.day + '-е число' }), acts));
+      });
+      if (pending.length > 1) rl.appendChild(h('div', { class: 'row-actions', style: 'margin-top:8px' }, h('button', { type: 'button', class: 'btn ghost small', text: 'Внести все за ' + monthTitle(state.month).toLowerCase(), onclick: function () { pending.forEach(postRec); save(); render(); toast('Внесено платежей: ' + pending.length); } })));
+    }
+
+    // цели
+    var gl = clear($('goal-list'));
+    var goals = db.goals.filter(function (g) { return g.cur === db.cur; });
+    if (!goals.length) gl.appendChild(h('p', { class: 'empty', text: 'Целей пока нет. Например, отпуск или машина.' }));
+    goals.forEach(function (g) {
+      var ratio = g.target > 0 ? g.saved / g.target : 0;
+      var fill = h('div', { class: 'fill' }); fill.style.width = Math.min(100, ratio * 100) + '%';
+      var inp = h('input', { type: 'text', inputmode: 'decimal', id: 'gp-' + g.id, placeholder: 'Сумма', 'aria-label': 'Пополнить: ' + g.name });
+      var acts = h('div', { class: 'inline' }, inp, h('button', { type: 'button', class: 'btn small', text: 'Пополнить', onclick: function () {
+        var v = parseAmount(inp.value);
+        if (!(v > 0)) { toast('Введите сумму больше нуля'); return; }
+        g.saved += v; save(); render();
+      } }));
+      delBtn('g' + g.id, function () { db.goals = db.goals.filter(function (x) { return x.id !== g.id; }); save(); render(); }, g.name).forEach(function (b) { acts.appendChild(b); });
+      gl.appendChild(h('div', { class: 'item' },
+        h('div', { class: 'item-head' }, h('span', { class: 'name', text: g.name }), h('span', { class: 'num', text: fmt(g.saved) + ' из ' + fmt(g.target) })),
+        h('div', { class: 'track' }, fill),
+        h('div', { class: 'hint num', text: Math.round(ratio * 100) + '%' + (g.saved >= g.target ? ' · цель достигнута' : ' · осталось ' + fmt(g.target - g.saved)) }), acts));
+    });
+
+    // долги
+    var dl = clear($('debt-list'));
+    var debts = db.debts.filter(function (d) { return d.cur === db.cur; });
+    if (!debts.length) dl.appendChild(h('p', { class: 'empty', text: 'Долгов нет.' }));
+    var owe = 0, owed = 0;
+    debts.forEach(function (d) { if (!d.done) { if (d.dir === 'owe') owe += d.amount; else owed += d.amount; } });
+    if (debts.length) dl.appendChild(h('p', { class: 'hint num', text: 'Я должен: ' + fmt(owe) + ' · Мне должны: ' + fmt(owed) }));
+    debts.slice().sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.due || '9') .localeCompare(b.due || '9'); }).forEach(function (d) {
+      var late = !d.done && d.due && d.due < ds(now);
+      var acts = h('div', { class: 'inline' }, h('button', { type: 'button', class: 'btn ghost small', text: d.done ? 'Вернуть в активные' : 'Отметить возвращённым', onclick: function () { d.done = !d.done; save(); render(); } }));
+      delBtn('d' + d.id, function () { db.debts = db.debts.filter(function (x) { return x.id !== d.id; }); save(); render(); }, d.who).forEach(function (b) { acts.appendChild(b); });
+      var meta = (d.dir === 'owe' ? 'Я должен' : 'Мне должны') + (d.due ? ' · до ' + d.due.split('-').reverse().join('.') : '') + (late ? ' · просрочено' : '');
+      dl.appendChild(h('div', { class: 'item' + (d.done ? ' done' : '') },
+        h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: fmt(d.amount) })),
+        h('div', { class: 'hint' + (late ? ' out' : ''), text: meta }),
+        d.note ? h('div', { class: 'rn', text: d.note }) : null, acts));
+    });
+  }
+
+  /* ---------- КОПИЯ ---------- */
+  function renderBackup() {
+    var last = db.lastBackup ? 'Последняя копия: ' + new Date(db.lastBackup).toLocaleDateString('ru-RU') : 'Копию ещё не сохраняли.';
+    $('bk-last').textContent = last;
+    var c = clear($('bk-confirm'));
+    if (state.pendingImport) {
+      c.appendChild(h('div', { class: 'item' },
+        h('div', { class: 'name', text: 'Заменить текущие записи данными из файла?' }),
+        h('div', { class: 'hint', text: 'В файле записей: ' + state.pendingImport.entries.length + '. Текущие данные на этом телефоне будут заменены.' }),
+        h('div', { class: 'inline' },
+          h('button', { type: 'button', class: 'btn small', text: 'Заменить', onclick: function () { db = state.pendingImport; state.pendingImport = null; save(); applyCur(); render(); setMsg('bk-msg', 'Данные загружены из файла.'); } }),
+          h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.pendingImport = null; render(); } }))));
+    }
+  }
+  $('bk-export').addEventListener('click', function () {
+    try {
+      var blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'semya-rashody-' + ds(new Date()) + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+      db.lastBackup = Date.now(); save(); renderBackup();
+      setMsg('bk-msg', 'Файл сохранён. Отправьте его себе в мессенджер или на почту.');
+    } catch (e) { setMsg('bk-msg', 'Не удалось сохранить файл. Попробуйте открыть сайт в обычном браузере.', true); }
+  });
+  $('bk-file').addEventListener('change', function (ev) {
+    var f = ev.target.files && ev.target.files[0];
+    ev.target.value = '';
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var d = JSON.parse(r.result);
+        if (!d || d.v !== 1 || !Array.isArray(d.entries)) throw new Error('bad');
+        state.pendingImport = normalize(d); setMsg('bk-msg', ''); renderBackup();
+      } catch (e) { setMsg('bk-msg', 'Этот файл не похож на копию семейных расходов.', true); }
+    };
+    r.onerror = function () { setMsg('bk-msg', 'Не удалось прочитать файл.', true); };
+    r.readAsText(f);
+  });
+
+  /* ---------- общее ---------- */
+  function fillSelect(sel, items) { clear(sel); items.forEach(function (c) { sel.appendChild(h('option', { value: c, text: c })); }); }
+  function setType(t) {
+    state.type = t;
+    $(t === 'out' ? 't-out' : 't-in').checked = true;
+    fillSelect($('cat'), t === 'out' ? OUT : INC);
+    $('extra-row').hidden = t !== 'out';
+  }
+  function applyCur() {
+    $('cur').value = db.cur;
+    document.querySelector('label[for="amount"]').textContent = 'Сумма, ' + CUR[db.cur];
+  }
+
+  function render() {
+    $('month-label').textContent = monthTitle(state.month);
+    ['home', 'budget', 'plans', 'backup'].forEach(function (t) { $('tab-' + t).hidden = state.tab !== t; });
+    document.querySelectorAll('nav.tabs button').forEach(function (b) {
+      if (b.dataset.tab === state.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    document.querySelector('.months').hidden = state.tab === 'plans' && false;
+    if (state.tab === 'home') renderHome();
+    else if (state.tab === 'budget') renderBudget();
+    else if (state.tab === 'plans') renderPlans();
+    else renderBackup();
+  }
+
+  document.querySelectorAll('nav.tabs button').forEach(function (b) {
+    b.addEventListener('click', function () { state.tab = b.dataset.tab; state.pd = null; state.editC = null; render(); window.scrollTo(0, 0); });
+  });
+  $('prev').addEventListener('click', function () { state.month = shiftMonth(state.month, -1); state.pd = null; render(); });
+  $('next').addEventListener('click', function () { state.month = shiftMonth(state.month, 1); state.pd = null; render(); });
+  $('cur').addEventListener('change', function () { db.cur = $('cur').value; save(); applyCur(); state.pd = null; render(); });
+  document.querySelectorAll('input[name="type"]').forEach(function (r) { r.addEventListener('change', function () { setType(r.value); }); });
+
+  $('form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var amount = parseAmount($('amount').value);
+    if (!(amount > 0)) { setMsg('msg', 'Введите сумму больше нуля.', true); $('amount').focus(); return; }
+    var date = $('date').value;
+    if (!date) { setMsg('msg', 'Выберите дату.', true); return; }
+    addEntry({ type: state.type, amount: amount, cat: $('cat').value, wallet: $('wallet').value, date: date, note: $('note').value.trim(), extra: state.type === 'out' && $('extra-flag').checked });
+    if (!save()) return;
+    state.month = date.slice(0, 7);
+    var msg = (state.type === 'in' ? 'Доход добавлен: ' : 'Расход добавлен: ') + fmt(amount) + '.';
+    $('amount').value = ''; $('note').value = ''; $('extra-flag').checked = false;
+    render(); setMsg('msg', msg); $('amount').focus();
+  });
+  $('save-quick').addEventListener('click', function () {
+    if (state.type !== 'out') { setMsg('msg', 'Быстрый ввод сохраняется для расходов.', true); return; }
+    var note = $('note').value.trim(), cat = $('cat').value;
+    var label = note || cat;
+    if (db.quick.some(function (q) { return q.label === label && q.cat === cat; })) { setMsg('msg', 'Такая кнопка уже есть.'); return; }
+    db.quick.push({ label: label.slice(0, 24), cat: cat, note: note });
+    save(); render(); setMsg('msg', 'Кнопка «' + label.slice(0, 24) + '» добавлена в быстрый ввод.');
+  });
+
+  $('rec-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var t = $('rt').value.trim(), a = parseAmount($('ra').value), day = parseInt($('rday').value, 10);
+    if (!t) { setMsg('rec-msg', 'Введите название.', true); return; }
+    if (!(a > 0)) { setMsg('rec-msg', 'Введите сумму больше нуля.', true); return; }
+    db.recurring.push({ id: uid(), cur: db.cur, title: t, amount: a, cat: $('rc').value, wallet: $('rw').value, day: day >= 1 && day <= 31 ? day : 1 });
+    save(); $('rt').value = ''; $('ra').value = ''; render(); setMsg('rec-msg', 'Платёж добавлен.');
+  });
+  $('goal-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var n = $('gn').value.trim(), t = parseAmount($('gt').value);
+    if (!n) { setMsg('goal-msg', 'Введите название цели.', true); return; }
+    if (!(t > 0)) { setMsg('goal-msg', 'Введите нужную сумму.', true); return; }
+    db.goals.push({ id: uid(), cur: db.cur, name: n, target: t, saved: 0 });
+    save(); $('gn').value = ''; $('gt').value = ''; render(); setMsg('goal-msg', 'Цель добавлена.');
+  });
+  $('debt-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var w = $('dw').value.trim(), a = parseAmount($('da').value);
+    if (!w) { setMsg('debt-msg', 'Введите имя.', true); return; }
+    if (!(a > 0)) { setMsg('debt-msg', 'Введите сумму больше нуля.', true); return; }
+    db.debts.push({ id: uid(), cur: db.cur, who: w, amount: a, dir: $('ddir').value, due: $('ddue').value || '', note: $('dnote').value.trim(), done: false });
+    save(); $('dw').value = ''; $('da').value = ''; $('ddue').value = ''; $('dnote').value = ''; render(); setMsg('debt-msg', 'Долг добавлен.');
+  });
+
+  fillSelect($('rc'), OUT);
+  setType('out');
+  $('date').value = ds(now);
+  applyCur();
+  render();
+
+  // напоминание о копии
+  if (db.entries.length > 10 && (!db.lastBackup || Date.now() - db.lastBackup > 14 * 86400000)) {
+    setTimeout(function () { toast('Сделайте резервную копию: раздел «Копия».'); }, 1200);
+  }
+
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+})();
+</script>
+</body>
+</html>
