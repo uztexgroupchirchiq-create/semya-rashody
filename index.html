@@ -85,7 +85,7 @@ button, input, select { font: inherit; color: inherit; }
 .val.big { font-size: 1.3rem; }
 .in { color: var(--in); } .out { color: var(--out); } .warn { color: var(--warn); }
 
-.wallets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wallets { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
 .wallet { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0; }
 
 .seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
@@ -200,6 +200,19 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
   background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; z-index: 30; font-size: 0.9rem; max-width: 90vw;
 }
 
+.mini { margin: 2px 0 0; font-size: 0.7rem; color: var(--muted); line-height: 1.3; }
+.wrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.wrow:first-child { border-top: 0; }
+.chart svg { width: 100%; height: auto; display: block; }
+.key { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.82rem; color: var(--muted); }
+.key span { display: inline-flex; align-items: center; gap: 6px; }
+.key i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+.dsum { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+h3.sub { margin: 10px 0 0; font-size: 0.95rem; font-weight: 650; }
+nav.tabs { grid-template-columns: repeat(5, 1fr); }
+nav.tabs button { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 2px 10px; font-size: 0.72rem; border-top-width: 3px; }
+nav.tabs svg { width: 22px; height: 22px; }
+
 @media (max-width: 560px) {
   .summary { grid-template-columns: 1fr 1fr; }
   .summary > div:first-child { grid-column: 1 / -1; border-bottom: 1px solid var(--line); }
@@ -233,17 +246,14 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
   <!-- ГЛАВНАЯ -->
   <main id="tab-home" class="tab" style="display:contents">
     <section class="summary" aria-label="Итоги">
-      <div><p class="cap">Остаток всего</p><p class="val big num" id="balance"></p></div>
+      <div><p class="cap">Общий баланс</p><p class="val big num" id="balance"></p></div>
       <div><p class="cap">Доходы</p><p class="val in num" id="income"></p></div>
       <div><p class="cap">Расходы</p><p class="val out num" id="expense"></p></div>
-      <div><p class="cap">Лишнее</p><p class="val warn num" id="extra"></p></div>
+      <div><p class="cap">Свободные средства</p><p class="val in num" id="free"></p><p class="mini">Доходы месяца минус обязательные расходы: жильё, еда, транспорт, коммунальные, связь, здоровье, ребёнок, одежда.</p></div>
     </section>
 
-    <section class="panel" aria-label="Кошельки">
-      <div class="wallets">
-        <div class="wallet"><p class="cap">Наличные</p><p class="val num" id="w-cash"></p></div>
-        <div class="wallet"><p class="cap">Карта</p><p class="val num" id="w-card"></p></div>
-      </div>
+    <section class="panel" aria-label="Кошельки и карты">
+      <div class="wallets" id="wallet-grid"></div>
       <p class="hint num" id="debt-line" hidden></p>
     </section>
 
@@ -254,7 +264,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
         <input type="text" id="say" maxlength="160" placeholder="Скажите или напишите: такси 30 000" aria-label="Фраза о трате" autocomplete="off">
         <button class="btn" id="say-go" type="button">Разобрать</button>
       </div>
-      <p class="hint" id="voice-hint">Нажмите на микрофон и скажите, например: «хлеб пять тысяч» или «получил зарплату два миллиона». Голос распознаёт браузер телефона, для этого нужен интернет. Фразу можно и написать.</p>
+      <p class="hint" id="voice-hint">Нажмите на микрофон и скажите, например: «хлеб пять тысяч» или «получил зарплату два миллиона». Перед сохранением вы увидите карточку и подтвердите запись. Голос распознаёт браузер телефона, нужен интернет. Фразу можно и написать.</p>
       <div id="voice-card"></div>
       <div class="quick" id="quick" aria-label="Быстрый ввод"></div>
     </section>
@@ -271,7 +281,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
         <div class="fields" style="margin-top:12px">
           <div class="field"><label for="amount">Сумма</label><input type="text" id="amount" inputmode="decimal" placeholder="например, 25 000"></div>
           <div class="field"><label for="cat">Категория</label><select id="cat"></select></div>
-          <div class="field"><label for="wallet">Кошелёк</label><select id="wallet"><option value="card">Карта</option><option value="cash">Наличные</option></select></div>
+          <div class="field"><label for="wallet">Кошелёк</label><select id="wallet"></select></div>
           <div class="field"><label for="date">Дата</label><input type="date" id="date"></div>
           <div class="field wide"><label for="note">Комментарий</label><input type="text" id="note" maxlength="140" placeholder="например, мазь для малыша"></div>
           <div class="field wide check" id="extra-row"><input type="checkbox" id="extra-flag"><label for="extra-flag" style="font-size:0.95rem;color:var(--ink)">Лишняя трата, можно было не покупать</label></div>
@@ -284,32 +294,20 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
       </form>
     </details>
 
-    <section class="panel" aria-labelledby="pie-title">
-      <h2 id="pie-title">Куда уходят деньги</h2>
-      <div id="pie"></div>
-    </section>
-
     <section class="panel" aria-labelledby="list-title">
-      <h2 id="list-title">Записи за месяц</h2>
+      <h2 id="list-title">Последние записи</h2>
       <div class="list" id="list"></div>
+      <div><button type="button" class="link-btn" id="all-link" hidden>Все операции за месяц →</button></div>
     </section>
   </main>
 
-  <!-- БЮДЖЕТ -->
-  <main id="tab-budget" class="tab" style="display:contents" hidden>
-    <section class="panel" aria-labelledby="bud-title">
-      <h2 id="bud-title">Бюджет на месяц</h2>
-      <p class="hint">Задайте лимит на каждую категорию. Лимит действует на каждый месяц, пока вы его не измените.</p>
-      <div id="bud-list"></div>
+  <!-- ОПЕРАЦИИ -->
+  <main id="tab-ops" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="ops-title">
+      <h2 id="ops-title">Операции за месяц</h2>
+      <div class="list" id="list-all"></div>
     </section>
-    <section class="panel" aria-labelledby="cmp-title">
-      <h2 id="cmp-title">Сравнение с прошлым месяцем</h2>
-      <div class="tbl-wrap" id="cmp"></div>
-    </section>
-  </main>
 
-  <!-- ПЛАНЫ -->
-  <main id="tab-plans" class="tab" style="display:contents" hidden>
     <section class="panel" aria-labelledby="rec-title">
       <h2 id="rec-title">Регулярные платежи</h2>
       <p class="hint">Аренда, интернет, связь. Запишите один раз, а каждый месяц нажимайте «Внести».</p>
@@ -318,14 +316,71 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
           <div class="field"><label for="rt">Название</label><input type="text" id="rt" maxlength="60" placeholder="Аренда квартиры"></div>
           <div class="field"><label for="ra">Сумма</label><input type="text" id="ra" inputmode="decimal"></div>
           <div class="field"><label for="rc">Категория</label><select id="rc"></select></div>
-          <div class="field"><label for="rw">Кошелёк</label><select id="rw"><option value="card">Карта</option><option value="cash">Наличные</option></select></div>
+          <div class="field"><label for="rw">Кошелёк</label><select id="rw"></select></div>
           <div class="field"><label for="rday">День месяца</label><input type="number" id="rday" min="1" max="31" value="1"></div>
         </div>
         <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Добавить платёж</button><p class="msg" id="rec-msg" role="status" aria-live="polite"></p></div>
       </form>
       <div id="rec-list"></div>
     </section>
+  </main>
 
+  <!-- ДОЛГИ -->
+  <main id="tab-debts" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="debt-title">
+      <h2 id="debt-title">Долги</h2>
+      <p class="hint">Долги не считаются ни расходом, ни доходом. Они меняют только остаток кошелька, поэтому итоги по месяцу остаются честными.</p>
+      <div class="dsum">
+        <div class="wallet"><p class="cap">Мне должны</p><p class="val in num" id="ds-owed"></p></div>
+        <div class="wallet"><p class="cap">Я должен</p><p class="val out num" id="ds-owe"></p></div>
+      </div>
+    </section>
+    <section class="panel" aria-labelledby="debt-add-title">
+      <h2 id="debt-add-title">Записать долг</h2>
+      <form id="debt-form" autocomplete="off">
+        <div class="fields">
+          <div class="field"><label for="ddir">Что произошло</label><select id="ddir"><option value="owed">Я дал в долг (мне должны)</option><option value="owe">Я взял в долг (я должен)</option></select></div>
+          <div class="field"><label for="dw">Имя</label><input type="text" id="dw" maxlength="60" placeholder="Кто"></div>
+          <div class="field"><label for="da">Сумма</label><input type="text" id="da" inputmode="decimal"></div>
+          <div class="field"><label for="dwal">Кошелёк</label><select id="dwal"></select></div>
+          <div class="field"><label for="ddue">Вернуть до</label><input type="date" id="ddue"></div>
+          <div class="field"><label for="dnote">Комментарий</label><input type="text" id="dnote" maxlength="140"></div>
+        </div>
+        <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Записать долг</button><p class="msg" id="debt-msg" role="status" aria-live="polite"></p></div>
+      </form>
+    </section>
+    <section class="panel" aria-labelledby="debt-list-title">
+      <h2 id="debt-list-title">Список долгов</h2>
+      <div id="debt-list"></div>
+    </section>
+  </main>
+
+  <!-- ОТЧЁТЫ -->
+  <main id="tab-reports" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="pie-title">
+      <h2 id="pie-title">Куда уходят деньги</h2>
+      <div id="pie"></div>
+      <p class="hint num" id="extra-line"></p>
+    </section>
+    <section class="panel" aria-labelledby="bud-title">
+      <h2 id="bud-title">Анализ категорий и бюджет</h2>
+      <p class="hint">Задайте лимит на каждую категорию. Лимит действует на каждый месяц, пока вы его не измените.</p>
+      <div id="bud-list"></div>
+    </section>
+    <section class="panel" aria-labelledby="cmp-title">
+      <h2 id="cmp-title">Сравнение с прошлым месяцем</h2>
+      <div class="tbl-wrap" id="cmp"></div>
+    </section>
+    <section class="panel" aria-labelledby="dyn-title">
+      <h2 id="dyn-title">Доходы и расходы за 6 месяцев</h2>
+      <div class="chart" id="dyn"></div>
+      <div class="key"><span><i style="background:var(--in)"></i>Доходы</span><span><i style="background:var(--out)"></i>Расходы</span></div>
+    </section>
+    <section class="panel" aria-labelledby="sav-title">
+      <h2 id="sav-title">Динамика накоплений</h2>
+      <p class="hint">Общий баланс на конец каждого месяца.</p>
+      <div class="chart" id="sav"></div>
+    </section>
     <section class="panel" aria-labelledby="goal-title">
       <h2 id="goal-title">Цели и накопления</h2>
       <form id="goal-form" autocomplete="off">
@@ -337,51 +392,49 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
       </form>
       <div id="goal-list"></div>
     </section>
-
-    <section class="panel" aria-labelledby="debt-title">
-      <h2 id="debt-title">Долги</h2>
-      <p class="hint">Долги не считаются ни расходом, ни доходом. Они меняют только остаток кошелька, поэтому итоги по месяцу остаются честными.</p>
-      <form id="debt-form" autocomplete="off">
-        <div class="fields">
-          <div class="field"><label for="ddir">Что произошло</label><select id="ddir"><option value="owed">Я дал в долг (мне должны)</option><option value="owe">Я взял в долг (я должен)</option></select></div>
-          <div class="field"><label for="dw">Имя</label><input type="text" id="dw" maxlength="60" placeholder="Кто"></div>
-          <div class="field"><label for="da">Сумма</label><input type="text" id="da" inputmode="decimal"></div>
-          <div class="field"><label for="dwal">Кошелёк</label><select id="dwal"><option value="card">Карта</option><option value="cash">Наличные</option></select></div>
-          <div class="field"><label for="ddue">Вернуть до</label><input type="date" id="ddue"></div>
-          <div class="field"><label for="dnote">Комментарий</label><input type="text" id="dnote" maxlength="140"></div>
-        </div>
-        <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Записать долг</button><p class="msg" id="debt-msg" role="status" aria-live="polite"></p></div>
-      </form>
-      <div id="debt-list"></div>
-    </section>
   </main>
 
-  <!-- КОПИЯ -->
-  <main id="tab-backup" class="tab" style="display:contents" hidden>
+  <!-- НАСТРОЙКИ -->
+  <main id="tab-settings" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="w-title">
+      <h2 id="w-title">Кошельки и карты</h2>
+      <p class="hint">Можно завести несколько: наличные, Uzcard, Humo, копилка. Название меняется прямо в строке. Удалить можно только кошелёк без записей.</p>
+      <div id="wlist"></div>
+      <form id="wallet-form" autocomplete="off">
+        <div class="inline">
+          <input type="text" id="wnew" maxlength="30" placeholder="Название нового кошелька" aria-label="Название нового кошелька">
+          <button class="btn small" type="submit">Добавить</button>
+        </div>
+        <p class="msg" id="w-msg" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
     <section class="panel" aria-labelledby="bk-title">
-      <h2 id="bk-title">Резервная копия</h2>
-      <p class="hint">Записи хранятся только в памяти этого телефона. Если очистить браузер или сменить телефон, они пропадут. Сохраняйте копию в файл раз в неделю и отправляйте себе в мессенджер.</p>
+      <h2 id="bk-title">Резервные копии</h2>
+      <p class="hint">Записи хранятся только в памяти этого телефона. Если очистить браузер или сменить телефон, они пропадут. Сохраняйте копию в файл раз в неделю и отправляйте себе в мессенджер. Из такого файла данные восстанавливаются целиком.</p>
       <p class="msg" id="bk-last"></p>
       <div class="row-actions">
         <button class="btn" type="button" id="bk-export">Сохранить копию в файл</button>
-        <label class="btn ghost" for="bk-file" style="cursor:pointer">Загрузить из файла</label>
+        <label class="btn ghost" for="bk-file" style="cursor:pointer">Восстановить из файла</label>
         <input type="file" id="bk-file" accept="application/json,.json" hidden>
       </div>
       <div id="bk-confirm"></div>
       <p class="msg" id="bk-msg" role="status" aria-live="polite"></p>
     </section>
+
     <section class="panel" aria-labelledby="cur-title">
       <h2 id="cur-title">Про валюты</h2>
-      <p class="hint">Каждая валюта ведёт отдельный учёт. Записи в сумах не пересчитываются в рубли или сомони при переключении. Выберите валюту вверху страницы.</p>
+      <p class="hint">Каждая валюта ведёт отдельный учёт. Записи в сумах не пересчитываются в рубли или сомони при переключении. Валюта выбирается вверху страницы.</p>
     </section>
   </main>
 </div>
 
 <nav class="tabs" aria-label="Разделы">
-  <button type="button" data-tab="home" aria-current="page">Главная</button>
-  <button type="button" data-tab="budget">Бюджет</button>
-  <button type="button" data-tab="plans">Планы</button>
-  <button type="button" data-tab="backup">Копия</button>
+  <button type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Главная</button>
+  <button type="button" data-tab="ops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h13M16 3l4 4-4 4"/><path d="M17 17H4M8 13l-4 4 4 4"/></svg>Операции</button>
+  <button type="button" data-tab="debts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="6.5" r="3.5"/><path d="M3 15h5l4 2h5a2 2 0 0 0 0-4h-3"/><path d="M3 12v9"/></svg>Долги</button>
+  <button type="button" data-tab="reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></svg>Отчёты</button>
+  <button type="button" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>Настройки</button>
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
@@ -398,6 +451,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
   function fresh() {
     return {
       v: 1, cur: 'UZS', entries: [], budgets: {}, recurring: [], goals: [], debts: [], lastBackup: 0,
+      wallets: [{ id: 'cash', name: 'Наличные' }, { id: 'card', name: 'Карта' }],
       quick: [
         { label: 'Хлеб', cat: 'Питание', note: 'Хлеб' },
         { label: 'Продукты', cat: 'Питание', note: 'Продукты' },
@@ -413,10 +467,24 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     if (d.budgets && typeof d.budgets === 'object') f.budgets = d.budgets;
     if (CUR[d.cur]) f.cur = d.cur;
     f.lastBackup = +d.lastBackup || 0;
+    if (Array.isArray(d.wallets)) {
+      var ws = d.wallets.filter(function (w) { return w && typeof w.id === 'string' && typeof w.name === 'string' && w.name; });
+      if (ws.length) f.wallets = ws;
+    }
+    var seen = {};
+    f.wallets.forEach(function (w) { seen[w.id] = true; });
+    [f.entries, f.recurring, f.debts].forEach(function (arr) {
+      arr.forEach(function (x) {
+        if (x && x.wallet && !seen[x.wallet]) { seen[x.wallet] = true; f.wallets.push({ id: x.wallet, name: x.wallet === 'cash' ? 'Наличные' : x.wallet === 'card' ? 'Карта' : 'Кошелёк' }); }
+      });
+    });
     return f;
   }
   function load() {
-    try { return normalize(JSON.parse(localStorage.getItem(KEY))); } catch (e) { return fresh(); }
+    try {
+      var raw = localStorage.getItem(KEY) || localStorage.getItem('semya-rashody-v1');
+      return normalize(JSON.parse(raw));
+    } catch (e) { return fresh(); }
   }
   var db = load();
   function save() {
@@ -490,26 +558,82 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     return [h('button', { type: 'button', class: 'link-btn', text: 'Удалить', 'aria-label': 'Удалить: ' + (label || ''), onclick: function () { state.pd = key; render(); } })];
   }
 
+  /* ---------- кошельки ---------- */
+  var MAND = ['Аренда квартиры', 'Питание', 'Транспорт', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Ребёнок', 'Одежда'];
+  function effect(e) { return e.type === 'in' ? e.amount : e.type === 'out' ? -e.amount : e.sign * e.amount; }
+  function wname(id) {
+    for (var i = 0; i < db.wallets.length; i++) if (db.wallets[i].id === id) return db.wallets[i].name;
+    return 'Кошелёк';
+  }
+  function walletOk(id) { return db.wallets.some(function (w) { return w.id === id; }); }
+  function walletUsed(id) {
+    return db.entries.some(function (e) { return e.wallet === id; }) || db.recurring.some(function (r) { return r.wallet === id; }) || db.debts.some(function (d) { return d.wallet === id; });
+  }
+  function fillWallets() {
+    ['wallet', 'rw', 'dwal'].forEach(function (id) {
+      var sel = $(id), cur = sel.value;
+      clear(sel);
+      db.wallets.forEach(function (w) { sel.appendChild(h('option', { value: w.id, text: w.name })); });
+      if (cur && walletOk(cur)) sel.value = cur;
+    });
+  }
+
+  /* ---------- список записей ---------- */
+  function entryList(elId, list, limit, emptyText) {
+    var el = clear($(elId));
+    if (!list.length) { el.appendChild(h('p', { class: 'empty', text: emptyText })); return; }
+    var sorted = list.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : (b.ts || 0) - (a.ts || 0); });
+    if (limit) sorted = sorted.slice(0, limit);
+    sorted.forEach(function (e) {
+      var p = e.date.split('-');
+      var dd = new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', '');
+      var head = h('div', { class: 'rc' }, e.cat, h('span', { class: 'tag', text: wname(e.wallet) }), isExtra(e) ? h('span', { class: 'tag extra', text: 'лишнее' }) : null);
+      var mid = h('div', null, head);
+      var actions = h('div', { class: 'rx' });
+      if (state.editC === e.id) {
+        var inp = h('input', { type: 'text', maxlength: '140', 'aria-label': 'Комментарий' });
+        inp.value = e.note || '';
+        var saveC = function () { e.note = inp.value.trim(); state.editC = null; save(); render(); };
+        inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') saveC(); });
+        mid.appendChild(h('div', { class: 'edit-row' }, inp,
+          h('button', { type: 'button', class: 'btn small', text: 'Сохранить', onclick: saveC }),
+          h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.editC = null; render(); } })));
+        setTimeout(function () { if (inp.offsetParent) inp.focus(); }, 0);
+      } else {
+        if (e.note) mid.appendChild(h('div', { class: 'rn', text: e.note }));
+        actions.appendChild(h('button', { type: 'button', class: 'link-btn', text: e.note ? 'Изменить комментарий' : '+ Комментарий', onclick: function () { state.editC = e.id; render(); } }));
+        if (!e.debt) delBtn('e' + elId + e.id, function () { db.entries = db.entries.filter(function (x) { return x.id !== e.id; }); save(); render(); }, e.cat).forEach(function (b) { actions.appendChild(b); });
+      }
+      el.appendChild(h('div', { class: 'row' },
+        h('div', { class: 'rd', text: dd }), mid,
+        h('div', { class: 'ra num ' + e.type, text: (e.type === 'in' || (e.type === 'xfer' && e.sign > 0) ? '+' : '−') + fmt(e.amount) }),
+        actions));
+    });
+  }
+
   /* ---------- ГЛАВНАЯ ---------- */
   function renderHome() {
     var all = ents(), list = monthEnts(state.month);
-    var total = 0, wc = 0, wd = 0;
-    all.forEach(function (e) {
-      var v = e.type === 'in' ? e.amount : e.type === 'out' ? -e.amount : e.sign * e.amount;
-      total += v;
-      if (e.wallet === 'cash') wc += v; else wd += v;
-    });
-    var inM = 0, outM = 0, exM = 0;
+    var total = 0, bal = {};
+    db.wallets.forEach(function (w) { bal[w.id] = 0; });
+    all.forEach(function (e) { var v = effect(e); total += v; bal[e.wallet] = (bal[e.wallet] || 0) + v; });
+    var inM = 0, outM = 0, mand = 0;
     list.forEach(function (e) {
-      if (e.type === 'in') inM += e.amount; else if (e.type === 'out') outM += e.amount;
-      if (isExtra(e)) exM += e.amount;
+      if (e.type === 'in') inM += e.amount;
+      else if (e.type === 'out') { outM += e.amount; if (MAND.indexOf(e.cat) >= 0 && !isExtra(e)) mand += e.amount; }
     });
+    var free = inM - mand;
     $('balance').textContent = signed(total);
     $('income').textContent = fmt(inM);
     $('expense').textContent = fmt(outM);
-    $('extra').textContent = fmt(exM);
-    $('w-cash').textContent = signed(wc);
-    $('w-card').textContent = signed(wd);
+    $('free').textContent = signed(free);
+    $('free').className = 'val num ' + (free < 0 ? 'out' : 'in');
+
+    var grid = clear($('wallet-grid'));
+    db.wallets.forEach(function (w) {
+      grid.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: w.name }), h('p', { class: 'val num', text: signed(bal[w.id] || 0) })));
+    });
+
     var dOwe = 0, dOwed = 0;
     db.debts.forEach(function (d) { if (d.cur !== db.cur) return; var left = d.amount - (d.paid || 0); if (left > 0) { if (d.dir === 'owe') dOwe += left; else dOwed += left; } });
     var dl0 = $('debt-line');
@@ -530,36 +654,104 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     });
     q.appendChild(h('button', { type: 'button', class: 'link-btn', text: state.editQuick ? 'Готово' : 'Изменить', onclick: function () { state.editQuick = !state.editQuick; render(); } }));
 
-    renderPie(list, outM);
+    entryList('list', list, 5, 'За этот месяц записей нет. Скажите или напишите первую в блоке «Быстрая запись».');
+    $('all-link').hidden = list.length <= 5;
+  }
 
-    // список
-    var el = clear($('list'));
-    if (!list.length) { el.appendChild(h('p', { class: 'empty', text: 'За этот месяц записей нет. Добавьте первую в форме выше.' })); return; }
-    list.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : (b.ts || 0) - (a.ts || 0); }).forEach(function (e) {
-      var p = e.date.split('-');
-      var dd = new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', '');
-      var head = h('div', { class: 'rc' }, e.cat, h('span', { class: 'tag', text: WALLET[e.wallet] || 'Карта' }), isExtra(e) ? h('span', { class: 'tag extra', text: 'лишнее' }) : null);
-      var mid = h('div', null, head);
-      var actions = h('div', { class: 'rx' });
-      if (state.editC === e.id) {
-        var inp = h('input', { type: 'text', maxlength: '140', value: e.note || '', 'aria-label': 'Комментарий' });
-        inp.value = e.note || '';
-        var saveC = function () { e.note = inp.value.trim(); state.editC = null; save(); render(); };
-        inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') saveC(); });
-        mid.appendChild(h('div', { class: 'edit-row' }, inp,
-          h('button', { type: 'button', class: 'btn small', text: 'Сохранить', onclick: saveC }),
-          h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.editC = null; render(); } })));
-        setTimeout(function () { inp.focus(); }, 0);
-      } else {
-        if (e.note) mid.appendChild(h('div', { class: 'rn', text: e.note }));
-        actions.appendChild(h('button', { type: 'button', class: 'link-btn', text: e.note ? 'Изменить комментарий' : '+ Комментарий', onclick: function () { state.editC = e.id; render(); } }));
-        if (!e.debt) delBtn('e' + e.id, function () { db.entries = db.entries.filter(function (x) { return x.id !== e.id; }); save(); render(); }, e.cat).forEach(function (b) { actions.appendChild(b); });
-      }
-      el.appendChild(h('div', { class: 'row' },
-        h('div', { class: 'rd', text: dd }), mid,
-        h('div', { class: 'ra num ' + e.type, text: (e.type === 'in' || (e.type === 'xfer' && e.sign > 0) ? '+' : '−') + fmt(e.amount) }),
-        actions));
+  /* ---------- ОПЕРАЦИИ ---------- */
+  function renderOps() {
+    entryList('list-all', monthEnts(state.month), 0, 'За этот месяц записей нет.');
+  }
+
+  /* ---------- ОТЧЁТЫ ---------- */
+  function sh(n) {
+    var a = Math.abs(n), t;
+    if (a >= 1000000) t = (a / 1000000).toFixed(1).replace('.0', '').replace('.', ',') + ' млн';
+    else if (a >= 1000) t = Math.round(a / 1000) + ' тыс';
+    else t = String(Math.round(a));
+    return (n < 0 ? '−' : '') + t;
+  }
+  function mshort(key) { var p = key.split('-'); return new Date(+p[0], +p[1] - 1, 1).toLocaleDateString('ru-RU', { month: 'short' }).replace('.', ''); }
+  var NS = 'http://www.w3.org/2000/svg';
+  function sv(name, attrs, text) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function drawBars(el, keys, ins, outs) {
+    clear(el);
+    var W = 320, H = 170, L = 8, R = 8, T = 20, B = 24;
+    var max = Math.max.apply(null, ins.concat(outs).concat([1]));
+    var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Доходы и расходы по месяцам' });
+    svg.appendChild(sv('line', { x1: L, y1: H - B, x2: W - R, y2: H - B, stroke: 'var(--line)', 'stroke-width': 1 }));
+    svg.appendChild(sv('text', { x: L, y: 11, fill: 'var(--muted)', 'font-size': 10 }, 'до ' + sh(max)));
+    var gw = (W - L - R) / keys.length, bw = Math.min(16, gw / 2 - 3);
+    keys.forEach(function (k, i) {
+      var xc = L + gw * i + gw / 2, ch = H - B - T;
+      var hi = ins[i] / max * ch, ho = outs[i] / max * ch;
+      svg.appendChild(sv('rect', { x: xc - bw - 1, y: H - B - hi, width: bw, height: Math.max(hi, ins[i] > 0 ? 1 : 0), rx: 2, fill: 'var(--in)' }));
+      svg.appendChild(sv('rect', { x: xc + 1, y: H - B - ho, width: bw, height: Math.max(ho, outs[i] > 0 ? 1 : 0), rx: 2, fill: 'var(--out)' }));
+      svg.appendChild(sv('text', { x: xc, y: H - 8, fill: 'var(--muted)', 'font-size': 10, 'text-anchor': 'middle' }, mshort(k)));
     });
+    el.appendChild(svg);
+  }
+  function drawLine(el, keys, vals) {
+    clear(el);
+    var W = 320, H = 170, L = 22, R = 22, T = 26, B = 24;
+    var mn = Math.min.apply(null, vals.concat([0])), mx = Math.max.apply(null, vals.concat([0]));
+    if (mx === mn) mx = mn + 1;
+    var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Баланс на конец каждого месяца' });
+    function X(i) { return keys.length === 1 ? W / 2 : L + (W - L - R) * i / (keys.length - 1); }
+    function Y(v) { return T + (mx - v) / (mx - mn) * (H - B - T); }
+    svg.appendChild(sv('line', { x1: 8, y1: Y(0), x2: W - 8, y2: Y(0), stroke: 'var(--line)', 'stroke-width': 1 }));
+    var pts = vals.map(function (v, i) { return X(i).toFixed(1) + ',' + Y(v).toFixed(1); }).join(' ');
+    svg.appendChild(sv('polyline', { points: pts, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+    vals.forEach(function (v, i) {
+      svg.appendChild(sv('circle', { cx: X(i), cy: Y(v), r: 3.2, fill: 'var(--accent)' }));
+      var anchor = i === 0 && keys.length > 1 ? 'start' : i === keys.length - 1 && keys.length > 1 ? 'end' : 'middle';
+      var tx = anchor === 'start' ? X(i) - 6 : anchor === 'end' ? X(i) + 6 : X(i);
+      svg.appendChild(sv('text', { x: tx, y: Y(v) - 8, fill: 'var(--ink)', 'font-size': 10, 'font-weight': 600, 'text-anchor': anchor }, sh(v)));
+      svg.appendChild(sv('text', { x: X(i), y: H - 8, fill: 'var(--muted)', 'font-size': 10, 'text-anchor': 'middle' }, mshort(keys[i])));
+    });
+    el.appendChild(svg);
+  }
+  function renderReports() {
+    var list = monthEnts(state.month);
+    var outM = 0, exM = 0;
+    list.forEach(function (e) { if (e.type === 'out') { outM += e.amount; if (isExtra(e)) exM += e.amount; } });
+    renderPie(list, outM);
+    $('extra-line').textContent = exM ? 'Из них лишнее: ' + fmt(exM) + ' (' + Math.round(exM / outM * 100) + '% расходов)' : '';
+    renderBudget();
+    var keys = [];
+    for (var i = 5; i >= 0; i--) keys.push(shiftMonth(state.month, -i));
+    var all = ents();
+    var ins = keys.map(function (k) { return all.filter(function (e) { return e.type === 'in' && e.date.slice(0, 7) === k; }).reduce(function (a, e) { return a + e.amount; }, 0); });
+    var outs = keys.map(function (k) { return all.filter(function (e) { return e.type === 'out' && e.date.slice(0, 7) === k; }).reduce(function (a, e) { return a + e.amount; }, 0); });
+    var bals = keys.map(function (k) { return all.filter(function (e) { return e.date.slice(0, 7) <= k; }).reduce(function (a, e) { return a + effect(e); }, 0); });
+    drawBars($('dyn'), keys, ins, outs);
+    drawLine($('sav'), keys, bals);
+  }
+
+  /* ---------- НАСТРОЙКИ ---------- */
+  function renderSettings() {
+    var el = clear($('wlist'));
+    db.wallets.forEach(function (w) {
+      var inp = h('input', { type: 'text', maxlength: '30', 'aria-label': 'Название кошелька' });
+      inp.value = w.name;
+      inp.addEventListener('change', function () {
+        var v = inp.value.trim().slice(0, 30);
+        if (!v) { inp.value = w.name; return; }
+        w.name = v; save(); render(); toast('Название сохранено');
+      });
+      var act = h('div', { class: 'inline' });
+      if (db.wallets.length > 1) {
+        if (walletUsed(w.id)) act.appendChild(h('span', { class: 'hint', text: 'есть записи' }));
+        else delBtn('w' + w.id, function () { db.wallets = db.wallets.filter(function (x) { return x.id !== w.id; }); save(); render(); }, w.name).forEach(function (b) { act.appendChild(b); });
+      }
+      el.appendChild(h('div', { class: 'wrow' }, inp, act));
+    });
+    renderBackup();
   }
 
   function renderPie(list, outM) {
@@ -675,7 +867,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
         delBtn('r' + r.id, function () { db.recurring = db.recurring.filter(function (x) { return x.id !== r.id; }); save(); render(); }, r.title).forEach(function (b) { acts.appendChild(b); });
         rl.appendChild(h('div', { class: 'item' },
           h('div', { class: 'item-head' }, h('span', { class: 'name', text: r.title }), h('span', { class: 'num', text: fmt(r.amount) })),
-          h('div', { class: 'hint', text: r.cat + ' · ' + (WALLET[r.wallet] || 'Карта') + ' · каждое ' + r.day + '-е число' }), acts));
+          h('div', { class: 'hint', text: r.cat + ' · ' + wname(r.wallet) + ' · каждое ' + r.day + '-е число' }), acts));
       });
       if (pending.length > 1) rl.appendChild(h('div', { class: 'row-actions', style: 'margin-top:8px' }, h('button', { type: 'button', class: 'btn ghost small', text: 'Внести все за ' + monthTitle(state.month).toLowerCase(), onclick: function () { pending.forEach(postRec); save(); render(); toast('Внесено платежей: ' + pending.length); } })));
     }
@@ -705,55 +897,76 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     var debts = db.debts.filter(function (d) { return d.cur === db.cur; });
     var owe = 0, owed = 0;
     debts.forEach(function (d) { var left = d.amount - (d.paid || 0); if (left > 0) { if (d.dir === 'owe') owe += left; else owed += left; } });
+    $('ds-owed').textContent = fmt(owed);
+    $('ds-owe').textContent = fmt(owe);
     if (!debts.length) dl.appendChild(h('p', { class: 'empty', text: 'Долгов нет.' }));
-    else dl.appendChild(h('p', { class: 'hint num', text: 'Мне должны: ' + fmt(owed) + ' · Я должен: ' + fmt(owe) }));
-    debts.slice().sort(function (a, b) {
-      var da = (a.amount - (a.paid || 0)) <= 0 ? 1 : 0, dbb = (b.amount - (b.paid || 0)) <= 0 ? 1 : 0;
-      return da - dbb || (a.due || '9').localeCompare(b.due || '9');
-    }).forEach(function (d) {
-      var paid = d.paid || 0, left = Math.max(0, d.amount - paid), done = left <= 0;
-      var late = !done && d.due && d.due < ds(now);
-      var ratio = d.amount > 0 ? paid / d.amount : 0;
-      var fill = h('div', { class: 'fill' }); fill.style.width = Math.min(100, ratio * 100) + '%';
-      var acts = h('div', { class: 'inline' });
-      if (!done) {
-        var inp = h('input', { type: 'text', inputmode: 'decimal', id: 'dp-' + d.id, placeholder: 'Пусто = всё: ' + fmt(left), 'aria-label': 'Сумма возврата: ' + d.who });
-        acts.appendChild(inp);
-        acts.appendChild(h('button', { type: 'button', class: 'btn small', text: d.dir === 'owed' ? 'Мне вернули' : 'Я вернул', onclick: function () {
-          var v = inp.value.trim() ? parseAmount(inp.value) : left;
-          if (!(v > 0)) { toast('Введите сумму больше нуля'); return; }
-          if (v > left) v = left;
-          d.paid = (d.paid || 0) + v;
-          addEntry({ type: 'xfer', sign: d.dir === 'owed' ? 1 : -1, amount: v, cat: 'Долг', wallet: d.wallet || 'card', date: ds(new Date()), note: (d.dir === 'owed' ? 'Вернули: ' : 'Вернул: ') + d.who, debt: d.id });
-          save(); render(); toast('Записано: ' + fmt(v));
-        } }));
-      }
-      delBtn('d' + d.id, function () {
-        db.entries = db.entries.filter(function (x) { return x.debt !== d.id; });
-        db.debts = db.debts.filter(function (x) { return x.id !== d.id; });
-        save(); render();
-      }, d.who).forEach(function (b) { acts.appendChild(b); });
-      var meta = (d.dir === 'owe' ? 'Я должен' : 'Мне должны') + (d.due ? ' · до ' + d.due.split('-').reverse().join('.') : '') + (late ? ' · просрочено' : '') + (done ? ' · возвращён' : '');
-      dl.appendChild(h('div', { class: 'item' + (done ? ' done' : '') },
-        h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: fmt(left) + (paid ? ' из ' + fmt(d.amount) : '') })),
-        paid ? h('div', { class: 'track' }, fill) : null,
-        h('div', { class: 'hint' + (late ? ' out' : ''), text: meta }),
-        d.note ? h('div', { class: 'rn', text: d.note }) : null, acts));
+    [['owed', 'Мне должны'], ['owe', 'Я должен']].forEach(function (grp) {
+      var items = debts.filter(function (d) { return d.dir === grp[0]; });
+      if (!items.length) return;
+      dl.appendChild(h('h3', { class: 'sub', text: grp[1] }));
+      items.sort(function (a, b) {
+        var da = (a.amount - (a.paid || 0)) <= 0 ? 1 : 0, dbb = (b.amount - (b.paid || 0)) <= 0 ? 1 : 0;
+        return da - dbb || (a.due || '9').localeCompare(b.due || '9');
+      }).forEach(function (d) {
+        var paid = d.paid || 0, left = Math.max(0, d.amount - paid), done = left <= 0;
+        var late = !done && d.due && d.due < ds(now);
+        var ratio = d.amount > 0 ? paid / d.amount : 0;
+        var fill = h('div', { class: 'fill' }); fill.style.width = Math.min(100, ratio * 100) + '%';
+        var acts = h('div', { class: 'inline' });
+        if (!done) {
+          var inp = h('input', { type: 'text', inputmode: 'decimal', id: 'dp-' + d.id, placeholder: 'Пусто = всё: ' + fmt(left), 'aria-label': 'Сумма возврата: ' + d.who });
+          acts.appendChild(inp);
+          acts.appendChild(h('button', { type: 'button', class: 'btn small', text: d.dir === 'owed' ? 'Мне вернули' : 'Я вернул', onclick: function () {
+            var v = inp.value.trim() ? parseAmount(inp.value) : left;
+            if (!(v > 0)) { toast('Введите сумму больше нуля'); return; }
+            if (v > left) v = left;
+            d.paid = (d.paid || 0) + v;
+            addEntry({ type: 'xfer', sign: d.dir === 'owed' ? 1 : -1, amount: v, cat: 'Долг', wallet: walletOk(d.wallet) ? d.wallet : db.wallets[0].id, date: ds(new Date()), note: (d.dir === 'owed' ? 'Вернули: ' : 'Вернул: ') + d.who, debt: d.id });
+            save(); render(); toast('Записано: ' + fmt(v));
+          } }));
+        }
+        delBtn('d' + d.id, function () {
+          db.entries = db.entries.filter(function (x) { return x.debt !== d.id; });
+          db.debts = db.debts.filter(function (x) { return x.id !== d.id; });
+          save(); render();
+        }, d.who).forEach(function (b) { acts.appendChild(b); });
+        var meta = (d.due ? 'До ' + d.due.split('-').reverse().join('.') : 'Без срока') + (late ? ' · просрочено' : '') + (done ? ' · возвращён' : '') + ' · ' + wname(d.wallet);
+        dl.appendChild(h('div', { class: 'item' + (done ? ' done' : '') },
+          h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: fmt(left) + (paid ? ' из ' + fmt(d.amount) : '') })),
+          paid ? h('div', { class: 'track' }, fill) : null,
+          h('div', { class: 'hint' + (late ? ' out' : ''), text: meta }),
+          d.note ? h('div', { class: 'rn', text: d.note }) : null, acts));
+      });
     });
   }
 
-  /* ---------- КОПИЯ ---------- */
+  /* ---------- КОПИИ ---------- */
+  var PREV = 'moneva-prev';
+  function readPrev() { try { var d = JSON.parse(localStorage.getItem(PREV)); return d && d.v === 1 ? d : null; } catch (e) { return null; } }
   function renderBackup() {
-    var last = db.lastBackup ? 'Последняя копия: ' + new Date(db.lastBackup).toLocaleDateString('ru-RU') : 'Копию ещё не сохраняли.';
-    $('bk-last').textContent = last;
+    $('bk-last').textContent = db.lastBackup ? 'Последняя копия: ' + new Date(db.lastBackup).toLocaleDateString('ru-RU') : 'Копию ещё не сохраняли.';
     var c = clear($('bk-confirm'));
     if (state.pendingImport) {
+      var pi = state.pendingImport;
       c.appendChild(h('div', { class: 'item' },
-        h('div', { class: 'name', text: 'Заменить текущие записи данными из файла?' }),
-        h('div', { class: 'hint', text: 'В файле записей: ' + state.pendingImport.entries.length + '. Текущие данные на этом телефоне будут заменены.' }),
+        h('div', { class: 'name', text: 'Восстановить данные из файла?' }),
+        h('div', { class: 'hint', text: 'В файле: записей ' + pi.entries.length + ', кошельков ' + pi.wallets.length + ', долгов ' + pi.debts.length + '. Текущие данные на этом телефоне будут заменены. Перед этим я сохраню их, и вы сможете вернуть.' }),
         h('div', { class: 'inline' },
-          h('button', { type: 'button', class: 'btn small', text: 'Заменить', onclick: function () { db = state.pendingImport; state.pendingImport = null; save(); applyCur(); render(); setMsg('bk-msg', 'Данные загружены из файла.'); } }),
+          h('button', { type: 'button', class: 'btn small', text: 'Восстановить', onclick: function () {
+            try { localStorage.setItem(PREV, JSON.stringify(db)); } catch (e) {}
+            db = pi; state.pendingImport = null; save(); applyCur(); render(); setMsg('bk-msg', 'Данные восстановлены из файла.');
+          } }),
           h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.pendingImport = null; render(); } }))));
+    }
+    var prev = readPrev();
+    if (prev && !state.pendingImport) {
+      c.appendChild(h('div', { class: 'item' },
+        h('div', { class: 'hint', text: 'Данные до последнего восстановления сохранены (записей: ' + prev.entries.length + ').' }),
+        h('div', { class: 'inline' }, h('button', { type: 'button', class: 'btn ghost small', text: 'Вернуть их', onclick: function () {
+          var cur = db;
+          try { localStorage.setItem(PREV, JSON.stringify(cur)); } catch (e) {}
+          db = normalize(prev); save(); applyCur(); render(); setMsg('bk-msg', 'Прежние данные возвращены.');
+        } }))));
     }
   }
   $('bk-export').addEventListener('click', function () {
@@ -797,21 +1010,29 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     document.querySelector('label[for="amount"]').textContent = 'Сумма, ' + CUR[db.cur];
   }
 
+  var TABS = ['home', 'ops', 'debts', 'reports', 'settings'];
   function render() {
     $('month-label').textContent = monthTitle(state.month);
-    ['home', 'budget', 'plans', 'backup'].forEach(function (t) { $('tab-' + t).hidden = state.tab !== t; });
+    TABS.forEach(function (t) { $('tab-' + t).hidden = state.tab !== t; });
     document.querySelectorAll('nav.tabs button').forEach(function (b) {
       if (b.dataset.tab === state.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
     });
-    document.querySelector('.months').hidden = state.tab === 'plans' && false;
-    if (state.tab === 'home') renderHome();
-    else if (state.tab === 'budget') renderBudget();
-    else if (state.tab === 'plans') renderPlans();
-    else renderBackup();
+    document.querySelector('.months').hidden = state.tab === 'debts' || state.tab === 'settings';
+    fillWallets();
+    renderHome(); renderOps(); renderReports(); renderPlans(); renderSettings();
   }
 
   document.querySelectorAll('nav.tabs button').forEach(function (b) {
     b.addEventListener('click', function () { state.tab = b.dataset.tab; state.pd = null; state.editC = null; render(); window.scrollTo(0, 0); });
+  });
+  $('all-link').addEventListener('click', function () { state.tab = 'ops'; render(); window.scrollTo(0, 0); });
+  $('wallet-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var n = $('wnew').value.trim().slice(0, 30);
+    if (!n) { setMsg('w-msg', 'Введите название.', true); return; }
+    if (db.wallets.some(function (w) { return w.name.toLowerCase() === n.toLowerCase(); })) { setMsg('w-msg', 'Кошелёк с таким названием уже есть.', true); return; }
+    db.wallets.push({ id: 'w' + uid(), name: n });
+    save(); $('wnew').value = ''; render(); setMsg('w-msg', 'Кошелёк «' + n + '» добавлен.');
   });
   $('prev').addEventListener('click', function () { state.month = shiftMonth(state.month, -1); state.pd = null; render(); });
   $('next').addEventListener('click', function () { state.month = shiftMonth(state.month, 1); state.pd = null; render(); });
@@ -935,7 +1156,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
   function showVoiceCard(res) {
     var box = clear($('voice-card'));
     pendingVoice = res;
-    var line = (res.type === 'in' ? 'Доход' : 'Расход') + ' · ' + fmt(res.amount) + ' · ' + res.cat + ' · ' + (WALLET[res.wallet] || 'Карта') + (res.extra ? ' · лишнее' : '');
+    var line = (res.type === 'in' ? 'Доход' : 'Расход') + ' · ' + fmt(res.amount) + ' · ' + res.cat + ' · ' + wname(res.wallet) + (res.extra ? ' · лишнее' : '');
     box.appendChild(h('div', { class: 'vcard' },
       h('div', { class: 'big num', text: line }),
       h('div', { class: 'rn', text: '«' + res.note + '»' + (res.date !== ds(new Date()) ? ' · ' + res.date.split('-').reverse().join('.') : '') }),
@@ -957,6 +1178,9 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     var text = $('say').value.trim();
     if (!text) { toast('Скажите или напишите фразу, например: такси 30 000'); return; }
     var res = parsePhrase(text, $('wallet').value);
+    var low = text.toLowerCase();
+    db.wallets.forEach(function (w) { if (w.id !== 'cash' && w.id !== 'card' && w.name.length >= 3 && low.indexOf(w.name.toLowerCase()) >= 0) res.wallet = w.id; });
+    if (!walletOk(res.wallet)) res.wallet = db.wallets[0].id;
     if (!(res.amount > 0)) { clear($('voice-card')); toast('Не нашёл сумму. Например: «такси тридцать тысяч»'); return; }
     showVoiceCard(res);
   }
