@@ -3,45 +3,45 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#3d4fb5">
+<meta name="theme-color" content="#0b6152">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Семья">
+<meta name="apple-mobile-web-app-title" content="MONEVA">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<title>Семейные расходы</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>MONEVA</title>
 <style>
-/* Layout: одна колонка до 720px, нижнее меню из четырёх разделов (Главная, Бюджет, Планы, Копия). Без внешних шрифтов и скриптов, чтобы всё работало без интернета. */
+/* Layout: одна колонка до 720px. Сверху остаток, затем быстрая запись голосом или текстом, ниже диаграмма и записи. Светлый фон, тёмно-зелёные акценты из логотипа MONEVA. Без внешних шрифтов и скриптов, чтобы всё работало без интернета. */
 :root {
-  --bg: #f1f4f6;
+  --bg: #f2f6f4;
   --surface: #ffffff;
-  --ink: #14212b;
-  --muted: #5a6975;
-  --line: #dbe2e8;
-  --accent: #3d4fb5;
+  --ink: #0f201b;
+  --muted: #566b63;
+  --line: #d9e4df;
+  --accent: #0b6152;
   --accent-ink: #ffffff;
-  --in: #0f8559;
+  --in: #14804f;
   --out: #c24132;
   --warn: #a86a00;
-  --c1: #3d4fb5; --c2: #e07a1f; --c3: #138a5e; --c4: #c24132; --c5: #8a4fb8;
+  --c1: #0b6152; --c2: #e07a1f; --c3: #3d6fb5; --c4: #c24132; --c5: #8a4fb8;
   --c6: #0f8aa8; --c7: #b89a1f; --c8: #d0558a; --c9: #5f6b76; --c10: #6a9c2c;
   --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
   --mono: ui-monospace, 'SF Mono', Consolas, 'Roboto Mono', monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0e151b; --surface: #16202a; --ink: #e7eef3; --muted: #93a3b1; --line: #26333f;
-    --accent: #8a9bf0; --accent-ink: #0b1220; --in: #4cc79a; --out: #f08b78; --warn: #e8b04a;
-    --c1: #8a9bf0; --c2: #f0a05a; --c3: #4cc79a; --c4: #f08b78; --c5: #c79bf0;
+    --bg: #0b1512; --surface: #13211c; --ink: #e5f1ec; --muted: #8fa99e; --line: #22342d;
+    --accent: #4ee0b0; --accent-ink: #04150e; --in: #5fd6a2; --out: #f08b78; --warn: #e8b04a;
+    --c1: #4ee0b0; --c2: #f0a05a; --c3: #7aa8f0; --c4: #f08b78; --c5: #c79bf0;
     --c6: #5cc4e0; --c7: #e6cc5a; --c8: #f08cb4; --c9: #a9b6c2; --c10: #a3d65e;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0e151b; --surface: #16202a; --ink: #e7eef3; --muted: #93a3b1; --line: #26333f;
-  --accent: #8a9bf0; --accent-ink: #0b1220; --in: #4cc79a; --out: #f08b78; --warn: #e8b04a;
-  --c1: #8a9bf0; --c2: #f0a05a; --c3: #4cc79a; --c4: #f08b78; --c5: #c79bf0;
+  --bg: #0b1512; --surface: #13211c; --ink: #e5f1ec; --muted: #8fa99e; --line: #22342d;
+  --accent: #4ee0b0; --accent-ink: #04150e; --in: #5fd6a2; --out: #f08b78; --warn: #e8b04a;
+  --c1: #4ee0b0; --c2: #f0a05a; --c3: #7aa8f0; --c4: #f08b78; --c5: #c79bf0;
   --c6: #5cc4e0; --c7: #e6cc5a; --c8: #f08cb4; --c9: #a9b6c2; --c10: #a3d65e;
   color-scheme: dark;
 }
@@ -167,6 +167,25 @@ tfoot td { font-weight: 700; }
 .inline { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .inline input { flex: 1 1 8rem; max-width: 12rem; }
 
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand img { width: 42px; height: 42px; flex: none; border-radius: 10px; }
+.top h1 { font-size: 1.2rem; letter-spacing: 0.16em; font-weight: 800; color: var(--accent); line-height: 1.1; }
+.slogan { margin: 2px 0 0; font-size: 0.78rem; color: var(--muted); }
+.voice-row { display: flex; gap: 8px; align-items: center; }
+.voice-row input { flex: 1 1 auto; }
+.mic { width: 52px; height: 52px; flex: none; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); cursor: pointer; display: grid; place-items: center; }
+.mic.live { animation: pulse 1.1s ease-in-out infinite; background: var(--out); color: var(--surface); }
+@keyframes pulse { 50% { box-shadow: 0 0 0 10px color-mix(in srgb, var(--out) 22%, transparent); } }
+.vcard { border: 1px solid var(--accent); border-radius: 10px; padding: 12px; display: grid; gap: 8px; background: var(--bg); }
+.vcard .big { font-weight: 700; font-size: 1.05rem; overflow-wrap: anywhere; }
+details.manual { display: block; }
+details.manual summary { cursor: pointer; font-weight: 650; font-size: 1.05rem; list-style: none; }
+details.manual summary::-webkit-details-marker { display: none; }
+details.manual summary::after { content: '+'; float: right; color: var(--accent); font-weight: 700; }
+details.manual[open] summary::after { content: '−'; }
+details.manual form { margin-top: 14px; }
+.ra.xfer { color: var(--muted); }
+
 nav.tabs {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
   display: grid; grid-template-columns: repeat(4, 1fr);
@@ -184,9 +203,8 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
 @media (max-width: 560px) {
   .summary { grid-template-columns: 1fr 1fr; }
   .summary > div:first-child { grid-column: 1 / -1; border-bottom: 1px solid var(--line); }
-  .summary > div:nth-child(3) { border-left: 0; border-top: 0; }
-  .summary > div:nth-child(n+3) { border-top: 1px solid var(--line); }
-  .summary > div:nth-child(4) { border-left: 1px solid var(--line); }
+  .summary > div:nth-child(2) { border-left: 0; }
+  .summary > div:nth-child(4) { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); }
   .fields { grid-template-columns: 1fr; }
   .pie-wrap { grid-template-columns: 1fr; justify-items: center; }
   .legend { width: 100%; }
@@ -197,7 +215,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
 <body>
 <div class="wrap">
   <header class="top">
-    <h1>Семейные расходы</h1>
+    <div class="brand"><img src="logo-mark.png" alt="" width="42" height="42"><div><h1>MONEVA</h1><p class="slogan">Управляй своими деньгами</p></div></div>
     <div class="top-right">
       <select id="cur" class="cur-select" aria-label="Валюта">
         <option value="UZS">Сум</option>
@@ -226,11 +244,23 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
         <div class="wallet"><p class="cap">Наличные</p><p class="val num" id="w-cash"></p></div>
         <div class="wallet"><p class="cap">Карта</p><p class="val num" id="w-card"></p></div>
       </div>
+      <p class="hint num" id="debt-line" hidden></p>
     </section>
 
-    <section class="panel" aria-labelledby="add-title">
-      <h2 id="add-title">Новая запись</h2>
+    <section class="panel" aria-labelledby="voice-title">
+      <h2 id="voice-title">Быстрая запись</h2>
+      <div class="voice-row">
+        <button class="mic" id="mic" type="button" aria-label="Записать голосом" aria-pressed="false"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+        <input type="text" id="say" maxlength="160" placeholder="Скажите или напишите: такси 30 000" aria-label="Фраза о трате" autocomplete="off">
+        <button class="btn" id="say-go" type="button">Разобрать</button>
+      </div>
+      <p class="hint" id="voice-hint">Нажмите на микрофон и скажите, например: «хлеб пять тысяч» или «получил зарплату два миллиона». Голос распознаёт браузер телефона, для этого нужен интернет. Фразу можно и написать.</p>
+      <div id="voice-card"></div>
       <div class="quick" id="quick" aria-label="Быстрый ввод"></div>
+    </section>
+
+    <details class="panel manual" id="manual">
+      <summary>Добавить вручную</summary>
       <form id="form" autocomplete="off">
         <div class="seg" role="radiogroup" aria-label="Тип записи">
           <input type="radio" name="type" id="t-out" value="out" checked>
@@ -252,7 +282,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
           <p class="msg" id="msg" role="status" aria-live="polite"></p>
         </div>
       </form>
-    </section>
+    </details>
 
     <section class="panel" aria-labelledby="pie-title">
       <h2 id="pie-title">Куда уходят деньги</h2>
@@ -310,15 +340,17 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
 
     <section class="panel" aria-labelledby="debt-title">
       <h2 id="debt-title">Долги</h2>
+      <p class="hint">Долги не считаются ни расходом, ни доходом. Они меняют только остаток кошелька, поэтому итоги по месяцу остаются честными.</p>
       <form id="debt-form" autocomplete="off">
         <div class="fields">
-          <div class="field"><label for="dw">Кто</label><input type="text" id="dw" maxlength="60" placeholder="Имя"></div>
+          <div class="field"><label for="ddir">Что произошло</label><select id="ddir"><option value="owed">Я дал в долг (мне должны)</option><option value="owe">Я взял в долг (я должен)</option></select></div>
+          <div class="field"><label for="dw">Имя</label><input type="text" id="dw" maxlength="60" placeholder="Кто"></div>
           <div class="field"><label for="da">Сумма</label><input type="text" id="da" inputmode="decimal"></div>
-          <div class="field"><label for="ddir">Чей долг</label><select id="ddir"><option value="owe">Я должен</option><option value="owed">Мне должны</option></select></div>
+          <div class="field"><label for="dwal">Кошелёк</label><select id="dwal"><option value="card">Карта</option><option value="cash">Наличные</option></select></div>
           <div class="field"><label for="ddue">Вернуть до</label><input type="date" id="ddue"></div>
-          <div class="field wide"><label for="dnote">Комментарий</label><input type="text" id="dnote" maxlength="140"></div>
+          <div class="field"><label for="dnote">Комментарий</label><input type="text" id="dnote" maxlength="140"></div>
         </div>
-        <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Добавить долг</button><p class="msg" id="debt-msg" role="status" aria-live="polite"></p></div>
+        <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Записать долг</button><p class="msg" id="debt-msg" role="status" aria-live="polite"></p></div>
       </form>
       <div id="debt-list"></div>
     </section>
@@ -358,10 +390,10 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
   'use strict';
 
   var CUR = { UZS: 'сум', RUB: '₽', TJS: 'сомони' };
-  var OUT = ['Аренда квартиры', 'Питание', 'Транспорт', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Одежда', 'Ребёнок', 'Развлечения', 'Лишние траты'];
+  var OUT = ['Аренда квартиры', 'Питание', 'Транспорт', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Одежда', 'Ребёнок', 'Развлечения', 'Лишние траты', 'Прочее'];
   var INC = ['Зарплата', 'Подработка', 'Прочий доход'];
   var WALLET = { cash: 'Наличные', card: 'Карта' };
-  var KEY = 'semya-rashody-v1';
+  var KEY = 'moneva-v1';
 
   function fresh() {
     return {
@@ -463,13 +495,13 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     var all = ents(), list = monthEnts(state.month);
     var total = 0, wc = 0, wd = 0;
     all.forEach(function (e) {
-      var v = e.type === 'in' ? e.amount : -e.amount;
+      var v = e.type === 'in' ? e.amount : e.type === 'out' ? -e.amount : e.sign * e.amount;
       total += v;
       if (e.wallet === 'cash') wc += v; else wd += v;
     });
     var inM = 0, outM = 0, exM = 0;
     list.forEach(function (e) {
-      if (e.type === 'in') inM += e.amount; else outM += e.amount;
+      if (e.type === 'in') inM += e.amount; else if (e.type === 'out') outM += e.amount;
       if (isExtra(e)) exM += e.amount;
     });
     $('balance').textContent = signed(total);
@@ -478,13 +510,18 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     $('extra').textContent = fmt(exM);
     $('w-cash').textContent = signed(wc);
     $('w-card').textContent = signed(wd);
+    var dOwe = 0, dOwed = 0;
+    db.debts.forEach(function (d) { if (d.cur !== db.cur) return; var left = d.amount - (d.paid || 0); if (left > 0) { if (d.dir === 'owe') dOwe += left; else dOwed += left; } });
+    var dl0 = $('debt-line');
+    dl0.hidden = !(dOwe || dOwed);
+    dl0.textContent = 'Мне должны: ' + fmt(dOwed) + ' · Я должен: ' + fmt(dOwe);
 
     // быстрый ввод
     var q = clear($('quick'));
     db.quick.forEach(function (it, i) {
       var chip = h('button', { type: 'button', class: 'chip', onclick: function () {
         if (state.editQuick) return;
-        setType('out'); $('cat').value = it.cat; $('note').value = it.note || ''; $('amount').focus();
+        setType('out'); $('cat').value = it.cat; $('note').value = it.note || ''; $('manual').open = true; $('amount').focus();
       } }, it.label);
       if (state.editQuick) chip.appendChild(h('span', { class: 'x', text: '×', 'aria-label': 'Убрать ' + it.label, onclick: function (ev) {
         ev.stopPropagation(); db.quick.splice(i, 1); save(); render();
@@ -516,11 +553,11 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
       } else {
         if (e.note) mid.appendChild(h('div', { class: 'rn', text: e.note }));
         actions.appendChild(h('button', { type: 'button', class: 'link-btn', text: e.note ? 'Изменить комментарий' : '+ Комментарий', onclick: function () { state.editC = e.id; render(); } }));
-        delBtn('e' + e.id, function () { db.entries = db.entries.filter(function (x) { return x.id !== e.id; }); save(); render(); }, e.cat).forEach(function (b) { actions.appendChild(b); });
+        if (!e.debt) delBtn('e' + e.id, function () { db.entries = db.entries.filter(function (x) { return x.id !== e.id; }); save(); render(); }, e.cat).forEach(function (b) { actions.appendChild(b); });
       }
       el.appendChild(h('div', { class: 'row' },
         h('div', { class: 'rd', text: dd }), mid,
-        h('div', { class: 'ra num ' + e.type, text: (e.type === 'in' ? '+' : '−') + fmt(e.amount) }),
+        h('div', { class: 'ra num ' + e.type, text: (e.type === 'in' || (e.type === 'xfer' && e.sign > 0) ? '+' : '−') + fmt(e.amount) }),
         actions));
     });
   }
@@ -541,7 +578,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     var offset = 0;
     var legend = h('div', { class: 'legend' });
     cats.forEach(function (c) {
-      var idx = OUT.indexOf(c); if (idx < 0) idx = 9;
+      var idx = OUT.indexOf(c); if (idx < 0 || idx > 9) idx = 8;
       var color = 'var(--c' + (idx + 1) + ')';
       var pct = m[c] / outM * 100;
       var seg = document.createElementNS(NS, 'circle');
@@ -611,7 +648,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
 
   /* ---------- ПЛАНЫ ---------- */
   function addEntry(o) {
-    var e = { id: uid(), cur: db.cur, type: o.type, amount: o.amount, cat: o.cat, wallet: o.wallet || 'card', date: o.date, note: o.note || '', extra: !!o.extra, rec: o.rec || null, ts: Date.now() };
+    var e = { id: uid(), cur: db.cur, type: o.type, amount: o.amount, cat: o.cat, wallet: o.wallet || 'card', date: o.date, note: o.note || '', extra: !!o.extra, rec: o.rec || null, sign: o.sign || 0, debt: o.debt || null, ts: Date.now() };
     db.entries.push(e);
     return e;
   }
@@ -666,17 +703,40 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     // долги
     var dl = clear($('debt-list'));
     var debts = db.debts.filter(function (d) { return d.cur === db.cur; });
-    if (!debts.length) dl.appendChild(h('p', { class: 'empty', text: 'Долгов нет.' }));
     var owe = 0, owed = 0;
-    debts.forEach(function (d) { if (!d.done) { if (d.dir === 'owe') owe += d.amount; else owed += d.amount; } });
-    if (debts.length) dl.appendChild(h('p', { class: 'hint num', text: 'Я должен: ' + fmt(owe) + ' · Мне должны: ' + fmt(owed) }));
-    debts.slice().sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.due || '9') .localeCompare(b.due || '9'); }).forEach(function (d) {
-      var late = !d.done && d.due && d.due < ds(now);
-      var acts = h('div', { class: 'inline' }, h('button', { type: 'button', class: 'btn ghost small', text: d.done ? 'Вернуть в активные' : 'Отметить возвращённым', onclick: function () { d.done = !d.done; save(); render(); } }));
-      delBtn('d' + d.id, function () { db.debts = db.debts.filter(function (x) { return x.id !== d.id; }); save(); render(); }, d.who).forEach(function (b) { acts.appendChild(b); });
-      var meta = (d.dir === 'owe' ? 'Я должен' : 'Мне должны') + (d.due ? ' · до ' + d.due.split('-').reverse().join('.') : '') + (late ? ' · просрочено' : '');
-      dl.appendChild(h('div', { class: 'item' + (d.done ? ' done' : '') },
-        h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: fmt(d.amount) })),
+    debts.forEach(function (d) { var left = d.amount - (d.paid || 0); if (left > 0) { if (d.dir === 'owe') owe += left; else owed += left; } });
+    if (!debts.length) dl.appendChild(h('p', { class: 'empty', text: 'Долгов нет.' }));
+    else dl.appendChild(h('p', { class: 'hint num', text: 'Мне должны: ' + fmt(owed) + ' · Я должен: ' + fmt(owe) }));
+    debts.slice().sort(function (a, b) {
+      var da = (a.amount - (a.paid || 0)) <= 0 ? 1 : 0, dbb = (b.amount - (b.paid || 0)) <= 0 ? 1 : 0;
+      return da - dbb || (a.due || '9').localeCompare(b.due || '9');
+    }).forEach(function (d) {
+      var paid = d.paid || 0, left = Math.max(0, d.amount - paid), done = left <= 0;
+      var late = !done && d.due && d.due < ds(now);
+      var ratio = d.amount > 0 ? paid / d.amount : 0;
+      var fill = h('div', { class: 'fill' }); fill.style.width = Math.min(100, ratio * 100) + '%';
+      var acts = h('div', { class: 'inline' });
+      if (!done) {
+        var inp = h('input', { type: 'text', inputmode: 'decimal', id: 'dp-' + d.id, placeholder: 'Пусто = всё: ' + fmt(left), 'aria-label': 'Сумма возврата: ' + d.who });
+        acts.appendChild(inp);
+        acts.appendChild(h('button', { type: 'button', class: 'btn small', text: d.dir === 'owed' ? 'Мне вернули' : 'Я вернул', onclick: function () {
+          var v = inp.value.trim() ? parseAmount(inp.value) : left;
+          if (!(v > 0)) { toast('Введите сумму больше нуля'); return; }
+          if (v > left) v = left;
+          d.paid = (d.paid || 0) + v;
+          addEntry({ type: 'xfer', sign: d.dir === 'owed' ? 1 : -1, amount: v, cat: 'Долг', wallet: d.wallet || 'card', date: ds(new Date()), note: (d.dir === 'owed' ? 'Вернули: ' : 'Вернул: ') + d.who, debt: d.id });
+          save(); render(); toast('Записано: ' + fmt(v));
+        } }));
+      }
+      delBtn('d' + d.id, function () {
+        db.entries = db.entries.filter(function (x) { return x.debt !== d.id; });
+        db.debts = db.debts.filter(function (x) { return x.id !== d.id; });
+        save(); render();
+      }, d.who).forEach(function (b) { acts.appendChild(b); });
+      var meta = (d.dir === 'owe' ? 'Я должен' : 'Мне должны') + (d.due ? ' · до ' + d.due.split('-').reverse().join('.') : '') + (late ? ' · просрочено' : '') + (done ? ' · возвращён' : '');
+      dl.appendChild(h('div', { class: 'item' + (done ? ' done' : '') },
+        h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: fmt(left) + (paid ? ' из ' + fmt(d.amount) : '') })),
+        paid ? h('div', { class: 'track' }, fill) : null,
         h('div', { class: 'hint' + (late ? ' out' : ''), text: meta }),
         d.note ? h('div', { class: 'rn', text: d.note }) : null, acts));
     });
@@ -701,7 +761,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
       var blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url; a.download = 'semya-rashody-' + ds(new Date()) + '.json';
+      a.href = url; a.download = 'moneva-' + ds(new Date()) + '.json';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
       db.lastBackup = Date.now(); save(); renderBackup();
@@ -718,7 +778,7 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
         var d = JSON.parse(r.result);
         if (!d || d.v !== 1 || !Array.isArray(d.entries)) throw new Error('bad');
         state.pendingImport = normalize(d); setMsg('bk-msg', ''); renderBackup();
-      } catch (e) { setMsg('bk-msg', 'Этот файл не похож на копию семейных расходов.', true); }
+      } catch (e) { setMsg('bk-msg', 'Этот файл не похож на копию MONEVA.', true); }
     };
     r.onerror = function () { setMsg('bk-msg', 'Не удалось прочитать файл.', true); };
     r.readAsText(f);
@@ -801,9 +861,135 @@ nav.tabs button[aria-current="page"] { color: var(--accent); border-top-color: v
     var w = $('dw').value.trim(), a = parseAmount($('da').value);
     if (!w) { setMsg('debt-msg', 'Введите имя.', true); return; }
     if (!(a > 0)) { setMsg('debt-msg', 'Введите сумму больше нуля.', true); return; }
-    db.debts.push({ id: uid(), cur: db.cur, who: w, amount: a, dir: $('ddir').value, due: $('ddue').value || '', note: $('dnote').value.trim(), done: false });
-    save(); $('dw').value = ''; $('da').value = ''; $('ddue').value = ''; $('dnote').value = ''; render(); setMsg('debt-msg', 'Долг добавлен.');
+    var d = { id: uid(), cur: db.cur, who: w, amount: a, paid: 0, dir: $('ddir').value, wallet: $('dwal').value, due: $('ddue').value || '', note: $('dnote').value.trim() };
+    db.debts.push(d);
+    addEntry({ type: 'xfer', sign: d.dir === 'owed' ? -1 : 1, amount: a, cat: 'Долг', wallet: d.wallet, date: ds(new Date()), note: (d.dir === 'owed' ? 'Дал в долг: ' : 'Взял в долг: ') + w, debt: d.id });
+    save(); $('dw').value = ''; $('da').value = ''; $('ddue').value = ''; $('dnote').value = ''; render(); setMsg('debt-msg', 'Долг записан.');
   });
+
+  /*PARSER_START*/
+  var NW = { ноль: 0, один: 1, одна: 1, одну: 1, два: 2, две: 2, три: 3, четыре: 4, пять: 5, шесть: 6, семь: 7, восемь: 8, девять: 9, десять: 10, одиннадцать: 11, двенадцать: 12, тринадцать: 13, четырнадцать: 14, пятнадцать: 15, шестнадцать: 16, семнадцать: 17, восемнадцать: 18, девятнадцать: 19, двадцать: 20, тридцать: 30, сорок: 40, пятьдесят: 50, шестьдесят: 60, семьдесят: 70, восемьдесят: 80, девяносто: 90, сто: 100, двести: 200, триста: 300, четыреста: 400, пятьсот: 500, шестьсот: 600, семьсот: 700, восемьсот: 800, девятьсот: 900 };
+  var CAT_RULES = [
+    ['Ребёнок', ['памперс', 'подгузник', 'смесь', 'смеси', 'мазь', 'присыпк', 'детск', 'малыш', 'ребен', 'игрушк', 'коляск', 'соск']],
+    ['Здоровье', ['аптек', 'лекарств', 'врач', 'доктор', 'больниц', 'анализ', 'стоматолог', 'зуб', 'таблетк', 'витамин', 'поликлиник']],
+    ['Аренда квартиры', ['аренд', 'квартир', 'съем', 'снимаю']],
+    ['Коммунальные', ['коммунал', 'электричеств', 'свет=', 'газ=', 'отоплен', 'мусор', 'водоканал']],
+    ['Связь и интернет', ['интернет', 'связь', 'телефон', 'мобильн', 'тариф', 'вайфай', 'wifi', 'wi-fi', 'билайн', 'ucell', 'uzmobile', 'mobiuz', 'симк']],
+    ['Транспорт', ['такси', 'бензин', 'метан', 'заправк', 'метро', 'автобус', 'проезд', 'маршрутк', 'парковк', 'мойк', 'яндекс', 'поездк']],
+    ['Одежда', ['одежд', 'обув', 'куртк', 'штаны', 'джинс', 'платье', 'кроссовк', 'футболк', 'рубашк', 'туфл']],
+    ['Развлечения', ['кино', 'игр', 'парк=', 'поход', 'концерт', 'подарок', 'подарк', 'отдых', 'кальян', 'театр', 'аттракцион']],
+    ['Питание', ['хлеб', 'продукт', 'магазин', 'еда=', 'еду=', 'обед', 'ужин', 'завтрак', 'кафе', 'ресторан', 'мясо', 'молок', 'овощ', 'фрукт', 'базар', 'рынок', 'чай', 'самса', 'плов', 'лепешк', 'сладост', 'вода=', 'воду=']]
+  ];
+  var INC_WORDS = ['получил', 'получила', 'зарплат', 'аванс', 'доход', 'заработал', 'заработала', 'продал', 'продала', 'подработк', 'премия', 'премию'];
+  function wordHit(words, list) {
+    return words.some(function (w) {
+      return list.some(function (st) { return st.charAt(st.length - 1) === '=' ? w === st.slice(0, -1) : w.indexOf(st) === 0; });
+    });
+  }
+  function findAmount(text) {
+    var t = text.toLowerCase().replace(/ё/g, 'е').replace(/ /g, ' ').replace(/(\d)\.(\d{3})(?!\d)/g, '$1$2');
+    var best = 0, m;
+    var re = /(\d+(?: \d{3})*(?:[.,]\d+)?)\s*(тыс\S*|миллион\S*|млн\S*|к(?![а-я]))?/g;
+    while ((m = re.exec(t))) {
+      var v = parseFloat(m[1].replace(/ /g, '').replace(',', '.'));
+      if (m[2]) v *= /^(миллион|млн)/.test(m[2]) ? 1000000 : 1000;
+      if (v > best) best = v;
+    }
+    var toks = t.replace(/[^а-я0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+    var cur = 0, total = 0, any = false;
+    function flush() { if (any) { total += cur; if (total > best) best = total; } cur = 0; total = 0; any = false; }
+    toks.forEach(function (w) {
+      if (Object.prototype.hasOwnProperty.call(NW, w)) { cur += NW[w]; any = true; }
+      else if (w === 'полторы' || w === 'полтора') { cur += 1.5; any = true; }
+      else if (/^тыс/.test(w)) { if (!any) { cur = 1; any = true; } total += cur * 1000; cur = 0; }
+      else if (/^(миллион|млн)/.test(w)) { if (!any) { cur = 1; any = true; } total += cur * 1000000; cur = 0; }
+      else flush();
+    });
+    flush();
+    return Math.round(best);
+  }
+  function parsePhrase(text, defWallet) {
+    var raw = String(text || '').trim();
+    var t = raw.toLowerCase().replace(/ё/g, 'е');
+    var words = t.replace(/[^а-яa-z0-9\s-]/g, ' ').split(/\s+/).filter(Boolean);
+    var res = { amount: findAmount(raw), type: 'out', cat: 'Прочее', wallet: defWallet || 'card', date: ds(new Date()), extra: false, note: '' };
+    if (wordHit(words, INC_WORDS)) {
+      res.type = 'in';
+      res.cat = wordHit(words, ['зарплат', 'аванс', 'премия', 'премию']) ? 'Зарплата' : wordHit(words, ['подработк', 'заработал', 'заработала', 'продал', 'продала']) ? 'Подработка' : 'Прочий доход';
+    } else {
+      for (var i = 0; i < CAT_RULES.length; i++) { if (wordHit(words, CAT_RULES[i][1])) { res.cat = CAT_RULES[i][0]; break; } }
+    }
+    if (words.some(function (w) { return w.indexOf('налич') === 0 || w === 'кэш' || w === 'кеш'; })) res.wallet = 'cash';
+    else if (words.some(function (w) { return w.indexOf('карт') === 0; })) res.wallet = 'card';
+    var back = words.indexOf('позавчера') >= 0 ? 2 : words.indexOf('вчера') >= 0 ? 1 : 0;
+    if (back) { var d0 = new Date(); d0.setDate(d0.getDate() - back); res.date = ds(d0); }
+    res.extra = res.type === 'out' && wordHit(words, ['лишн', 'зря', 'ненужн']);
+    res.note = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : '';
+    return res;
+  }
+  /*PARSER_END*/
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = null, listening = false, pendingVoice = null;
+
+  function showVoiceCard(res) {
+    var box = clear($('voice-card'));
+    pendingVoice = res;
+    var line = (res.type === 'in' ? 'Доход' : 'Расход') + ' · ' + fmt(res.amount) + ' · ' + res.cat + ' · ' + (WALLET[res.wallet] || 'Карта') + (res.extra ? ' · лишнее' : '');
+    box.appendChild(h('div', { class: 'vcard' },
+      h('div', { class: 'big num', text: line }),
+      h('div', { class: 'rn', text: '«' + res.note + '»' + (res.date !== ds(new Date()) ? ' · ' + res.date.split('-').reverse().join('.') : '') }),
+      h('div', { class: 'inline' },
+        h('button', { type: 'button', class: 'btn small', text: 'Добавить', onclick: function () {
+          addEntry(res); if (!save()) return;
+          state.month = res.date.slice(0, 7);
+          $('say').value = ''; clear($('voice-card')); pendingVoice = null;
+          render(); toast((res.type === 'in' ? 'Доход' : 'Расход') + ' добавлен: ' + fmt(res.amount));
+        } }),
+        h('button', { type: 'button', class: 'btn ghost small', text: 'Изменить', onclick: function () {
+          setType(res.type); $('cat').value = res.cat; $('wallet').value = res.wallet; $('date').value = res.date;
+          $('amount').value = String(res.amount); $('note').value = res.note; $('extra-flag').checked = !!res.extra;
+          $('manual').open = true; clear($('voice-card')); $('amount').focus();
+        } }),
+        h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { clear($('voice-card')); pendingVoice = null; } }))));
+  }
+  function analyzeSay() {
+    var text = $('say').value.trim();
+    if (!text) { toast('Скажите или напишите фразу, например: такси 30 000'); return; }
+    var res = parsePhrase(text, $('wallet').value);
+    if (!(res.amount > 0)) { clear($('voice-card')); toast('Не нашёл сумму. Например: «такси тридцать тысяч»'); return; }
+    showVoiceCard(res);
+  }
+  function setListening(on) {
+    listening = on;
+    $('mic').classList.toggle('live', on);
+    $('mic').setAttribute('aria-pressed', on ? 'true' : 'false');
+    $('mic').setAttribute('aria-label', on ? 'Остановить запись' : 'Записать голосом');
+  }
+  function startVoice() {
+    if (!SR) { toast('Этот браузер не умеет слушать голос. Напишите фразу в строке.'); $('say').focus(); return; }
+    if (listening && rec) { try { rec.stop(); } catch (e) {} return; }
+    try {
+      rec = new SR();
+      rec.lang = 'ru-RU'; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
+      var finalText = '';
+      rec.onstart = function () { setListening(true); $('say').value = ''; clear($('voice-card')); };
+      rec.onresult = function (ev) {
+        var t = '';
+        for (var i = 0; i < ev.results.length; i++) t += ev.results[i][0].transcript;
+        finalText = t; $('say').value = t;
+      };
+      rec.onerror = function (ev) {
+        var m = { 'not-allowed': 'Разрешите доступ к микрофону в настройках браузера.', 'service-not-allowed': 'Разрешите доступ к микрофону в настройках браузера.', 'no-speech': 'Не расслышал. Нажмите на микрофон и попробуйте ещё раз.', 'network': 'Для распознавания голоса нужен интернет.', 'audio-capture': 'Микрофон не найден.' };
+        toast(m[ev.error] || 'Не получилось распознать голос. Напишите фразу в строке.');
+      };
+      rec.onend = function () { setListening(false); if (finalText.trim()) analyzeSay(); };
+      rec.start();
+    } catch (e) { setListening(false); toast('Не удалось включить микрофон. Напишите фразу в строке.'); }
+  }
+  $('mic').addEventListener('click', startVoice);
+  $('say-go').addEventListener('click', analyzeSay);
+  $('say').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); analyzeSay(); } });
 
   fillSelect($('rc'), OUT);
   setType('out');
