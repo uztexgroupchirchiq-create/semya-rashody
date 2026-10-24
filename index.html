@@ -12,52 +12,47 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>MONEVA</title>
 <style>
-/* Layout: одна колонка до 720px. Сверху остаток, затем быстрая запись голосом или текстом, ниже диаграмма и записи. Светлый фон, тёмно-зелёные акценты из логотипа MONEVA. Без внешних шрифтов и скриптов, чтобы всё работало без интернета. */
+/* Layout: одна колонка до 720px. Главная: итоги, диаграмма расходов с периодами, кошельки и долги, быстрая запись. Пять тем оформления, светлая по умолчанию независимо от настроек телефона. Шрифты берутся из системы устройства с запасными вариантами, ничего не загружается из сети. */
 :root {
-  --bg: #f2f6f4;
-  --surface: #ffffff;
-  --ink: #0f201b;
-  --muted: #566b63;
-  --line: #d9e4df;
-  --accent: #0b6152;
-  --accent-ink: #ffffff;
-  --in: #14804f;
-  --out: #c24132;
-  --warn: #a86a00;
-  --c1: #0b6152; --c2: #e07a1f; --c3: #3d6fb5; --c4: #c24132; --c5: #8a4fb8;
+  --bg: #f3f6f5; --surface: #ffffff; --ink: #0f201b; --muted: #506760; --line: #d3dfda;
+  --accent: #0b6152; --accent-ink: #ffffff; --in: #14804f; --out: #c24132; --warn: #a86a00;
+  --c1: var(--accent); --c2: #e07a1f; --c3: #3d6fb5; --c4: #c24132; --c5: #8a4fb8;
   --c6: #0f8aa8; --c7: #b89a1f; --c8: #d0558a; --c9: #5f6b76; --c10: #6a9c2c;
   --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
   --mono: ui-monospace, 'SF Mono', Consolas, 'Roboto Mono', monospace;
+  --num: var(--mono); --fs: 1;
+  color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0b1512; --surface: #13211c; --ink: #e5f1ec; --muted: #8fa99e; --line: #22342d;
-    --accent: #4ee0b0; --accent-ink: #04150e; --in: #5fd6a2; --out: #f08b78; --warn: #e8b04a;
-    --c1: #4ee0b0; --c2: #f0a05a; --c3: #7aa8f0; --c4: #f08b78; --c5: #c79bf0;
-    --c6: #5cc4e0; --c7: #e6cc5a; --c8: #f08cb4; --c9: #a9b6c2; --c10: #a3d65e;
-    color-scheme: dark;
-  }
-}
+:root[data-theme="emerald"] { --bg: #d9eee4; --surface: #f4fbf7; --ink: #082a21; --muted: #3d5f53; --line: #b0d3c3; --accent: #07795c; --in: #0f7a4e; --out: #bd3f2d; }
 :root[data-theme="dark"] {
-  --bg: #0b1512; --surface: #13211c; --ink: #e5f1ec; --muted: #8fa99e; --line: #22342d;
+  --bg: #0a1210; --surface: #1b2a25; --ink: #eaf5f0; --muted: #9db5ab; --line: #38544a;
   --accent: #4ee0b0; --accent-ink: #04150e; --in: #5fd6a2; --out: #f08b78; --warn: #e8b04a;
-  --c1: #4ee0b0; --c2: #f0a05a; --c3: #7aa8f0; --c4: #f08b78; --c5: #c79bf0;
-  --c6: #5cc4e0; --c7: #e6cc5a; --c8: #f08cb4; --c9: #a9b6c2; --c10: #a3d65e;
+  --c2: #f0a05a; --c3: #7aa8f0; --c4: #f08b78; --c5: #c79bf0; --c6: #5cc4e0; --c7: #e6cc5a; --c8: #f08cb4; --c9: #a9b6c2; --c10: #a3d65e;
   color-scheme: dark;
 }
+:root[data-theme="slate"] { --bg: #e4eaf2; --surface: #ffffff; --ink: #18212f; --muted: #4c5a70; --line: #c5cfde; --accent: #33558f; --in: #1e7a55; --out: #b8473a; }
+:root[data-theme="beige"] { --bg: #f0e7d6; --surface: #fffaf1; --ink: #2a2216; --muted: #6a5b43; --line: #dbcdb2; --accent: #8a5f1f; --in: #4b7a2e; --out: #b4492f; --warn: #9a6200; }
+:root[data-font="cambria"] { --font: Cambria, 'Noto Serif', Georgia, 'Times New Roman', serif; --num: var(--font); }
+:root[data-font="franklin"] { --font: 'Franklin Gothic Medium', 'Franklin Gothic', 'Arial Narrow', 'Noto Sans', Arial, sans-serif; --num: var(--font); }
+:root[data-font="times"] { --font: 'Times New Roman', Times, 'Noto Serif', serif; --num: var(--font); }
+:root[data-font="sitka"] { --font: 'Sitka Small', 'Sitka Text', Sitka, Georgia, 'Noto Serif', serif; --num: var(--font); }
+:root[data-font="pmingliu"] { --font: 'PMingLiU-ExtB', 'PMingLiU', 'MingLiU-ExtB', 'MingLiU', 'Times New Roman', 'Noto Serif', serif; --num: var(--font); }
+:root[data-size="small"] { --fs: 0.92; }
+:root[data-size="large"] { --fs: 1.12; }
+html { font-size: calc(100% * var(--fs)); }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font);
-  font-size: 15px; line-height: 1.5;
+  font-size: 0.9375rem; line-height: 1.45;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-top: calc(16px + env(safe-area-inset-top, 0px));
-  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  padding-top: calc(10px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px));
 }
-.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.num { font-family: var(--num); font-variant-numeric: tabular-nums; }
 button, input, select { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 [hidden] { display: none !important; }
@@ -213,6 +208,30 @@ nav.tabs { grid-template-columns: repeat(5, 1fr); }
 nav.tabs button { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 2px 10px; font-size: 0.72rem; border-top-width: 3px; }
 nav.tabs svg { width: 22px; height: 22px; }
 
+.panel { padding: 12px; gap: 9px; }
+.summary > div { padding: 9px 12px; }
+.val.big { font-size: 1.25rem; }
+.wallet { padding: 7px 10px; }
+.item { padding: 8px 0; }
+.row { padding: 8px 0; }
+.bud { padding: 8px 0; }
+nav.tabs button { padding: 6px 2px 7px; font-size: 0.7rem; gap: 2px; }
+nav.tabs svg { width: 20px; height: 20px; }
+.info { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--muted); background: none; color: var(--muted); font-size: 0.7rem; line-height: 1; cursor: pointer; margin-left: 6px; vertical-align: middle; padding: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.pie circle.seg { cursor: pointer; pointer-events: stroke; }
+button.leg { background: none; border: 0; text-align: left; width: 100%; padding: 5px 6px; border-radius: 8px; cursor: pointer; }
+button.leg[aria-pressed="true"] { background: var(--bg); outline: 1px solid var(--accent); }
+.cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cards3 .val { font-size: 0.88rem; }
+.swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.swatch { border: 2px solid var(--line); border-radius: 12px; padding: 5px 3px 6px; background: var(--surface); cursor: pointer; display: grid; gap: 4px; justify-items: center; font-size: 0.68rem; color: var(--ink); min-width: 0; }
+.swatch i { width: 100%; height: 30px; border-radius: 8px; display: block; border: 1px solid rgba(0, 0, 0, 0.1); }
+.swatch[aria-pressed="true"] { border-color: var(--accent); }
+.sample { border: 1px dashed var(--line); border-radius: 10px; padding: 10px; }
+.hist { color: var(--muted); font-size: 0.82rem; display: grid; gap: 2px; }
+
 @media (max-width: 560px) {
   .summary { grid-template-columns: 1fr 1fr; }
   .summary > div:first-child { grid-column: 1 / -1; border-bottom: 1px solid var(--line); }
@@ -249,24 +268,45 @@ nav.tabs svg { width: 22px; height: 22px; }
       <div><p class="cap">Общий баланс</p><p class="val big num" id="balance"></p></div>
       <div><p class="cap">Доходы</p><p class="val in num" id="income"></p></div>
       <div><p class="cap">Расходы</p><p class="val out num" id="expense"></p></div>
-      <div><p class="cap">Свободные средства</p><p class="val in num" id="free"></p><p class="mini">Доходы месяца минус обязательные расходы: жильё, еда, транспорт, коммунальные, связь, здоровье, ребёнок, одежда.</p></div>
+      <div><p class="cap">Свободные средства<button type="button" class="info" id="free-info" aria-label="Что такое свободные средства" aria-expanded="false">i</button></p><p class="val in num" id="free"></p><p class="mini" id="free-hint" hidden>Доходы месяца минус обязательные расходы: жильё, еда, транспорт, коммунальные, связь, здоровье, ребёнок, одежда.</p></div>
     </section>
 
-    <section class="panel" aria-label="Кошельки и карты">
+    <section class="panel" aria-labelledby="hp-title">
+      <h2 id="hp-title">Куда уходят деньги</h2>
+      <div class="chips" id="period" role="group" aria-label="Период">
+        <button type="button" class="chip" data-p="day">День</button>
+        <button type="button" class="chip" data-p="week">Неделя</button>
+        <button type="button" class="chip" data-p="month">Месяц</button>
+        <button type="button" class="chip" data-p="year">Год</button>
+        <button type="button" class="chip" data-p="custom">Свои даты</button>
+      </div>
+      <div class="inline" id="p-day" hidden><input type="date" id="pd-day" aria-label="День"></div>
+      <div class="inline" id="p-custom" hidden><input type="date" id="pc-from" aria-label="С даты"><span>—</span><input type="date" id="pc-to" aria-label="По дату"></div>
+      <p class="hint" id="period-label"></p>
+      <div id="hpie"></div>
+      <div id="hpie-detail"></div>
+    </section>
+
+    <section class="panel" aria-label="Кошельки и долги">
       <div class="wallets" id="wallet-grid"></div>
-      <p class="hint num" id="debt-line" hidden></p>
+      <div class="dsum">
+        <div class="wallet"><p class="cap">Мне должны</p><p class="val in num" id="hd-owed"></p></div>
+        <div class="wallet"><p class="cap">Я должен</p><p class="val out num" id="hd-owe"></p></div>
+      </div>
+      <p class="hint out" id="debt-alert" hidden></p>
     </section>
 
     <section class="panel" aria-labelledby="voice-title">
       <h2 id="voice-title">Быстрая запись</h2>
       <div class="voice-row">
         <button class="mic" id="mic" type="button" aria-label="Записать голосом" aria-pressed="false"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
-        <input type="text" id="say" maxlength="160" placeholder="Скажите или напишите: такси 30 000" aria-label="Фраза о трате" autocomplete="off">
+        <input type="text" id="say" maxlength="200" placeholder="Скажите или напишите: такси 30 000" aria-label="Фраза о трате" autocomplete="off">
         <button class="btn" id="say-go" type="button">Разобрать</button>
       </div>
-      <p class="hint" id="voice-hint">Нажмите на микрофон и скажите, например: «хлеб пять тысяч» или «получил зарплату два миллиона». Перед сохранением вы увидите карточку и подтвердите запись. Голос распознаёт браузер телефона, нужен интернет. Фразу можно и написать.</p>
+      <p class="hint" id="voice-hint">Нажмите на микрофон, говорите сколько нужно и нажмите ещё раз, чтобы остановить. Повторное нажатие дополняет текст. Текст можно исправить вручную, запись сохранится только после вашего подтверждения. <button type="button" class="link-btn" id="say-clear">Очистить</button></p>
       <div id="voice-card"></div>
       <div class="quick" id="quick" aria-label="Быстрый ввод"></div>
+      <div id="quick-edit"></div>
     </section>
 
     <details class="panel manual" id="manual">
@@ -308,6 +348,20 @@ nav.tabs svg { width: 22px; height: 22px; }
       <div class="list" id="list-all"></div>
     </section>
 
+    <details class="panel manual" id="tr-box">
+      <summary>Перевод между кошельками</summary>
+      <p class="hint" style="margin-top:8px">Например, сняли наличные с карты. Перевод меняет остатки кошельков, но не считается ни расходом, ни доходом.</p>
+      <form id="tr-form" autocomplete="off">
+        <div class="fields">
+          <div class="field"><label for="tf">Откуда</label><select id="tf"></select></div>
+          <div class="field"><label for="tt">Куда</label><select id="tt"></select></div>
+          <div class="field"><label for="tam">Сумма</label><input type="text" id="tam" inputmode="decimal"></div>
+          <div class="field"><label for="tdate">Дата</label><input type="date" id="tdate"></div>
+        </div>
+        <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Перевести</button><p class="msg" id="tr-msg" role="status" aria-live="polite"></p></div>
+      </form>
+    </details>
+
     <section class="panel" aria-labelledby="rec-title">
       <h2 id="rec-title">Регулярные платежи</h2>
       <p class="hint">Аренда, интернет, связь. Запишите один раз, а каждый месяц нажимайте «Внести».</p>
@@ -334,6 +388,7 @@ nav.tabs svg { width: 22px; height: 22px; }
         <div class="wallet"><p class="cap">Мне должны</p><p class="val in num" id="ds-owed"></p></div>
         <div class="wallet"><p class="cap">Я должен</p><p class="val out num" id="ds-owe"></p></div>
       </div>
+      <p class="hint out" id="ds-alert" hidden></p>
     </section>
     <section class="panel" aria-labelledby="debt-add-title">
       <h2 id="debt-add-title">Записать долг</h2>
@@ -341,26 +396,39 @@ nav.tabs svg { width: 22px; height: 22px; }
         <div class="fields">
           <div class="field"><label for="ddir">Что произошло</label><select id="ddir"><option value="owed">Я дал в долг (мне должны)</option><option value="owe">Я взял в долг (я должен)</option></select></div>
           <div class="field"><label for="dw">Имя</label><input type="text" id="dw" maxlength="60" placeholder="Кто"></div>
-          <div class="field"><label for="da">Сумма</label><input type="text" id="da" inputmode="decimal"></div>
+          <div class="field"><label for="da" id="da-label">Сумма</label><input type="text" id="da" inputmode="decimal"></div>
           <div class="field"><label for="dwal">Кошелёк</label><select id="dwal"></select></div>
+          <div class="field"><label for="ddate">Дата</label><input type="date" id="ddate"></div>
           <div class="field"><label for="ddue">Вернуть до</label><input type="date" id="ddue"></div>
-          <div class="field"><label for="dnote">Комментарий</label><input type="text" id="dnote" maxlength="140"></div>
+          <div class="field wide"><label for="dnote">Комментарий</label><input type="text" id="dnote" maxlength="140"></div>
         </div>
         <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Записать долг</button><p class="msg" id="debt-msg" role="status" aria-live="polite"></p></div>
       </form>
     </section>
     <section class="panel" aria-labelledby="debt-list-title">
       <h2 id="debt-list-title">Список долгов</h2>
+      <div class="seg" role="radiogroup" aria-label="Чьи долги">
+        <input type="radio" name="dtab" id="dt-owed" value="owed" checked>
+        <label for="dt-owed">Мне должны</label>
+        <input type="radio" name="dtab" id="dt-owe" value="owe">
+        <label for="dt-owe">Я должен</label>
+      </div>
       <div id="debt-list"></div>
     </section>
   </main>
 
   <!-- ОТЧЁТЫ -->
   <main id="tab-reports" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="rs-title">
+      <h2 id="rs-title">Итоги месяца</h2>
+      <div class="cards3" id="rsum"></div>
+      <p class="hint" id="rcmp"></p>
+    </section>
     <section class="panel" aria-labelledby="pie-title">
-      <h2 id="pie-title">Куда уходят деньги</h2>
+      <h2 id="pie-title">Расходы по категориям</h2>
       <div id="pie"></div>
       <p class="hint num" id="extra-line"></p>
+      <div id="pie-detail"></div>
     </section>
     <section class="panel" aria-labelledby="bud-title">
       <h2 id="bud-title">Анализ категорий и бюджет</h2>
@@ -372,7 +440,12 @@ nav.tabs svg { width: 22px; height: 22px; }
       <div class="tbl-wrap" id="cmp"></div>
     </section>
     <section class="panel" aria-labelledby="dyn-title">
-      <h2 id="dyn-title">Доходы и расходы за 6 месяцев</h2>
+      <h2 id="dyn-title">Доходы и расходы</h2>
+      <div class="chips" id="rgroup" role="group" aria-label="Группировка">
+        <button type="button" class="chip" data-g="days">По дням</button>
+        <button type="button" class="chip" data-g="months">По месяцам</button>
+        <button type="button" class="chip" data-g="years">По годам</button>
+      </div>
       <div class="chart" id="dyn"></div>
       <div class="key"><span><i style="background:var(--in)"></i>Доходы</span><span><i style="background:var(--out)"></i>Расходы</span></div>
     </section>
@@ -392,10 +465,34 @@ nav.tabs svg { width: 22px; height: 22px; }
       </form>
       <div id="goal-list"></div>
     </section>
+    <section class="panel" aria-labelledby="exp-title">
+      <h2 id="exp-title">Экспорт</h2>
+      <p class="hint">Excel (.xlsx): два листа, «Операции» и «Категории». CSV открывается в Excel и Google Таблицах. В файлах дата, тип, категория, сумма, кошелёк и комментарий.</p>
+      <div class="row-actions">
+        <button class="btn small" type="button" id="xl-month">Excel за выбранный месяц</button>
+        <button class="btn ghost small" type="button" id="xl-all">Excel, все записи</button>
+      </div>
+      <div class="row-actions" style="margin-top:8px">
+        <button class="btn ghost small" type="button" id="exp-month">CSV за месяц</button>
+        <button class="btn ghost small" type="button" id="exp-all">CSV, все записи</button>
+      </div>
+      <p class="msg" id="exp-msg" role="status" aria-live="polite"></p>
+    </section>
   </main>
 
   <!-- НАСТРОЙКИ -->
   <main id="tab-settings" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="ap-title">
+      <h2 id="ap-title">Оформление</h2>
+      <div class="swatches" id="swatches" role="group" aria-label="Тема оформления"></div>
+      <div class="fields">
+        <div class="field"><label for="set-font">Шрифт</label><select id="set-font"></select></div>
+        <div class="field"><label for="set-size">Размер текста</label><select id="set-size"></select></div>
+      </div>
+      <div class="sample"><strong>Пример текста.</strong> <span class="num">Баланс 1 250 000 сум.</span> Қ ғ ӣ ӯ ҳ ҷ · o‘ g‘ sh ch</div>
+      <p class="hint">Шрифты Cambria, Franklin Gothic Medium, Sitka Small и PMingLiU-ExtB есть в основном на компьютерах с Windows и Office. На телефоне вместо них покажется похожий шрифт: я не загружаю платные шрифты, чтобы не нарушать лицензии. PMingLiU-ExtB не содержит кириллицу, поэтому русские буквы будут в запасном шрифте.</p>
+    </section>
+
     <section class="panel" aria-labelledby="w-title">
       <h2 id="w-title">Кошельки и карты</h2>
       <p class="hint">Можно завести несколько: наличные, Uzcard, Humo, копилка. Название меняется прямо в строке. Удалить можно только кошелёк без записей.</p>
@@ -452,11 +549,11 @@ nav.tabs svg { width: 22px; height: 22px; }
     return {
       v: 1, cur: 'UZS', entries: [], budgets: {}, recurring: [], goals: [], debts: [], lastBackup: 0,
       wallets: [{ id: 'cash', name: 'Наличные' }, { id: 'card', name: 'Карта' }],
+      settings: { theme: 'light', font: 'system', size: 'normal' },
       quick: [
-        { label: 'Хлеб', cat: 'Питание', note: 'Хлеб' },
         { label: 'Продукты', cat: 'Питание', note: 'Продукты' },
         { label: 'Такси', cat: 'Транспорт', note: 'Такси' },
-        { label: 'Памперсы', cat: 'Ребёнок', note: 'Памперсы' }
+        { label: 'Кафе', cat: 'Питание', note: 'Кафе' }
       ]
     };
   }
@@ -471,6 +568,16 @@ nav.tabs svg { width: 22px; height: 22px; }
       var ws = d.wallets.filter(function (w) { return w && typeof w.id === 'string' && typeof w.name === 'string' && w.name; });
       if (ws.length) f.wallets = ws;
     }
+    if (d.settings && typeof d.settings === 'object') {
+      var st = d.settings;
+      if (['light', 'emerald', 'dark', 'slate', 'beige'].indexOf(st.theme) >= 0) f.settings.theme = st.theme;
+      if (['system', 'cambria', 'franklin', 'times', 'sitka', 'pmingliu'].indexOf(st.font) >= 0) f.settings.font = st.font;
+      if (['small', 'normal', 'large'].indexOf(st.size) >= 0) f.settings.size = st.size;
+    }
+    // старые подсказки «Хлеб» и «Памперсы» заменяем, если пользователь их не менял
+    var oldSet = ['Хлеб', 'Продукты', 'Такси', 'Памперсы'];
+    if (Array.isArray(d.quick) && d.quick.length && d.quick.every(function (q) { return q && oldSet.indexOf(q.label) >= 0; })) f.quick = fresh().quick;
+    f.debts.forEach(function (x) { if (!Array.isArray(x.pays)) x.pays = []; if (!x.issued) x.issued = ''; });
     var seen = {};
     f.wallets.forEach(function (w) { seen[w.id] = true; });
     [f.entries, f.recurring, f.debts].forEach(function (arr) {
@@ -493,7 +600,7 @@ nav.tabs svg { width: 22px; height: 22px; }
   }
 
   var now = new Date();
-  var state = { tab: 'home', month: ym(now), type: 'out', pd: null, editC: null, editQuick: false, pendingImport: null };
+  var state = { tab: 'home', month: ym(now), type: 'out', pd: null, editC: null, editQuick: false, qEdit: null, pendingImport: null, period: 'month', pDay: ds(now), pFrom: ds(new Date(now.getFullYear(), now.getMonth(), 1)), pTo: ds(now), sel: {}, dtab: 'owed', rgroup: 'months' };
 
   function $(id) { return document.getElementById(id); }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -570,12 +677,58 @@ nav.tabs svg { width: 22px; height: 22px; }
     return db.entries.some(function (e) { return e.wallet === id; }) || db.recurring.some(function (r) { return r.wallet === id; }) || db.debts.some(function (d) { return d.wallet === id; });
   }
   function fillWallets() {
-    ['wallet', 'rw', 'dwal'].forEach(function (id) {
+    ['wallet', 'rw', 'dwal', 'tf', 'tt'].forEach(function (id) {
       var sel = $(id), cur = sel.value;
       clear(sel);
       db.wallets.forEach(function (w) { sel.appendChild(h('option', { value: w.id, text: w.name })); });
       if (cur && walletOk(cur)) sel.value = cur;
     });
+  }
+
+  /* ---------- оформление ---------- */
+  var THEMES = { light: 'Светлая', emerald: 'Изумрудная', dark: 'Тёмная', slate: 'Сине-серая', beige: 'Бежевая' };
+  var THEME_COLOR = { light: '#0b6152', emerald: '#07795c', dark: '#0a1210', slate: '#33558f', beige: '#8a5f1f' };
+  var PREVIEW = { light: ['#f3f6f5', '#0b6152'], emerald: ['#d9eee4', '#07795c'], dark: ['#0a1210', '#4ee0b0'], slate: ['#e4eaf2', '#33558f'], beige: ['#f0e7d6', '#8a5f1f'] };
+  var FONTS = { system: 'Системный (стандартный)', cambria: 'Cambria', franklin: 'Franklin Gothic Medium', times: 'Times New Roman', sitka: 'Sitka Small Semibold', pmingliu: 'PMingLiU-ExtB' };
+  var SIZES = { small: 'Маленький', normal: 'Стандартный', large: 'Крупный' };
+  function applySettings() {
+    var r = document.documentElement, st = db.settings;
+    r.setAttribute('data-theme', st.theme); r.setAttribute('data-font', st.font); r.setAttribute('data-size', st.size);
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', THEME_COLOR[st.theme]);
+  }
+
+  /* ---------- долги: статистика ---------- */
+  function dmy(x) { return x ? x.split('-').reverse().join('.') : ''; }
+  function debtLeft(d) { return Math.max(0, d.amount - (d.paid || 0)); }
+  function dname(d) { return d.who + ' (' + fmt(debtLeft(d)) + ')'; }
+  function debtStats() {
+    var r = { owe: 0, owed: 0, late: [], soon: [] }, today = ds(new Date()), lim = new Date();
+    lim.setDate(lim.getDate() + 3);
+    var limS = ds(lim);
+    db.debts.forEach(function (d) {
+      if (d.cur !== db.cur) return;
+      var left = debtLeft(d); if (!left) return;
+      if (d.dir === 'owe') r.owe += left; else r.owed += left;
+      if (d.due) { if (d.due < today) r.late.push(d); else if (d.due <= limS) r.soon.push(d); }
+    });
+    return r;
+  }
+  function alertText(st) {
+    var parts = [];
+    if (st.late.length) parts.push('Просрочено: ' + st.late.map(dname).join(', '));
+    if (st.soon.length) parts.push('Срок в ближайшие 3 дня: ' + st.soon.map(dname).join(', '));
+    return parts.join(' · ');
+  }
+
+  /* ---------- период ---------- */
+  function periodRange() {
+    var t = new Date();
+    if (state.period === 'day') return { from: state.pDay, to: state.pDay, label: dmy(state.pDay) };
+    if (state.period === 'week') { var f = new Date(t); f.setDate(f.getDate() - 6); return { from: ds(f), to: ds(t), label: 'Последние 7 дней: ' + dmy(ds(f)) + ' – ' + dmy(ds(t)) }; }
+    if (state.period === 'year') { var y = state.month.slice(0, 4); return { from: y + '-01-01', to: y + '-12-31', label: y + ' год' }; }
+    if (state.period === 'custom') { var a = state.pFrom, b = state.pTo; if (a > b) { var x = a; a = b; b = x; } return { from: a, to: b, label: dmy(a) + ' – ' + dmy(b) }; }
+    return { from: state.month + '-01', to: state.month + '-' + pad(daysIn(state.month)), label: monthTitle(state.month) };
   }
 
   /* ---------- список записей ---------- */
@@ -602,7 +755,7 @@ nav.tabs svg { width: 22px; height: 22px; }
       } else {
         if (e.note) mid.appendChild(h('div', { class: 'rn', text: e.note }));
         actions.appendChild(h('button', { type: 'button', class: 'link-btn', text: e.note ? 'Изменить комментарий' : '+ Комментарий', onclick: function () { state.editC = e.id; render(); } }));
-        if (!e.debt) delBtn('e' + elId + e.id, function () { db.entries = db.entries.filter(function (x) { return x.id !== e.id; }); save(); render(); }, e.cat).forEach(function (b) { actions.appendChild(b); });
+        if (!e.debt) delBtn('e' + elId + e.id, function () { db.entries = db.entries.filter(function (x) { return e.tr ? x.tr !== e.tr : x.id !== e.id; }); save(); render(); }, e.cat).forEach(function (b) { actions.appendChild(b); });
       }
       el.appendChild(h('div', { class: 'row' },
         h('div', { class: 'rd', text: dd }), mid,
@@ -634,25 +787,55 @@ nav.tabs svg { width: 22px; height: 22px; }
       grid.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: w.name }), h('p', { class: 'val num', text: signed(bal[w.id] || 0) })));
     });
 
-    var dOwe = 0, dOwed = 0;
-    db.debts.forEach(function (d) { if (d.cur !== db.cur) return; var left = d.amount - (d.paid || 0); if (left > 0) { if (d.dir === 'owe') dOwe += left; else dOwed += left; } });
-    var dl0 = $('debt-line');
-    dl0.hidden = !(dOwe || dOwed);
-    dl0.textContent = 'Мне должны: ' + fmt(dOwed) + ' · Я должен: ' + fmt(dOwe);
+    var dst = debtStats();
+    $('hd-owed').textContent = fmt(dst.owed);
+    $('hd-owe').textContent = fmt(dst.owe);
+    var at = alertText(dst);
+    $('debt-alert').hidden = !at; $('debt-alert').textContent = at;
+
+    // период и диаграмма
+    document.querySelectorAll('#period .chip').forEach(function (b) {
+      var on = b.dataset.p === state.period;
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    $('p-day').hidden = state.period !== 'day';
+    $('p-custom').hidden = state.period !== 'custom';
+    if ($('pd-day').value !== state.pDay) $('pd-day').value = state.pDay;
+    if ($('pc-from').value !== state.pFrom) $('pc-from').value = state.pFrom;
+    if ($('pc-to').value !== state.pTo) $('pc-to').value = state.pTo;
+    var pr = periodRange();
+    $('period-label').textContent = 'Период: ' + pr.label;
+    drawDonut('hpie', 'hpie-detail', all.filter(function (e) { return e.date >= pr.from && e.date <= pr.to; }));
 
     // быстрый ввод
     var q = clear($('quick'));
     db.quick.forEach(function (it, i) {
-      var chip = h('button', { type: 'button', class: 'chip', onclick: function () {
-        if (state.editQuick) return;
+      q.appendChild(h('button', { type: 'button', class: 'chip' + (state.qEdit === i ? ' on' : ''), onclick: function () {
+        if (state.editQuick) { state.qEdit = i; render(); return; }
         setType('out'); $('cat').value = it.cat; $('note').value = it.note || ''; $('manual').open = true; $('amount').focus();
-      } }, it.label);
-      if (state.editQuick) chip.appendChild(h('span', { class: 'x', text: '×', 'aria-label': 'Убрать ' + it.label, onclick: function (ev) {
-        ev.stopPropagation(); db.quick.splice(i, 1); save(); render();
-      } }));
-      q.appendChild(chip);
+      } }, it.label));
     });
-    q.appendChild(h('button', { type: 'button', class: 'link-btn', text: state.editQuick ? 'Готово' : 'Изменить', onclick: function () { state.editQuick = !state.editQuick; render(); } }));
+    if (state.editQuick) q.appendChild(h('button', { type: 'button', class: 'chip', text: '+ Добавить', onclick: function () { state.qEdit = 'new'; render(); } }));
+    q.appendChild(h('button', { type: 'button', class: 'link-btn', text: state.editQuick ? 'Готово' : 'Изменить', onclick: function () { state.editQuick = !state.editQuick; state.qEdit = null; render(); } }));
+    var qe = clear($('quick-edit'));
+    if (state.editQuick && state.qEdit !== null) {
+      var isNew = state.qEdit === 'new', cur = isNew ? { label: '', cat: 'Питание', note: '' } : db.quick[state.qEdit];
+      if (cur) {
+        var li = h('input', { type: 'text', maxlength: '24', placeholder: 'Название кнопки', 'aria-label': 'Название кнопки' }); li.value = cur.label;
+        var ci = h('select', { 'aria-label': 'Категория' }); OUT.forEach(function (c) { ci.appendChild(h('option', { value: c, text: c })); }); ci.value = cur.cat;
+        qe.appendChild(h('div', { class: 'vcard' },
+          h('div', { class: 'edit-row' }, li, ci),
+          h('div', { class: 'inline' },
+            h('button', { type: 'button', class: 'btn small', text: 'Сохранить', onclick: function () {
+              var lb = li.value.trim().slice(0, 24); if (!lb) { toast('Введите название кнопки'); return; }
+              var item = { label: lb, cat: ci.value, note: lb };
+              if (isNew) db.quick.push(item); else db.quick[state.qEdit] = item;
+              state.qEdit = null; save(); render();
+            } }),
+            isNew ? null : h('button', { type: 'button', class: 'link-btn danger', text: 'Удалить', onclick: function () { db.quick.splice(state.qEdit, 1); state.qEdit = null; save(); render(); } }),
+            h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.qEdit = null; render(); } }))));
+      }
+    }
 
     entryList('list', list, 5, 'За этот месяц записей нет. Скажите или напишите первую в блоке «Быстрая запись».');
     $('all-link').hidden = list.length <= 5;
@@ -672,27 +855,20 @@ nav.tabs svg { width: 22px; height: 22px; }
     return (n < 0 ? '−' : '') + t;
   }
   function mshort(key) { var p = key.split('-'); return new Date(+p[0], +p[1] - 1, 1).toLocaleDateString('ru-RU', { month: 'short' }).replace('.', ''); }
-  var NS = 'http://www.w3.org/2000/svg';
-  function sv(name, attrs, text) {
-    var e = document.createElementNS(NS, name);
-    for (var k in attrs) e.setAttribute(k, attrs[k]);
-    if (text != null) e.textContent = text;
-    return e;
-  }
-  function drawBars(el, keys, ins, outs) {
+  function drawBars(el, keys, ins, outs, labels) {
     clear(el);
     var W = 320, H = 170, L = 8, R = 8, T = 20, B = 24;
     var max = Math.max.apply(null, ins.concat(outs).concat([1]));
-    var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Доходы и расходы по месяцам' });
+    var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Доходы и расходы' });
     svg.appendChild(sv('line', { x1: L, y1: H - B, x2: W - R, y2: H - B, stroke: 'var(--line)', 'stroke-width': 1 }));
     svg.appendChild(sv('text', { x: L, y: 11, fill: 'var(--muted)', 'font-size': 10 }, 'до ' + sh(max)));
-    var gw = (W - L - R) / keys.length, bw = Math.min(16, gw / 2 - 3);
+    var gw = (W - L - R) / keys.length, bw = Math.max(1.5, Math.min(16, gw / 2 - 1.5));
     keys.forEach(function (k, i) {
       var xc = L + gw * i + gw / 2, ch = H - B - T;
       var hi = ins[i] / max * ch, ho = outs[i] / max * ch;
-      svg.appendChild(sv('rect', { x: xc - bw - 1, y: H - B - hi, width: bw, height: Math.max(hi, ins[i] > 0 ? 1 : 0), rx: 2, fill: 'var(--in)' }));
-      svg.appendChild(sv('rect', { x: xc + 1, y: H - B - ho, width: bw, height: Math.max(ho, outs[i] > 0 ? 1 : 0), rx: 2, fill: 'var(--out)' }));
-      svg.appendChild(sv('text', { x: xc, y: H - 8, fill: 'var(--muted)', 'font-size': 10, 'text-anchor': 'middle' }, mshort(k)));
+      svg.appendChild(sv('rect', { x: xc - bw - 0.5, y: H - B - hi, width: bw, height: Math.max(hi, ins[i] > 0 ? 1 : 0), rx: 1.5, fill: 'var(--in)' }));
+      svg.appendChild(sv('rect', { x: xc + 0.5, y: H - B - ho, width: bw, height: Math.max(ho, outs[i] > 0 ? 1 : 0), rx: 1.5, fill: 'var(--out)' }));
+      if (labels[i]) svg.appendChild(sv('text', { x: xc, y: H - 8, fill: 'var(--muted)', 'font-size': 10, 'text-anchor': 'middle' }, labels[i]));
     });
     el.appendChild(svg);
   }
@@ -716,25 +892,158 @@ nav.tabs svg { width: 22px; height: 22px; }
     });
     el.appendChild(svg);
   }
+  function monthSums(key) {
+    var i = 0, o = 0;
+    monthEnts(key).forEach(function (e) { if (e.type === 'in') i += e.amount; else if (e.type === 'out') o += e.amount; });
+    return { i: i, o: o };
+  }
+  function trend(cur, prev) {
+    var d = Math.round((cur - prev) / prev * 100);
+    return (d > 0 ? '+' : d < 0 ? '−' : '') + Math.abs(d) + '%';
+  }
   function renderReports() {
     var list = monthEnts(state.month);
+    var cur = monthSums(state.month), prev = monthSums(shiftMonth(state.month, -1));
+    var diff = cur.i - cur.o;
+    var rs = clear($('rsum'));
+    rs.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: 'Доходы' }), h('p', { class: 'val in num', text: fmt(cur.i) })));
+    rs.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: 'Расходы' }), h('p', { class: 'val out num', text: fmt(cur.o) })));
+    rs.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: 'Разница' }), h('p', { class: 'val num ' + (diff < 0 ? 'out' : 'in'), text: signed(diff) })));
+    var mcat = byCat(list), top = Object.keys(mcat).sort(function (a, b) { return mcat[b] - mcat[a]; });
+    var cmpText = prev.i || prev.o
+      ? 'К прошлому месяцу: доходы ' + (prev.i ? trend(cur.i, prev.i) : 'нет данных') + ', расходы ' + (prev.o ? trend(cur.o, prev.o) : 'нет данных') + '.'
+      : 'За прошлый месяц записей нет, сравнивать пока не с чем.';
+    $('rcmp').textContent = cmpText + (top.length ? ' Крупнейшая категория: ' + top[0] + ' (' + fmt(mcat[top[0]]) + ').' : '');
     var outM = 0, exM = 0;
     list.forEach(function (e) { if (e.type === 'out') { outM += e.amount; if (isExtra(e)) exM += e.amount; } });
-    renderPie(list, outM);
+    drawDonut('pie', 'pie-detail', list);
     $('extra-line').textContent = exM ? 'Из них лишнее: ' + fmt(exM) + ' (' + Math.round(exM / outM * 100) + '% расходов)' : '';
     renderBudget();
-    var keys = [];
-    for (var i = 5; i >= 0; i--) keys.push(shiftMonth(state.month, -i));
     var all = ents();
-    var ins = keys.map(function (k) { return all.filter(function (e) { return e.type === 'in' && e.date.slice(0, 7) === k; }).reduce(function (a, e) { return a + e.amount; }, 0); });
-    var outs = keys.map(function (k) { return all.filter(function (e) { return e.type === 'out' && e.date.slice(0, 7) === k; }).reduce(function (a, e) { return a + e.amount; }, 0); });
-    var bals = keys.map(function (k) { return all.filter(function (e) { return e.date.slice(0, 7) <= k; }).reduce(function (a, e) { return a + effect(e); }, 0); });
-    drawBars($('dyn'), keys, ins, outs);
-    drawLine($('sav'), keys, bals);
+    document.querySelectorAll('#rgroup .chip').forEach(function (b) { var on = b.dataset.g === state.rgroup; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    var keys = [], labels = [], len;
+    if (state.rgroup === 'days') {
+      var n = daysIn(state.month);
+      for (var d = 1; d <= n; d++) { keys.push(state.month + '-' + pad(d)); labels.push(d === 1 || d % 5 === 0 ? String(d) : ''); }
+      len = 10;
+    } else if (state.rgroup === 'years') {
+      var y0 = +state.month.slice(0, 4);
+      for (var yy = y0 - 4; yy <= y0; yy++) { keys.push(String(yy)); labels.push(String(yy)); }
+      len = 4;
+    } else {
+      for (var i = 5; i >= 0; i--) { var k = shiftMonth(state.month, -i); keys.push(k); labels.push(mshort(k)); }
+      len = 7;
+    }
+    function sumBy(type, k) { return all.filter(function (e) { return e.type === type && e.date.slice(0, len) === k; }).reduce(function (a, e) { return a + e.amount; }, 0); }
+    drawBars($('dyn'), keys, keys.map(function (k) { return sumBy('in', k); }), keys.map(function (k) { return sumBy('out', k); }), labels);
+    var mk = [];
+    for (var j = 5; j >= 0; j--) mk.push(shiftMonth(state.month, -j));
+    var bals = mk.map(function (k) { return all.filter(function (e) { return e.date.slice(0, 7) <= k; }).reduce(function (a, e) { return a + effect(e); }, 0); });
+    drawLine($('sav'), mk, bals);
+  }
+
+  /* ---------- экспорт ---------- */
+  function csvEsc(v) { v = String(v == null ? '' : v); return /[";\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function typeLabel(e) {
+    return e.type === 'in' ? 'Доход' : e.type === 'out' ? 'Расход' : e.tr ? 'Перевод между кошельками' : (e.sign > 0 ? 'Долг: деньги получены' : 'Долг: деньги выданы');
+  }
+  function exportTables(onlyMonth) {
+    var src = (onlyMonth ? monthEnts(state.month) : ents()).slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.ts || 0) - (b.ts || 0); });
+    var ops = [['Дата', 'Тип', 'Категория', 'Сумма', 'Валюта', 'Кошелёк', 'Влияние на баланс', 'Комментарий', 'Лишнее']];
+    var cats = {}, inc = 0, out = 0;
+    src.forEach(function (e) {
+      ops.push([dmy(e.date), typeLabel(e), e.cat, e.amount, db.cur, wname(e.wallet), effect(e), e.note || '', isExtra(e) ? 'да' : '']);
+      if (e.type === 'out') { out += e.amount; cats[e.cat] = (cats[e.cat] || 0) + e.amount; }
+      if (e.type === 'in') inc += e.amount;
+    });
+    var cs = [['Категория расходов', 'Сумма', 'Доля, %']];
+    Object.keys(cats).sort(function (a, b) { return cats[b] - cats[a]; }).forEach(function (c) { cs.push([c, cats[c], out ? Math.round(cats[c] / out * 1000) / 10 : 0]); });
+    cs.push(['', '', '']);
+    cs.push(['Всего расходов', out, '']);
+    cs.push(['Всего доходов', inc, '']);
+    cs.push(['Разница', inc - out, '']);
+    return { count: src.length, ops: ops, cats: cs };
+  }
+  function saveBlob(blob, name) {
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+  function csvText(rows) {
+    return '﻿' + rows.map(function (r) { return r.map(function (v) { return csvEsc(typeof v === 'number' ? String(v).replace('.', ',') : v); }).join(';'); }).join('\r\n');
+  }
+  /* минимальный .xlsx: zip без сжатия + таблицы в XML, всё без библиотек и без интернета */
+  function crc32(buf) {
+    var t = crc32.t;
+    if (!t) { t = crc32.t = []; for (var n = 0; n < 256; n++) { var c = n; for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } }
+    var r = 0xFFFFFFFF;
+    for (var i = 0; i < buf.length; i++) r = t[(r ^ buf[i]) & 255] ^ (r >>> 8);
+    return (r ^ 0xFFFFFFFF) >>> 0;
+  }
+  function zipStore(files) {
+    var enc = new TextEncoder(), parts = [], central = [], offset = 0;
+    files.forEach(function (f) {
+      var nm = enc.encode(f.name), data = enc.encode(f.text), crc = crc32(data), sz = data.length;
+      var lh = new Uint8Array(30 + nm.length), dv = new DataView(lh.buffer);
+      dv.setUint32(0, 0x04034b50, true); dv.setUint16(4, 20, true); dv.setUint16(6, 0x0800, true); dv.setUint16(8, 0, true);
+      dv.setUint16(10, 0, true); dv.setUint16(12, 0x21, true); dv.setUint32(14, crc, true); dv.setUint32(18, sz, true); dv.setUint32(22, sz, true);
+      dv.setUint16(26, nm.length, true); dv.setUint16(28, 0, true); lh.set(nm, 30);
+      parts.push(lh, data);
+      var ch = new Uint8Array(46 + nm.length), cv = new DataView(ch.buffer);
+      cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true); cv.setUint16(8, 0x0800, true);
+      cv.setUint16(10, 0, true); cv.setUint16(12, 0, true); cv.setUint16(14, 0x21, true); cv.setUint32(16, crc, true);
+      cv.setUint32(20, sz, true); cv.setUint32(24, sz, true); cv.setUint16(28, nm.length, true); cv.setUint32(42, offset, true); ch.set(nm, 46);
+      central.push(ch); offset += lh.length + sz;
+    });
+    var cdSize = central.reduce(function (a, c) { return a + c.length; }, 0), end = new Uint8Array(22), ev = new DataView(end.buffer);
+    ev.setUint32(0, 0x06054b50, true); ev.setUint16(8, files.length, true); ev.setUint16(10, files.length, true); ev.setUint32(12, cdSize, true); ev.setUint32(16, offset, true);
+    return new Blob(parts.concat(central, [end]), { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+  function xesc(v) { return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, ''); }
+  function sheetXml(rows, widths) {
+    var x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>';
+    widths.forEach(function (w, i) { x += '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>'; });
+    x += '</cols><sheetData>';
+    rows.forEach(function (r, ri) {
+      x += '<row r="' + (ri + 1) + '">';
+      r.forEach(function (v, ci) {
+        var ref = String.fromCharCode(65 + ci) + (ri + 1), st = ri === 0 ? ' s="1"' : '';
+        if (typeof v === 'number') x += '<c r="' + ref + '"' + st + '><v>' + v + '</v></c>';
+        else x += '<c r="' + ref + '"' + st + ' t="inlineStr"><is><t xml:space="preserve">' + xesc(v) + '</t></is></c>';
+      });
+      x += '</row>';
+    });
+    return x + '</sheetData></worksheet>';
+  }
+  function xlsxBlob(t) {
+    var H = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+    var R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    return zipStore([
+      { name: '[Content_Types].xml', text: H + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>' },
+      { name: '_rels/.rels', text: H + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + R + '/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
+      { name: 'xl/workbook.xml', text: H + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="' + R + '"><sheets><sheet name="Операции" sheetId="1" r:id="rId1"/><sheet name="Категории" sheetId="2" r:id="rId2"/></sheets></workbook>' },
+      { name: 'xl/_rels/workbook.xml.rels', text: H + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + R + '/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="' + R + '/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="' + R + '/styles" Target="styles.xml"/></Relationships>' },
+      { name: 'xl/styles.xml', text: H + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs></styleSheet>' },
+      { name: 'xl/worksheets/sheet1.xml', text: sheetXml(t.ops, [12, 26, 20, 14, 9, 16, 18, 32, 8]) },
+      { name: 'xl/worksheets/sheet2.xml', text: sheetXml(t.cats, [24, 16, 10]) }
+    ]);
+  }
+  function exportFile(onlyMonth, kind) {
+    var t = exportTables(onlyMonth);
+    if (!t.count) { setMsg('exp-msg', 'Нет записей для экспорта.', true); return; }
+    var base = 'moneva-' + (onlyMonth ? state.month : 'vse') + '-' + db.cur;
+    try {
+      if (kind === 'xlsx') saveBlob(xlsxBlob(t), base + '.xlsx');
+      else saveBlob(new Blob([csvText(t.ops)], { type: 'text/csv;charset=utf-8' }), base + '.csv');
+      setMsg('exp-msg', 'Файл сохранён: записей ' + t.count + '.');
+    } catch (err) { setMsg('exp-msg', 'Не удалось сохранить файл. Откройте сайт в обычном браузере.', true); }
   }
 
   /* ---------- НАСТРОЙКИ ---------- */
   function renderSettings() {
+    document.querySelectorAll('#swatches .swatch').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.t === db.settings.theme ? 'true' : 'false'); });
+    $('set-font').value = db.settings.font; $('set-size').value = db.settings.size;
     var el = clear($('wlist'));
     db.wallets.forEach(function (w) {
       var inp = h('input', { type: 'text', maxlength: '30', 'aria-label': 'Название кошелька' });
@@ -754,39 +1063,45 @@ nav.tabs svg { width: 22px; height: 22px; }
     renderBackup();
   }
 
-  function renderPie(list, outM) {
-    var box = clear($('pie'));
-    var m = byCat(list);
+  var NS = 'http://www.w3.org/2000/svg';
+  function sv(name, attrs, text) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function drawDonut(boxId, detailId, list) {
+    var box = clear($(boxId)), det = clear($(detailId));
+    var m = byCat(list), total = 0;
+    Object.keys(m).forEach(function (c) { total += m[c]; });
     var cats = Object.keys(m).sort(function (a, b) { return m[b] - m[a]; });
-    if (!cats.length) { box.appendChild(h('p', { class: 'empty', text: 'За этот месяц расходов нет.' })); return; }
-    var NS = 'http://www.w3.org/2000/svg';
-    var svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('viewBox', '0 0 42 42'); svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', 'Диаграмма расходов по категориям');
-    var bg = document.createElementNS(NS, 'circle');
-    bg.setAttribute('cx', 21); bg.setAttribute('cy', 21); bg.setAttribute('r', 15.9155); bg.setAttribute('fill', 'none');
-    bg.setAttribute('stroke-width', 7); bg.style.stroke = 'var(--line)';
-    svg.appendChild(bg);
-    var offset = 0;
-    var legend = h('div', { class: 'legend' });
+    if (!cats.length) { box.appendChild(h('p', { class: 'empty', text: 'За выбранный период расходов нет.' })); return; }
+    var sel = state.sel[boxId];
+    if (sel && !m[sel]) { sel = null; state.sel[boxId] = null; }
+    function pick(c) { state.sel[boxId] = state.sel[boxId] === c ? null : c; render(); }
+    var svg = sv('svg', { viewBox: '0 0 42 42', role: 'img', 'aria-label': 'Диаграмма расходов по категориям' });
+    svg.appendChild(sv('circle', { cx: 21, cy: 21, r: 15.9155, fill: 'none', 'stroke-width': 7, stroke: 'var(--line)' }));
+    var offset = 0, legend = h('div', { class: 'legend' });
     cats.forEach(function (c) {
       var idx = OUT.indexOf(c); if (idx < 0 || idx > 9) idx = 8;
       var color = 'var(--c' + (idx + 1) + ')';
-      var pct = m[c] / outM * 100;
-      var seg = document.createElementNS(NS, 'circle');
-      seg.setAttribute('cx', 21); seg.setAttribute('cy', 21); seg.setAttribute('r', 15.9155); seg.setAttribute('fill', 'none');
-      seg.setAttribute('stroke-width', 7);
-      seg.setAttribute('stroke-dasharray', pct.toFixed(3) + ' ' + (100 - pct).toFixed(3));
-      seg.setAttribute('stroke-dashoffset', (-offset).toFixed(3));
-      seg.style.stroke = color;
+      var pct = m[c] / total * 100;
+      var seg = sv('circle', { class: 'seg', cx: 21, cy: 21, r: 15.9155, fill: 'none', 'stroke-width': sel === c ? 8.6 : 7, 'stroke-dasharray': pct.toFixed(3) + ' ' + (100 - pct).toFixed(3), 'stroke-dashoffset': (-offset).toFixed(3), stroke: color, 'stroke-opacity': sel && sel !== c ? 0.35 : 1 });
+      seg.addEventListener('click', function () { pick(c); });
       svg.appendChild(seg);
       offset += pct;
       var dot = h('div', { class: 'dot' }); dot.style.background = color;
-      legend.appendChild(h('div', { class: 'leg' }, dot, h('div', { class: 'name', text: c, title: c }),
-        h('div', { class: 'num', text: Math.round(pct) + '% · ' + fmt(m[c]) })));
+      legend.appendChild(h('button', { type: 'button', class: 'leg', 'aria-pressed': sel === c ? 'true' : 'false', onclick: function () { pick(c); } },
+        dot, h('div', { class: 'name', text: c, title: c }), h('div', { class: 'num', text: Math.round(pct) + '% · ' + fmt(m[c]) })));
     });
-    var pie = h('div', { class: 'pie' }, svg, h('div', { class: 'pie-center' }, h('div', { class: 'num', text: fmt(outM) }), h('span', { text: 'всего расходов' })));
+    var pie = h('div', { class: 'pie' }, svg, h('div', { class: 'pie-center' }, h('div', { class: 'num', text: fmt(total) }), h('span', { text: 'всего расходов' })));
     box.appendChild(h('div', { class: 'pie-wrap' }, pie, legend));
+    box.appendChild(h('p', { class: 'hint', text: 'Больше всего ушло на «' + cats[0] + '»: ' + fmt(m[cats[0]]) + ' (' + Math.round(m[cats[0]] / total * 100) + '%). Нажмите на категорию, чтобы увидеть операции.' }));
+    if (sel) {
+      det.appendChild(h('h3', { class: 'sub', text: sel + ': ' + fmt(m[sel]) + ' · ' + Math.round(m[sel] / total * 100) + '% расходов' }));
+      det.appendChild(h('div', { class: 'list', id: boxId + '-list' }));
+      entryList(boxId + '-list', list.filter(function (e) { return e.type === 'out' && e.cat === sel; }), 0, '');
+    }
   }
 
   /* ---------- БЮДЖЕТ ---------- */
@@ -894,49 +1209,55 @@ nav.tabs svg { width: 22px; height: 22px; }
 
     // долги
     var dl = clear($('debt-list'));
-    var debts = db.debts.filter(function (d) { return d.cur === db.cur; });
-    var owe = 0, owed = 0;
-    debts.forEach(function (d) { var left = d.amount - (d.paid || 0); if (left > 0) { if (d.dir === 'owe') owe += left; else owed += left; } });
-    $('ds-owed').textContent = fmt(owed);
-    $('ds-owe').textContent = fmt(owe);
-    if (!debts.length) dl.appendChild(h('p', { class: 'empty', text: 'Долгов нет.' }));
-    [['owed', 'Мне должны'], ['owe', 'Я должен']].forEach(function (grp) {
-      var items = debts.filter(function (d) { return d.dir === grp[0]; });
-      if (!items.length) return;
-      dl.appendChild(h('h3', { class: 'sub', text: grp[1] }));
-      items.sort(function (a, b) {
-        var da = (a.amount - (a.paid || 0)) <= 0 ? 1 : 0, dbb = (b.amount - (b.paid || 0)) <= 0 ? 1 : 0;
-        return da - dbb || (a.due || '9').localeCompare(b.due || '9');
-      }).forEach(function (d) {
-        var paid = d.paid || 0, left = Math.max(0, d.amount - paid), done = left <= 0;
-        var late = !done && d.due && d.due < ds(now);
-        var ratio = d.amount > 0 ? paid / d.amount : 0;
-        var fill = h('div', { class: 'fill' }); fill.style.width = Math.min(100, ratio * 100) + '%';
-        var acts = h('div', { class: 'inline' });
-        if (!done) {
-          var inp = h('input', { type: 'text', inputmode: 'decimal', id: 'dp-' + d.id, placeholder: 'Пусто = всё: ' + fmt(left), 'aria-label': 'Сумма возврата: ' + d.who });
-          acts.appendChild(inp);
-          acts.appendChild(h('button', { type: 'button', class: 'btn small', text: d.dir === 'owed' ? 'Мне вернули' : 'Я вернул', onclick: function () {
-            var v = inp.value.trim() ? parseAmount(inp.value) : left;
-            if (!(v > 0)) { toast('Введите сумму больше нуля'); return; }
-            if (v > left) v = left;
-            d.paid = (d.paid || 0) + v;
-            addEntry({ type: 'xfer', sign: d.dir === 'owed' ? 1 : -1, amount: v, cat: 'Долг', wallet: walletOk(d.wallet) ? d.wallet : db.wallets[0].id, date: ds(new Date()), note: (d.dir === 'owed' ? 'Вернули: ' : 'Вернул: ') + d.who, debt: d.id });
-            save(); render(); toast('Записано: ' + fmt(v));
-          } }));
-        }
-        delBtn('d' + d.id, function () {
-          db.entries = db.entries.filter(function (x) { return x.debt !== d.id; });
-          db.debts = db.debts.filter(function (x) { return x.id !== d.id; });
-          save(); render();
-        }, d.who).forEach(function (b) { acts.appendChild(b); });
-        var meta = (d.due ? 'До ' + d.due.split('-').reverse().join('.') : 'Без срока') + (late ? ' · просрочено' : '') + (done ? ' · возвращён' : '') + ' · ' + wname(d.wallet);
-        dl.appendChild(h('div', { class: 'item' + (done ? ' done' : '') },
-          h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: fmt(left) + (paid ? ' из ' + fmt(d.amount) : '') })),
-          paid ? h('div', { class: 'track' }, fill) : null,
-          h('div', { class: 'hint' + (late ? ' out' : ''), text: meta }),
-          d.note ? h('div', { class: 'rn', text: d.note }) : null, acts));
-      });
+    var all2 = db.debts.filter(function (d) { return d.cur === db.cur; });
+    var st2 = debtStats();
+    $('ds-owed').textContent = fmt(st2.owed);
+    $('ds-owe').textContent = fmt(st2.owe);
+    var at2 = alertText(st2);
+    $('ds-alert').hidden = !at2; $('ds-alert').textContent = at2;
+    document.querySelectorAll('input[name="dtab"]').forEach(function (r) { r.checked = r.value === state.dtab; });
+    var items = all2.filter(function (d) { return d.dir === state.dtab; });
+    if (!items.length) dl.appendChild(h('p', { class: 'empty', text: state.dtab === 'owed' ? 'Вам никто не должен.' : 'У вас нет долгов.' }));
+    items.sort(function (a, b) {
+      var da = debtLeft(a) <= 0 ? 1 : 0, dbb = debtLeft(b) <= 0 ? 1 : 0;
+      return da - dbb || (a.due || '9').localeCompare(b.due || '9');
+    }).forEach(function (d) {
+      var paid = d.paid || 0, left = debtLeft(d), done = left <= 0;
+      var late = !done && d.due && d.due < ds(now);
+      var ratio = d.amount > 0 ? paid / d.amount : 0;
+      var fill = h('div', { class: 'fill' }); fill.style.width = Math.min(100, ratio * 100) + '%';
+      var acts = h('div', { class: 'inline' });
+      if (!done) {
+        var inp = h('input', { type: 'text', inputmode: 'decimal', id: 'dp-' + d.id, placeholder: 'Пусто = всё: ' + fmt(left), 'aria-label': 'Сумма возврата: ' + d.who });
+        acts.appendChild(inp);
+        acts.appendChild(h('button', { type: 'button', class: 'btn small', text: d.dir === 'owed' ? 'Мне вернули' : 'Я вернул', onclick: function () {
+          var v = inp.value.trim() ? parseAmount(inp.value) : left;
+          if (!(v > 0)) { toast('Введите сумму больше нуля'); return; }
+          if (v > left) v = left;
+          d.paid = (d.paid || 0) + v;
+          d.pays.push({ date: ds(new Date()), amount: v });
+          addEntry({ type: 'xfer', sign: d.dir === 'owed' ? 1 : -1, amount: v, cat: 'Долг', wallet: walletOk(d.wallet) ? d.wallet : db.wallets[0].id, date: ds(new Date()), note: (d.dir === 'owed' ? 'Вернули: ' : 'Вернул: ') + d.who, debt: d.id });
+          save(); render(); toast('Записано: ' + fmt(v));
+        } }));
+      }
+      delBtn('d' + d.id, function () {
+        db.entries = db.entries.filter(function (x) { return x.debt !== d.id; });
+        db.debts = db.debts.filter(function (x) { return x.id !== d.id; });
+        save(); render();
+      }, d.who).forEach(function (b) { acts.appendChild(b); });
+      var meta = (d.issued ? (d.dir === 'owed' ? 'Дал ' : 'Взял ') + dmy(d.issued) + ' · ' : '') + (d.due ? 'вернуть до ' + dmy(d.due) : 'без срока') + (late ? ' · просрочено' : '') + (done ? ' · возвращён полностью' : '') + ' · ' + wname(d.wallet);
+      var hist = null;
+      if (d.pays.length || paid) {
+        var sumPays = d.pays.reduce(function (a, x) { return a + x.amount; }, 0);
+        hist = h('div', { class: 'hist' }, h('div', { text: 'История погашений:' }),
+          paid - sumPays > 0 ? h('div', { class: 'num', text: 'раньше · ' + fmt(paid - sumPays) }) : null,
+          d.pays.map(function (x) { return h('div', { class: 'num', text: dmy(x.date) + ' · ' + fmt(x.amount) }); }));
+      }
+      dl.appendChild(h('div', { class: 'item' + (done ? ' done' : '') },
+        h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: 'остаток ' + fmt(left) + (paid ? ' из ' + fmt(d.amount) : '') })),
+        paid ? h('div', { class: 'track' }, fill) : null,
+        h('div', { class: 'hint' + (late ? ' out' : ''), text: meta }),
+        d.note ? h('div', { class: 'rn', text: d.note }) : null, hist, acts));
     });
   }
 
@@ -1006,6 +1327,7 @@ nav.tabs svg { width: 22px; height: 22px; }
     $('extra-row').hidden = t !== 'out';
   }
   function applyCur() {
+    applySettings();
     $('cur').value = db.cur;
     document.querySelector('label[for="amount"]').textContent = 'Сумма, ' + CUR[db.cur];
   }
@@ -1082,10 +1404,11 @@ nav.tabs svg { width: 22px; height: 22px; }
     var w = $('dw').value.trim(), a = parseAmount($('da').value);
     if (!w) { setMsg('debt-msg', 'Введите имя.', true); return; }
     if (!(a > 0)) { setMsg('debt-msg', 'Введите сумму больше нуля.', true); return; }
-    var d = { id: uid(), cur: db.cur, who: w, amount: a, paid: 0, dir: $('ddir').value, wallet: $('dwal').value, due: $('ddue').value || '', note: $('dnote').value.trim() };
+    var issued = $('ddate').value || ds(new Date());
+    var d = { id: uid(), cur: db.cur, who: w, amount: a, paid: 0, pays: [], dir: $('ddir').value, wallet: $('dwal').value, issued: issued, due: $('ddue').value || '', note: $('dnote').value.trim() };
     db.debts.push(d);
-    addEntry({ type: 'xfer', sign: d.dir === 'owed' ? -1 : 1, amount: a, cat: 'Долг', wallet: d.wallet, date: ds(new Date()), note: (d.dir === 'owed' ? 'Дал в долг: ' : 'Взял в долг: ') + w, debt: d.id });
-    save(); $('dw').value = ''; $('da').value = ''; $('ddue').value = ''; $('dnote').value = ''; render(); setMsg('debt-msg', 'Долг записан.');
+    addEntry({ type: 'xfer', sign: d.dir === 'owed' ? -1 : 1, amount: a, cat: 'Долг', wallet: d.wallet, date: issued, note: (d.dir === 'owed' ? 'Дал в долг: ' : 'Взял в долг: ') + w, debt: d.id });
+    save(); $('dw').value = ''; $('da').value = ''; $('ddue').value = ''; $('dnote').value = ''; state.dtab = d.dir; render(); setMsg('debt-msg', 'Долг записан.');
   });
 
   /*PARSER_START*/
@@ -1184,46 +1507,107 @@ nav.tabs svg { width: 22px; height: 22px; }
     if (!(res.amount > 0)) { clear($('voice-card')); toast('Не нашёл сумму. Например: «такси тридцать тысяч»'); return; }
     showVoiceCard(res);
   }
+  var wantListen = false, baseText = '', voiceTimer = null;
   function setListening(on) {
     listening = on;
     $('mic').classList.toggle('live', on);
     $('mic').setAttribute('aria-pressed', on ? 'true' : 'false');
     $('mic').setAttribute('aria-label', on ? 'Остановить запись' : 'Записать голосом');
   }
-  function startVoice() {
-    if (!SR) { toast('Этот браузер не умеет слушать голос. Напишите фразу в строке.'); $('say').focus(); return; }
-    if (listening && rec) { try { rec.stop(); } catch (e) {} return; }
+  function stopVoice() {
+    wantListen = false; clearTimeout(voiceTimer);
+    try { rec.stop(); } catch (e) { setListening(false); }
+  }
+  function beginVoice() {
     try {
       rec = new SR();
-      rec.lang = 'ru-RU'; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
-      var finalText = '';
-      rec.onstart = function () { setListening(true); $('say').value = ''; clear($('voice-card')); };
+      rec.lang = 'ru-RU'; rec.interimResults = true; rec.continuous = true; rec.maxAlternatives = 1;
+      var sessionText = '';
+      rec.onstart = function () { setListening(true); };
       rec.onresult = function (ev) {
         var t = '';
         for (var i = 0; i < ev.results.length; i++) t += ev.results[i][0].transcript;
-        finalText = t; $('say').value = t;
+        sessionText = t;
+        $('say').value = (baseText ? baseText + ' ' : '') + t.trim();
       };
       rec.onerror = function (ev) {
-        var m = { 'not-allowed': 'Разрешите доступ к микрофону в настройках браузера.', 'service-not-allowed': 'Разрешите доступ к микрофону в настройках браузера.', 'no-speech': 'Не расслышал. Нажмите на микрофон и попробуйте ещё раз.', 'network': 'Для распознавания голоса нужен интернет.', 'audio-capture': 'Микрофон не найден.' };
+        if (ev.error === 'no-speech' || ev.error === 'aborted') return;
+        wantListen = false;
+        var m = { 'not-allowed': 'Разрешите доступ к микрофону в настройках браузера.', 'service-not-allowed': 'Разрешите доступ к микрофону в настройках браузера.', 'network': 'Для распознавания голоса нужен интернет.', 'audio-capture': 'Микрофон не найден.' };
         toast(m[ev.error] || 'Не получилось распознать голос. Напишите фразу в строке.');
       };
-      rec.onend = function () { setListening(false); if (finalText.trim()) analyzeSay(); };
+      rec.onend = function () {
+        if (sessionText.trim()) baseText = (baseText ? baseText + ' ' : '') + sessionText.trim();
+        if (wantListen) { setTimeout(function () { if (wantListen) beginVoice(); }, 150); return; }
+        setListening(false);
+        if ($('say').value.trim()) analyzeSay();
+      };
       rec.start();
-    } catch (e) { setListening(false); toast('Не удалось включить микрофон. Напишите фразу в строке.'); }
+    } catch (e) { wantListen = false; setListening(false); toast('Не удалось включить микрофон. Напишите фразу в строке.'); }
+  }
+  function startVoice() {
+    if (!SR) { toast('Этот браузер не умеет слушать голос. Напишите фразу в строке.'); $('say').focus(); return; }
+    if (wantListen || listening) { stopVoice(); return; }
+    wantListen = true; baseText = $('say').value.trim(); clear($('voice-card'));
+    clearTimeout(voiceTimer); voiceTimer = setTimeout(function () { if (wantListen) { toast('Запись остановлена через 2 минуты.'); stopVoice(); } }, 120000);
+    beginVoice();
   }
   $('mic').addEventListener('click', startVoice);
   $('say-go').addEventListener('click', analyzeSay);
   $('say').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); analyzeSay(); } });
 
+  $('say-clear').addEventListener('click', function () { $('say').value = ''; baseText = ''; clear($('voice-card')); $('say').focus(); });
+  $('free-info').addEventListener('click', function () {
+    var hi = $('free-hint'); hi.hidden = !hi.hidden; $('free-info').setAttribute('aria-expanded', hi.hidden ? 'false' : 'true');
+  });
+  document.querySelectorAll('#period .chip').forEach(function (b) { b.addEventListener('click', function () { state.period = b.dataset.p; render(); }); });
+  $('pd-day').addEventListener('change', function () { state.pDay = $('pd-day').value || ds(new Date()); render(); });
+  $('pc-from').addEventListener('change', function () { state.pFrom = $('pc-from').value || state.pFrom; render(); });
+  $('pc-to').addEventListener('change', function () { state.pTo = $('pc-to').value || state.pTo; render(); });
+  document.querySelectorAll('#rgroup .chip').forEach(function (b) { b.addEventListener('click', function () { state.rgroup = b.dataset.g; render(); }); });
+  document.querySelectorAll('input[name="dtab"]').forEach(function (r) { r.addEventListener('change', function () { state.dtab = r.value; $('ddir').value = r.value; render(); }); });
+  $('xl-month').addEventListener('click', function () { exportFile(true, 'xlsx'); });
+  $('xl-all').addEventListener('click', function () { exportFile(false, 'xlsx'); });
+  $('tr-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var a = parseAmount($('tam').value), from = $('tf').value, to = $('tt').value, d = $('tdate').value || ds(new Date());
+    if (from === to) { setMsg('tr-msg', 'Выберите два разных кошелька.', true); return; }
+    if (!(a > 0)) { setMsg('tr-msg', 'Введите сумму больше нуля.', true); return; }
+    var id = uid();
+    [-1, 1].forEach(function (sg) {
+      var e = addEntry({ type: 'xfer', sign: sg, amount: a, cat: 'Перевод', wallet: sg < 0 ? from : to, date: d, note: 'Перевод: ' + wname(from) + ' → ' + wname(to) });
+      e.tr = id;
+    });
+    if (!save()) return;
+    $('tam').value = ''; render(); setMsg('tr-msg', 'Переведено: ' + fmt(a) + '.');
+  });
+  $('exp-month').addEventListener('click', function () { exportFile(true, 'csv'); });
+  $('exp-all').addEventListener('click', function () { exportFile(false, 'csv'); });
+
+  (function buildAppearance() {
+    var sw = $('swatches');
+    Object.keys(THEMES).forEach(function (k) {
+      var i = h('i'); i.style.background = 'linear-gradient(90deg,' + PREVIEW[k][0] + ' 60%,' + PREVIEW[k][1] + ' 60%)';
+      var b = h('button', { type: 'button', class: 'swatch', 'data-t': k, 'aria-pressed': 'false', onclick: function () { db.settings.theme = k; save(); applySettings(); renderSettings(); } }, i, THEMES[k]);
+      sw.appendChild(b);
+    });
+    Object.keys(FONTS).forEach(function (k) { $('set-font').appendChild(h('option', { value: k, text: FONTS[k] })); });
+    Object.keys(SIZES).forEach(function (k) { $('set-size').appendChild(h('option', { value: k, text: SIZES[k] })); });
+    $('set-font').addEventListener('change', function () { db.settings.font = $('set-font').value; save(); applySettings(); });
+    $('set-size').addEventListener('change', function () { db.settings.size = $('set-size').value; save(); applySettings(); });
+  })();
+
   fillSelect($('rc'), OUT);
   setType('out');
   $('date').value = ds(now);
+  $('ddate').value = ds(now);
+  $('tdate').value = ds(now);
   applyCur();
   render();
 
   // напоминание о копии
   if (db.entries.length > 10 && (!db.lastBackup || Date.now() - db.lastBackup > 14 * 86400000)) {
-    setTimeout(function () { toast('Сделайте резервную копию: раздел «Копия».'); }, 1200);
+    setTimeout(function () { toast('Сделайте резервную копию: Настройки → Резервные копии.'); }, 1200);
   }
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
