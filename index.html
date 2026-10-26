@@ -335,6 +335,19 @@ details.fold { display: block; padding: 0; }
 .fold[open] .chev { transform: rotate(180deg); }
 .fold > :not(summary) { margin: 0 12px 12px; }
 .fold[open] > summary { padding-bottom: 6px; }
+/* v10: валюта, месяц, кнопки в цветах логотипа */
+:root { --g1: #055e52; --g2: #0c9c7a; --gink: #ffffff; }
+:root[data-theme="dark"] { --g1: #17d6a8; --g2: #7cf2d0; --gink: #04150e; }
+.cur-select { -webkit-appearance: none; appearance: none; width: 94px; padding: 0 24px 0 11px; font-size: 0.88rem; text-overflow: clip;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1.5 1.5 6 6l4.5-4.5' fill='none' stroke='%238a8f8d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 9px center; background-size: 12px 8px; }
+.months { flex: 0 1 250px; max-width: 250px; }
+.mic { width: 76px; height: 52px; border-radius: 26px; background: linear-gradient(135deg, var(--g1), var(--g2)); color: var(--gink); box-shadow: 0 4px 14px rgba(10, 190, 150, 0.35); }
+.mic.live { background: var(--out); color: #fff; }
+.mic svg.ic { stroke-width: 2.2; }
+.fold .chev { width: 38px; height: 30px; padding: 5px 10px; box-sizing: border-box; border-radius: 15px; background: linear-gradient(135deg, var(--g1), var(--g2)); color: var(--gink); stroke-width: 2.8; box-shadow: 0 3px 10px rgba(10, 190, 150, 0.35); }
+.updbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 40; display: flex; align-items: center; gap: 12px; background: var(--ink); color: var(--bg); padding: 8px 8px 8px 16px; border-radius: 999px; font-size: 0.9rem; max-width: 92vw; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
+@media (max-width: 380px) { .cur-select { width: 90px; padding: 0 21px 0 9px; font-size: 0.84rem; background-position: right 7px center; } .months .icon-btn { width: 24px; } .months .label { font-size: 0.85rem; } .ctrl { gap: 5px; } .lang-btn { padding: 0 7px 0 5px; gap: 2px; font-size: 0.76rem; } .lang-btn svg.ic { width: 16px; height: 16px; } }
 </style>
 </head>
 <body>
@@ -647,6 +660,13 @@ details.fold { display: block; padding: 0; }
       <p class="msg" id="bk-msg" role="status" aria-live="polite"></p>
     </section>
 
+    <section class="panel" aria-labelledby="ab-title">
+      <h2 id="ab-title">О приложении</h2>
+      <p class="hint" id="ver-line"></p>
+      <div class="row-actions"><button class="btn ghost small" type="button" id="upd-btn">Проверить обновление</button></div>
+      <p class="msg" id="upd-msg" role="status" aria-live="polite"></p>
+    </section>
+
     <section class="panel" aria-labelledby="cur-title">
       <h2 id="cur-title">Про валюты</h2>
       <p class="hint">Каждая валюта ведёт отдельный учёт. Записи в сумах не пересчитываются в рубли или сомони при переключении. Валюта выбирается вверху страницы.</p>
@@ -734,7 +754,7 @@ details.fold { display: block; padding: 0; }
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '9';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '10';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -1451,7 +1471,7 @@ details.fold { display: block; padding: 0; }
   function hidePdfExtras() { $('ex-share').hidden = true; $('ex-open').hidden = true; }
   function exportFile(kind) {
     var info = scopeInfo(state.escope);
-    if (!info.count) { setMsg('exp-msg', 'Нет записей для экспорта.', true); hidePdfExtras(); return; }
+    if (!info.count) { setMsg('exp-msg', _f('Нет записей для экспорта: {0}, {1}. Выберите другой период («Год», «Все») или другую валюту вверху.', cname(), info.label), true); hidePdfExtras(); return; }
     if (kind === 'pdf') {
       setMsg('exp-msg', 'Готовлю PDF…'); $('ex-pdf').disabled = true; hidePdfExtras();
       Promise.all([loadScript('pdf-fonts.js'), loadScript('pdf.js')]).then(function () { return getLogo(); }).then(function (logo) {
@@ -1462,7 +1482,7 @@ details.fold { display: block; padding: 0; }
         lastPdfUrl = URL.createObjectURL(blob);
         $('ex-open').href = lastPdfUrl; $('ex-open').hidden = false; $('ex-share').hidden = !canShareFiles();
         saveBlob(blob, lastPdf.name);
-        setMsg('exp-msg', 'PDF готов. Если файл не появился, откройте его из загрузок.');
+        setMsg('exp-msg', 'PDF готов и сохранён в загрузках. Нажмите «Открыть PDF», чтобы посмотреть сразу.');
       }).catch(function () { setMsg('exp-msg', 'Не удалось подготовить PDF. Попробуйте ещё раз.', true); }).then(function () { $('ex-pdf').disabled = false; });
       return;
     }
@@ -1475,6 +1495,7 @@ details.fold { display: block; padding: 0; }
 
   /* ---------- НАСТРОЙКИ ---------- */
   function renderSettings() {
+    $('ver-line').textContent = _f('Версия {0}. При обновлении ваши записи не удаляются.', APPVER);
     document.querySelectorAll('#swatches .swatch').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.t === db.settings.theme ? 'true' : 'false'); });
     Array.prototype.forEach.call(document.querySelectorAll('#swatches .swatch'), function (b) { var sp = b.querySelector('span'); if (sp) sp.textContent = _t(THEMES[b.dataset.t]); });
     Array.prototype.forEach.call($('set-font').options, function (o) { o.textContent = _t(FONTS[o.value]); });
@@ -2255,6 +2276,20 @@ details.fold { display: block; padding: 0; }
       el.addEventListener('toggle', function () { try { localStorage.setItem('moneva-fold-' + x[0], el.open ? '1' : '0'); } catch (e) {} });
     });
   })();
+  $('upd-btn').addEventListener('click', function () {
+    setMsg('upd-msg', 'Проверяю обновление…');
+    var go = function () { location.reload(); };
+    if (!('serviceWorker' in navigator) || location.protocol === 'file:') { go(); return; }
+    navigator.serviceWorker.getRegistration().then(function (reg) { return reg ? reg.update() : null; })
+      .then(function () { return window.caches ? caches.keys() : []; })
+      .then(function (keys) { return Promise.all(keys.map(function (k) { return caches.delete(k); })); })
+      .then(go, go);
+  });
+  function showUpdateBar() {
+    if ($('upd-bar')) return;
+    var bar = h('div', { id: 'upd-bar', class: 'updbar', role: 'status' }, h('span', { text: 'Вышла новая версия' }), h('button', { type: 'button', class: 'btn small', text: 'Обновить', onclick: function () { location.reload(); } }));
+    document.body.appendChild(bar);
+  }
   fillSelect($('rc'), OUT);
   setType('out');
   $('date').value = ds(now);
@@ -2271,7 +2306,14 @@ details.fold { display: block; padding: 0; }
   }
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+    var hadCtl = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', function () { if (hadCtl) showUpdateBar(); });
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        reg.update().catch(function () {});
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) reg.update().catch(function () {}); });
+      }).catch(function () {});
+    });
   }
 })();
 </script>
