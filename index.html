@@ -31,6 +31,7 @@
   color-scheme: dark;
 }
 :root[data-theme="slate"] { --bg: #e8edf3; --surface: #ffffff; --field: #eef2f7; --ink: #162033; --muted: #4f5d73; --line: #d3dbe7; --accent: #2f5496; --in: #1e7a55; --out: #b8473a; }
+:root[data-theme="ios"] { --bg: #f2f2f7; --surface: #ffffff; --ink: #000000; --muted: #6c6c70; --line: #d9d9de; --accent: #007aff; --accent-ink: #ffffff; --in: #248a3d; --out: #d70015; --warn: #c93400; --c2: #ff9500; --c3: #34c759; --c4: #ff3b30; --c5: #af52de; --c6: #5ac8fa; --c7: #ffcc00; --c8: #ff2d55; --c9: #8e8e93; --c10: #a2845e; }
 :root[data-theme="beige"] { --bg: #f3ecdd; --surface: #fffcf5; --field: #f3ecdd; --ink: #2a2216; --muted: #685a43; --line: #e2d6bc; --accent: #86591a; --in: #476f2c; --out: #b4492f; --warn: #9a6200; }
 :root[data-font="cambria"] { --font: Cambria, 'Noto Serif', Georgia, 'Times New Roman', serif; --num: var(--font); }
 :root[data-font="franklin"] { --font: 'Franklin Gothic Medium', 'Franklin Gothic', 'Arial Narrow', 'Noto Sans', Arial, sans-serif; --num: var(--font); }
@@ -231,10 +232,10 @@ button.leg { background: none; border: 0; text-align: left; width: 100%; padding
 button.leg[aria-pressed="true"] { background: var(--field); outline: 1px solid var(--accent); }
 .cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .cards3 .val { font-size: 0.88rem; }
-.swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(86px, 1fr)); gap: 8px; }
-.swatch { border: 2px solid var(--line); border-radius: 12px; padding: 5px 3px 6px; background: var(--surface); cursor: pointer; display: grid; gap: 4px; justify-items: center; font-size: 0.68rem; color: var(--ink); min-width: 0; }
-.swatch i { width: 100%; height: 30px; border-radius: 8px; display: block; border: 1px solid rgba(0, 0, 0, 0.1); }
-.swatch[aria-pressed="true"] { border-color: var(--accent); }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.swatch { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 13px 6px 7px; background: var(--surface); cursor: pointer; font-size: 0.86rem; color: var(--ink); min-width: 0; white-space: nowrap; }
+.swatch i { width: 22px; height: 22px; flex: none; border-radius: 50%; display: block; border: 1px solid rgba(128, 128, 128, 0.4); }
+.swatch[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); font-weight: 650; }
 .banner { border: 1px solid var(--out); background: var(--surface); border-radius: 12px; padding: 12px; display: grid; gap: 8px; }
 .banner .t { font-weight: 650; color: var(--out); }
 .hist { color: var(--muted); font-size: 0.82rem; display: grid; gap: 2px; }
@@ -293,6 +294,14 @@ nav.tabs button[aria-current="page"] svg.ic { stroke-width: 2; }
 nav.tabs button[aria-current="page"] svg.ic .fl { fill: currentColor; fill-opacity: 0.22; }
 nav.tabs svg.ic { width: 24px; height: 24px; }
 nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); }
+input[type="date"] { -webkit-appearance: none; appearance: none; display: block; width: 100%; max-width: 100%; min-width: 0; min-height: 44px; text-align: left; }
+input[type="date"]::-webkit-date-and-time-value { text-align: left; min-width: 0; }
+.fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 560px) { .fields { grid-template-columns: minmax(0, 1fr); } }
+input[type="text"], input[type="date"], input[type="number"], select { padding-top: 8px; padding-bottom: 8px; }
+.months { flex: 0 0 auto; }
+.months .label { min-width: 8.6rem; flex: 0 0 auto; }
+.months .icon-btn { width: 32px; }
 </style>
 </head>
 <body>
@@ -549,16 +558,15 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
     </section>
     <section class="panel" aria-labelledby="exp-title">
       <h2 id="exp-title">Экспорт</h2>
-      <p class="hint">PDF-отчёт с диаграммами: готовый документ для просмотра и печати. Excel (.xlsx): листы «Обзор», «Категории» и «Операции» с фильтрами. CSV: простая таблица для других программ.</p>
+      <p class="hint">PDF-отчёт с диаграммами: готовый документ для просмотра и печати. Excel (.xlsx): листы «Обзор», «Категории» и «Операции» с фильтрами.</p>
       <div class="chips" id="escope" role="group" aria-label="Что выгрузить">
-        <button type="button" class="chip" data-s="month">Выбранный месяц</button>
-        <button type="button" class="chip" data-s="year">Выбранный год</button>
-        <button type="button" class="chip" data-s="all">Все записи</button>
+        <button type="button" class="chip" data-s="month">Месяц</button>
+        <button type="button" class="chip" data-s="year">Год</button>
+        <button type="button" class="chip" data-s="all">Все</button>
       </div>
       <div class="exp-btns">
         <button class="btn" type="button" id="ex-pdf"><svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg><span>Скачать PDF</span></button>
         <button class="btn ghost" type="button" id="ex-xlsx"><svg class="ic" aria-hidden="true"><use href="#i-table"/></svg><span>Скачать Excel</span></button>
-        <button class="btn ghost" type="button" id="ex-csv"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg><span>Скачать CSV</span></button>
       </div>
       <div class="row-actions"><a class="btn ghost small" id="ex-open" href="#" target="_blank" rel="noopener" hidden><span>Открыть PDF</span></a><button class="btn ghost small" type="button" id="ex-share" hidden><svg class="ic" aria-hidden="true" style="width:18px;height:18px"><use href="#i-share"/></svg> <span>Поделиться PDF</span></button></div>
       <p class="msg" id="exp-msg" role="status" aria-live="polite"></p>
@@ -627,8 +635,8 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
   'use strict';
 
   var CUR = { UZS: 'сум', RUB: '₽', TJS: 'сомони' };
-  var OUT = ['Аренда квартиры', 'Питание', 'Транспорт', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Одежда', 'Ребёнок', 'Развлечения', 'Лишние траты', 'Прочее'];
-  var INC = ['Зарплата', 'Подработка', 'Прочий доход'];
+  var OUT = ['Аренда квартиры', 'Питание', 'Транспорт', 'Топливо', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Одежда', 'Ребёнок', 'Образование', 'Развлечения', 'Подарки', 'Красота и уход', 'Товары для дома', 'Домашние животные', 'Кредиты и рассрочки', 'Лишние траты', 'Прочее'];
+  var INC = ['Зарплата', 'Подработка', 'Подарок', 'Продажа', 'Возврат денег', 'Прочий доход'];
   var WALLET = { cash: 'Наличные', card: 'Карта' };
   var KEY = 'moneva-v1';
   var I18 = window.MonevaI18N || (function () {
@@ -672,7 +680,7 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
     }
     if (d.settings && typeof d.settings === 'object') {
       var st = d.settings;
-      if (['light', 'emerald', 'dark', 'slate', 'beige'].indexOf(st.theme) >= 0) f.settings.theme = st.theme;
+      if (['light', 'emerald', 'dark', 'slate', 'beige', 'ios'].indexOf(st.theme) >= 0) f.settings.theme = st.theme;
       if (['system', 'cambria', 'franklin', 'times', 'sitka', 'pmingliu'].indexOf(st.font) >= 0) f.settings.font = st.font;
       if (['small', 'normal', 'large'].indexOf(st.size) >= 0) f.settings.size = st.size;
       if (['ru', 'uz', 'tg'].indexOf(st.lang) >= 0) f.settings.lang = st.lang;
@@ -691,7 +699,7 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '5';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '6';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -893,7 +901,7 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
   }
 
   /* ---------- кошельки ---------- */
-  var MAND = ['Аренда квартиры', 'Питание', 'Транспорт', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Ребёнок', 'Одежда'];
+  var MAND = ['Аренда квартиры', 'Питание', 'Транспорт', 'Топливо', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Ребёнок', 'Одежда'];
   function effect(e) { return e.type === 'in' ? e.amount : e.type === 'out' ? -e.amount : e.sign * e.amount; }
   function wname(id) {
     for (var i = 0; i < db.wallets.length; i++) if (db.wallets[i].id === id) return db.wallets[i].name;
@@ -913,9 +921,9 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
   }
 
   /* ---------- оформление ---------- */
-  var THEMES = { light: 'Светлая', emerald: 'Изумрудная', dark: 'Тёмная', slate: 'Сине-серая', beige: 'Бежевая' };
-  var THEME_COLOR = { light: '#f2f4f3', emerald: '#ecf3ef', dark: '#0b0f0e', slate: '#e8edf3', beige: '#f3ecdd' };
-  var PREVIEW = { light: ['#f2f4f3', '#0b6152'], emerald: ['#ecf3ef', '#0a6b52'], dark: ['#0b0f0e', '#46d6a6'], slate: ['#e8edf3', '#2f5496'], beige: ['#f3ecdd', '#86591a'] };
+  var THEMES = { light: 'Светлая', emerald: 'Изумрудная', dark: 'Тёмная', slate: 'Сине-серая', beige: 'Бежевая', ios: 'iOS' };
+  var THEME_COLOR = { light: '#f2f4f3', emerald: '#ecf3ef', dark: '#0b0f0e', slate: '#e8edf3', beige: '#f3ecdd', ios: '#f2f2f7' };
+  var PREVIEW = { light: ['#f2f4f3', '#0b6152'], emerald: ['#ecf3ef', '#0a6b52'], dark: ['#0b0f0e', '#46d6a6'], slate: ['#e8edf3', '#2f5496'], beige: ['#f3ecdd', '#86591a'], ios: ['#f2f2f7', '#007aff'] };
   var FONTS = { system: 'Системный (стандартный)', cambria: 'Cambria', franklin: 'Franklin Gothic Medium', times: 'Times New Roman', sitka: 'Sitka Small Semibold', pmingliu: 'PMingLiU-ExtB' };
   var SIZES = { small: 'Маленький', normal: 'Стандартный', large: 'Крупный' };
   function applySettings() {
@@ -1888,17 +1896,24 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
   /*PARSER_START*/
   var NW = { ноль: 0, один: 1, одна: 1, одну: 1, два: 2, две: 2, три: 3, четыре: 4, пять: 5, шесть: 6, семь: 7, восемь: 8, девять: 9, десять: 10, одиннадцать: 11, двенадцать: 12, тринадцать: 13, четырнадцать: 14, пятнадцать: 15, шестнадцать: 16, семнадцать: 17, восемнадцать: 18, девятнадцать: 19, двадцать: 20, тридцать: 30, сорок: 40, пятьдесят: 50, шестьдесят: 60, семьдесят: 70, восемьдесят: 80, девяносто: 90, сто: 100, двести: 200, триста: 300, четыреста: 400, пятьсот: 500, шестьсот: 600, семьсот: 700, восемьсот: 800, девятьсот: 900 };
   var CAT_RULES = [
-    ['Ребёнок', ['памперс', 'подгузник', 'смесь', 'смеси', 'мазь', 'присыпк', 'детск', 'малыш', 'ребен', 'игрушк', 'коляск', 'соск']],
-    ['Здоровье', ['dori', 'дору', 'аптек', 'лекарств', 'врач', 'доктор', 'больниц', 'анализ', 'стоматолог', 'зуб', 'таблетк', 'витамин', 'поликлиник']],
-    ['Аренда квартиры', ['ijara', 'иҷора', 'аренд', 'квартир', 'съем', 'снимаю']],
-    ['Коммунальные', ['kommunal', 'коммунал', 'электричеств', 'свет=', 'газ=', 'отоплен', 'мусор', 'водоканал']],
-    ['Связь и интернет', ['internet', 'aloqa', 'алоқа', 'интернет', 'связь', 'телефон', 'мобильн', 'тариф', 'вайфай', 'wifi', 'wi-fi', 'билайн', 'ucell', 'uzmobile', 'mobiuz', 'симк']],
-    ['Транспорт', ['taksi', 'benzin', 'таксӣ', 'бензин', 'такси', 'бензин', 'метан', 'заправк', 'метро', 'автобус', 'проезд', 'маршрутк', 'парковк', 'мойк', 'яндекс', 'поездк']],
-    ['Одежда', ['одежд', 'обув', 'куртк', 'штаны', 'джинс', 'платье', 'кроссовк', 'футболк', 'рубашк', 'туфл']],
-    ['Развлечения', ['кино', 'игр', 'парк=', 'поход', 'концерт', 'подарок', 'подарк', 'отдых', 'кальян', 'театр', 'аттракцион']],
-    ['Питание', ['хлеб', 'продукт', 'магазин', 'еда=', 'еду=', 'обед', 'ужин', 'завтрак', 'кафе', 'ресторан', 'мясо', 'молок', 'овощ', 'фрукт', 'базар', 'рынок', 'чай', 'самса', 'плов', 'лепешк', 'сладост', 'вода=', 'воду=']]
+    ['Ребёнок', ['памперс', 'подгузник', 'смесь', 'смеси', 'мазь', 'присыпк', 'детск', 'малыш', 'ребен', 'игрушк', 'коляск', 'соск', 'пеленк', 'садик', 'детсад', 'сад=']],
+    ['Здоровье', ['dori', 'дору', 'здоровь', 'медицин', 'аптек', 'лекарств', 'врач', 'доктор', 'больниц', 'анализ', 'стоматолог', 'зуб', 'таблетк', 'витамин', 'поликлиник', 'лечен', 'терапевт', 'узи=', 'рентген', 'операци', 'очки=', 'линзы', 'капли']],
+    ['Аренда квартиры', ['ijara', 'иҷора', 'аренд', 'квартир', 'съем', 'снимаю', 'жиль', 'жилье']],
+    ['Топливо', ['топлив', 'бензин', 'benzin', 'бензоколонк', 'заправк', 'заправил', 'метан', 'пропан', 'соляр', 'дизел', 'азс=', 'газбалон']],
+    ['Коммунальные', ['kommunal', 'коммунал', 'коммуналк', 'электричеств', 'свет=', 'газ=', 'отоплен', 'мусор', 'водоканал', 'квартплат', 'счетчик', 'горячая']],
+    ['Связь и интернет', ['internet', 'aloqa', 'алоқа', 'интернет', 'связь', 'связи=', 'телефон', 'мобильн', 'тариф', 'вайфай', 'wifi', 'wi-fi', 'билайн', 'ucell', 'uzmobile', 'mobiuz', 'симк', 'пополнил']],
+    ['Образование', ['образован', 'школ', 'курс', 'обучен', 'репетитор', 'учеб', 'универ', 'институт', 'тетрад', 'книг', 'контракт', 'английск', 'лицей', 'кружок', 'секци']],
+    ['Подарки', ['подарок', 'подарк', 'цветы', 'цветов', 'букет', 'свадьб', 'той=', 'садака', 'благотвор', 'рождени', 'поздравл']],
+    ['Красота и уход', ['красот', 'парикмахер', 'стрижк', 'барбер', 'маникюр', 'педикюр', 'салон', 'косметик', 'шампун', 'духи', 'ресниц', 'массаж', 'крем=', 'уход']],
+    ['Домашние животные', ['кошк', 'кот=', 'собак', 'ветеринар', 'зоомагазин', 'питомц', 'попугай', 'корм=', 'корма=']],
+    ['Товары для дома', ['мебел', 'посуд', 'бытов', 'хозтовар', 'хозяйств', 'порошок', 'стирал', 'пылесос', 'холодильник', 'телевизор', 'техник', 'ремонт', 'лампочк', 'постел', 'одеял', 'для дома', 'инструмент']],
+    ['Кредиты и рассрочки', ['кредит', 'рассрочк', 'ипотек', 'займ', 'заем', 'насия', 'kredit', 'взнос']],
+    ['Транспорт', ['taksi', 'таксӣ', 'такси', 'транспорт', 'метро', 'автобус', 'проезд', 'маршрутк', 'парковк', 'мойк', 'яндекс', 'поездк', 'самолет', 'авиабилет', 'поезд', 'автосервис', 'шиномонтаж', 'запчаст', 'страховк', 'штраф', 'dostavka', 'билет']],
+    ['Одежда', ['одежд', 'обув', 'куртк', 'штаны', 'джинс', 'платье', 'кроссовк', 'футболк', 'рубашк', 'туфл', 'шапк', 'носки', 'ботинк', 'пальто', 'костюм']],
+    ['Развлечения', ['развлечен', 'кино', 'игр', 'парк=', 'поход', 'концерт', 'отдых', 'кальян', 'театр', 'аттракцион', 'боулинг', 'бильярд', 'подписк', 'нетфликс', 'netflix', 'пляж', 'отпуск', 'путешеств', 'экскурс', 'тур=']],
+    ['Питание', ['питани', 'пища', 'еда=', 'еду=', 'едa=', 'хлеб', 'продукт', 'магазин', 'обед', 'ужин', 'завтрак', 'кафе', 'ресторан', 'мясо', 'мясн', 'молок', 'овощ', 'фрукт', 'базар', 'рынок', 'чай', 'кофе', 'самса', 'плов', 'лепешк', 'сладост', 'вода=', 'воду=', 'воды=', 'пицц', 'бургер', 'лаваш', 'шашлык', 'напитк', 'сок=', 'сока=', 'яйц', 'рис=', 'муку=', 'мука=', 'картош', 'торт', 'суши', 'фастфуд', 'доставк', 'макдон', 'kfc', 'кушал', 'поел', 'перекус', 'сахар', 'масло=', 'масла=', 'колбас', 'сыр=']]
   ];
-  var INC_WORDS = ['получил', 'получила', 'зарплат', 'аванс', 'доход', 'заработал', 'заработала', 'продал', 'продала', 'подработк', 'премия', 'премию'];
+  var INC_WORDS = ['получил', 'получила', 'зарплат', 'аванс', 'доход', 'заработал', 'заработала', 'продал', 'продала', 'подработк', 'премия', 'премию', 'подарили', 'возврат', 'кэшбэк', 'кешбэк', 'пенсия', 'пенсию', 'стипенди'];
   function wordHit(words, list) {
     return words.some(function (w) {
       return list.some(function (st) { return st.charAt(st.length - 1) === '=' ? w === st.slice(0, -1) : w.indexOf(st) === 0; });
@@ -1933,7 +1948,7 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
     var res = { amount: findAmount(raw), type: 'out', cat: 'Прочее', wallet: defWallet || 'card', date: ds(new Date()), extra: false, note: '' };
     if (wordHit(words, INC_WORDS)) {
       res.type = 'in';
-      res.cat = wordHit(words, ['зарплат', 'аванс', 'премия', 'премию']) ? 'Зарплата' : wordHit(words, ['подработк', 'заработал', 'заработала', 'продал', 'продала']) ? 'Подработка' : 'Прочий доход';
+      res.cat = wordHit(words, ['зарплат', 'аванс', 'премия', 'премию']) ? 'Зарплата' : wordHit(words, ['подработк', 'заработал', 'заработала']) ? 'Подработка' : wordHit(words, ['продал', 'продала']) ? 'Продажа' : wordHit(words, ['подарили']) ? 'Подарок' : wordHit(words, ['возврат', 'кэшбэк', 'кешбэк']) ? 'Возврат денег' : 'Прочий доход';
     } else {
       for (var i = 0; i < CAT_RULES.length; i++) { if (wordHit(words, CAT_RULES[i][1])) { res.cat = CAT_RULES[i][0]; break; } }
     }
@@ -1942,6 +1957,7 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
     var back = words.indexOf('позавчера') >= 0 ? 2 : words.indexOf('вчера') >= 0 ? 1 : 0;
     if (back) { var d0 = new Date(); d0.setDate(d0.getDate() - back); res.date = ds(d0); }
     res.extra = res.type === 'out' && wordHit(words, ['лишн', 'зря', 'ненужн']);
+    if (res.extra && res.cat === 'Прочее') res.cat = 'Лишние траты';
     res.note = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : '';
     return res;
   }
@@ -2129,7 +2145,6 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
   });
   $('ex-pdf').addEventListener('click', function () { exportFile('pdf'); });
   $('ex-xlsx').addEventListener('click', function () { exportFile('xlsx'); });
-  $('ex-csv').addEventListener('click', function () { exportFile('csv'); });
   $('ex-share').addEventListener('click', function () {
     if (!lastPdf) return;
     try {
@@ -2186,7 +2201,7 @@ nav.tabs { background: color-mix(in srgb, var(--surface) 94%, transparent); back
   (function buildAppearance() {
     var sw = $('swatches');
     Object.keys(THEMES).forEach(function (k) {
-      var i = h('i'); i.style.background = 'linear-gradient(90deg,' + PREVIEW[k][0] + ' 60%,' + PREVIEW[k][1] + ' 60%)';
+      var i = h('i'); i.style.background = 'linear-gradient(135deg,' + PREVIEW[k][0] + ' 50%,' + PREVIEW[k][1] + ' 50%)';
       var b = h('button', { type: 'button', class: 'swatch', 'data-t': k, 'aria-pressed': 'false', onclick: function () { db.settings.theme = k; save(); applySettings(); renderSettings(); } }, i, h('span', { text: THEMES[k] }));
       sw.appendChild(b);
     });
