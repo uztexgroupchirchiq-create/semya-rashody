@@ -1,6 +1,6 @@
 // Кэш для работы без интернета. Увеличьте номер версии, если меняете файлы сайта.
-var CACHE = 'moneva-v4';
-var FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './logo-mark.png', './apple-touch-icon.png', './favicon-32.png'];
+var CACHE = 'moneva-v5';
+var FILES = ['./', './index.html', './manifest.json', './i18n.js', './pdf.js', './pdf-fonts.js', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './logo-mark.png', './apple-touch-icon.png', './favicon-32.png'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));
