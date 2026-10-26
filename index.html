@@ -302,6 +302,18 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
 .months { flex: 0 0 auto; }
 .months .label { min-width: 8.6rem; flex: 0 0 auto; }
 .months .icon-btn { width: 32px; }
+/* v7: одна строка — месяц, валюта, язык */
+.top { grid-template-columns: minmax(0, 1fr); }
+.ctrl { gap: 6px; }
+.months { flex: 1 1 auto; min-width: 0; height: 34px; }
+.months .icon-btn { width: 28px; height: 32px; }
+.months .icon-btn svg.ic { width: 18px; height: 18px; }
+.months .label { min-width: 0; flex: 1 1 auto; height: 32px; font-size: 0.88rem; gap: 2px; }
+.months .label svg.ic { width: 13px; height: 13px; }
+.cur-select { width: 84px; height: 34px; padding: 0 20px 0 9px; font-size: 0.88rem; border-radius: 10px; flex: none; }
+.lang-btn { height: 34px; padding: 0 9px 0 7px; font-size: 0.8rem; gap: 3px; flex: none; }
+.lang-btn svg.ic { width: 18px; height: 18px; }
+@media (max-width: 380px) { .cur-select { width: 78px; } }
 </style>
 </head>
 <body>
@@ -333,17 +345,17 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
   <div class="banner" id="safe-banner" role="alert" hidden></div>
   <header class="top">
     <div class="brand"><img src="logo-mark.png" alt="" width="42" height="42"><div><h1>MONEVA</h1><p class="slogan">Управляй своими деньгами</p></div></div>
-    <select id="cur" class="cur-select" aria-label="Валюта">
-        <option value="UZS">Сум</option>
-        <option value="RUB">Рубль</option>
-        <option value="TJS">Сомони</option>
-      </select>
     <div class="ctrl">
       <div class="months" role="group" aria-label="Месяц">
         <button class="icon-btn" id="prev" type="button" aria-label="Предыдущий месяц"><svg class="ic" aria-hidden="true"><use href="#i-left"/></svg></button>
         <button class="label" id="month-btn" type="button" aria-label="Выбрать месяц и год" aria-haspopup="true" aria-expanded="false"><span id="month-label"></span><svg class="ic" aria-hidden="true"><use href="#i-down"/></svg></button>
         <button class="icon-btn" id="next" type="button" aria-label="Следующий месяц"><svg class="ic" aria-hidden="true"><use href="#i-right"/></svg></button>
       </div>
+      <select id="cur" class="cur-select" aria-label="Валюта">
+        <option value="UZS">Сум</option>
+        <option value="RUB">Рубль</option>
+        <option value="TJS">Сомони</option>
+      </select>
       <button class="lang-btn" id="lang-btn" type="button" aria-label="Язык" aria-haspopup="true" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg><span id="lang-code">RU</span></button>
       <div class="pop" id="mpick" hidden>
         <div class="yr"><button class="icon-btn" id="mp-prev" type="button" aria-label="Предыдущий год"><svg class="ic" aria-hidden="true"><use href="#i-left"/></svg></button><span id="mp-year"></span><button class="icon-btn" id="mp-next" type="button" aria-label="Следующий год"><svg class="ic" aria-hidden="true"><use href="#i-right"/></svg></button></div>
@@ -521,11 +533,11 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
       <p class="hint num" id="extra-line"></p>
       <div id="pie-detail"></div>
     </section>
-    <section class="panel" aria-labelledby="bud-title">
-      <h2 id="bud-title">Анализ категорий и бюджет</h2>
-      <p class="hint">Задайте лимит на каждую категорию. Лимит действует на каждый месяц, пока вы его не измените.</p>
+    <details class="panel manual" id="bud-box">
+      <summary>Анализ категорий и бюджет</summary>
+      <p class="hint" style="margin-top:8px">Задайте лимит на каждую категорию. Лимит действует на каждый месяц, пока вы его не измените.</p>
       <div id="bud-list"></div>
-    </section>
+    </details>
     <section class="panel" aria-labelledby="cmp-title">
       <h2 id="cmp-title">Сравнение с прошлым месяцем</h2>
       <div class="tbl-wrap" id="cmp"></div>
@@ -699,7 +711,7 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '6';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '7';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
