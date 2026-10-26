@@ -319,8 +319,9 @@ html, body { height: 100%; overflow: hidden; }
 body { padding: 0 !important; }
 #scroller { position: fixed; left: 0; right: 0; bottom: 0; top: env(safe-area-inset-top, 0px); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
   padding: 14px max(16px, env(safe-area-inset-left, 0px)) calc(86px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px)); }
-.brand img { width: 46px; height: 46px; border-radius: 12px; box-shadow: 0 3px 12px color-mix(in srgb, var(--accent) 38%, transparent); }
-.top h1 { font-size: 1.32rem; font-weight: 850; letter-spacing: 0.14em; background: linear-gradient(90deg, var(--ink) 0%, var(--accent) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.brand img { width: 46px; height: 46px; border-radius: 12px; box-shadow: 0 3px 12px rgba(10, 190, 150, 0.35); }
+:root[data-theme="dark"] { --b1: #2df0c4; --b2: #c4fbec; }
+.top h1 { font-size: 1.32rem; font-weight: 850; letter-spacing: 0.14em; background: linear-gradient(90deg, var(--b1, #045a4f) 0%, var(--b2, #09a07c) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
 .slogan { color: var(--ink); opacity: 0.72; font-weight: 500; }
 details.fold { display: block; padding: 0; }
 .fold > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 11px 12px; cursor: pointer; min-height: 54px; }
@@ -733,7 +734,7 @@ details.fold { display: block; padding: 0; }
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '8';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '9';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
