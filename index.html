@@ -314,6 +314,26 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
 .lang-btn { height: 34px; padding: 0 9px 0 7px; font-size: 0.8rem; gap: 3px; flex: none; }
 .lang-btn svg.ic { width: 18px; height: 18px; }
 @media (max-width: 380px) { .cur-select { width: 78px; } }
+/* v8: прокручивается внутренний блок под строкой состояния, страница не заезжает под системное стекло iOS */
+html, body { height: 100%; overflow: hidden; }
+body { padding: 0 !important; }
+#scroller { position: fixed; left: 0; right: 0; bottom: 0; top: env(safe-area-inset-top, 0px); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
+  padding: 14px max(16px, env(safe-area-inset-left, 0px)) calc(86px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px)); }
+.brand img { width: 46px; height: 46px; border-radius: 12px; box-shadow: 0 3px 12px color-mix(in srgb, var(--accent) 38%, transparent); }
+.top h1 { font-size: 1.32rem; font-weight: 850; letter-spacing: 0.14em; background: linear-gradient(90deg, var(--ink) 0%, var(--accent) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.slogan { color: var(--ink); opacity: 0.72; font-weight: 500; }
+details.fold { display: block; padding: 0; }
+.fold > summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 11px 12px; cursor: pointer; min-height: 54px; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold-ic { width: 34px; height: 34px; flex: none; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent); }
+.fold-ic svg.ic { width: 19px; height: 19px; }
+.fold-t { flex: 1 1 auto; min-width: 0; font-weight: 650; font-size: 1.02rem; }
+.fold-n { min-width: 24px; height: 22px; padding: 0 7px; border-radius: 11px; background: var(--bg); border: 1px solid var(--line); font-size: 0.78rem; font-weight: 650; color: var(--muted); display: grid; place-items: center; }
+.fold-n:empty { display: none; }
+.fold .chev { width: 20px; height: 20px; flex: none; color: var(--muted); transition: transform 0.2s; }
+.fold[open] .chev { transform: rotate(180deg); }
+.fold > :not(summary) { margin: 0 12px 12px; }
+.fold[open] > summary { padding-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -339,9 +359,10 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
 <symbol id="i-calendar" viewBox="0 0 24 24"><rect class="fl" x="4" y="5.5" width="16" height="14.5" rx="2.2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
 <symbol id="i-wallet" viewBox="0 0 24 24"><path class="fl" d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect class="fl" x="4" y="8" width="16" height="11.5" rx="2.5"/><circle cx="16" cy="13.8" r="1.1"/></symbol>
 <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle class="fl" cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
 <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M9.5 7V5h5v2M7 7l.8 12h8.4L17 7M10.5 11v5M13.5 11v5"/></symbol>
 </defs></svg>
-<div class="wrap">
+<div id="scroller"><div class="wrap">
   <div class="banner" id="safe-banner" role="alert" hidden></div>
   <header class="top">
     <div class="brand"><img src="logo-mark.png" alt="" width="42" height="42"><div><h1>MONEVA</h1><p class="slogan">Управляй своими деньгами</p></div></div>
@@ -437,11 +458,11 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
       </form>
     </details>
 
-    <section class="panel" aria-labelledby="list-title">
-      <h2 id="list-title">Последние записи</h2>
+    <details class="panel fold" id="recent-box" open>
+      <summary><span class="fold-ic"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg></span><span class="fold-t">Последние записи</span><span class="fold-n" id="recent-count"></span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
       <div class="list" id="list"></div>
       <div><button type="button" class="link-btn" id="all-link" hidden>Все операции за месяц →</button></div>
-    </section>
+    </details>
   </main>
 
   <!-- ОПЕРАЦИИ -->
@@ -533,9 +554,9 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
       <p class="hint num" id="extra-line"></p>
       <div id="pie-detail"></div>
     </section>
-    <details class="panel manual" id="bud-box">
-      <summary>Анализ категорий и бюджет</summary>
-      <p class="hint" style="margin-top:8px">Задайте лимит на каждую категорию. Лимит действует на каждый месяц, пока вы его не измените.</p>
+    <details class="panel fold" id="bud-box">
+      <summary><span class="fold-ic"><svg class="ic" aria-hidden="true"><use href="#i-reports"/></svg></span><span class="fold-t">Анализ категорий и бюджет</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
+      <p class="hint">Задайте лимит на каждую категорию. Лимит действует на каждый месяц, пока вы его не измените.</p>
       <div id="bud-list"></div>
     </details>
     <section class="panel" aria-labelledby="cmp-title">
@@ -632,6 +653,7 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
   </main>
 </div>
 
+</div>
 <nav class="tabs" aria-label="Разделы">
   <button type="button" data-tab="home" aria-current="page"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-home"/></svg></span><span class="tl">Главная</span></button>
   <button type="button" data-tab="ops"><span class="ti"><svg class="ic" aria-hidden="true"><use href="#i-ops"/></svg></span><span class="tl">Операции</span></button>
@@ -711,7 +733,7 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '7';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '8';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -1092,6 +1114,7 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
 
     entryList('list', list, 5, 'За этот месяц записей нет. Скажите или напишите первую в блоке «Быстрая запись».');
     $('all-link').hidden = list.length <= 5;
+    $('recent-count').textContent = list.length ? String(list.length) : '';
   }
 
   /* ---------- ОПЕРАЦИИ ---------- */
@@ -1695,7 +1718,7 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
       var acts = h('div', { class: 'inline' });
       if (store.mirror && dataCount(store.mirror)) acts.appendChild(h('button', { type: 'button', class: 'btn small', text: _f('Восстановить из копии на устройстве (записей: {0})', dataCount(store.mirror)), onclick: function () { restoreData(store.mirror, 'Данные восстановлены.').then(function () { renderBanner(); }); } }));
       acts.appendChild(h('button', { type: 'button', class: 'btn ghost small', text: 'Скачать повреждённые данные', onclick: function () { downloadText(lsGet(CORRUPT) || '', 'moneva-povrezhdeno.txt', 'text/plain'); } }));
-      acts.appendChild(h('button', { type: 'button', class: 'btn ghost small', text: 'Восстановить из файла', onclick: function () { state.tab = 'settings'; render(); window.scrollTo(0, 0); } }));
+      acts.appendChild(h('button', { type: 'button', class: 'btn ghost small', text: 'Восстановить из файла', onclick: function () { state.tab = 'settings'; render(); $('scroller').scrollTo(0, 0); } }));
       acts.appendChild(h('button', { type: 'button', class: 'link-btn danger', text: 'Начать с пустой базы', onclick: function () {
         if (!window.confirm(_t('Начать с пустой базы? Прежние данные останутся в памяти устройства, их можно будет скачать из этого сообщения.'))) return;
         store.safe = false; renderBanner(); save(); render();
@@ -1839,9 +1862,9 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
   }
 
   document.querySelectorAll('nav.tabs button').forEach(function (b) {
-    b.addEventListener('click', function () { state.tab = b.dataset.tab; state.pd = null; state.editC = null; render(); window.scrollTo(0, 0); });
+    b.addEventListener('click', function () { state.tab = b.dataset.tab; state.pd = null; state.editC = null; render(); $('scroller').scrollTo(0, 0); });
   });
-  $('all-link').addEventListener('click', function () { state.tab = 'ops'; render(); window.scrollTo(0, 0); });
+  $('all-link').addEventListener('click', function () { state.tab = 'ops'; render(); $('scroller').scrollTo(0, 0); });
   $('wallet-form').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var n = $('wnew').value.trim().slice(0, 30);
@@ -2223,6 +2246,14 @@ input[type="text"], input[type="date"], input[type="number"], select { padding-t
     $('set-size').addEventListener('change', function () { db.settings.size = $('set-size').value; save(); applySettings(); });
   })();
 
+  (function foldState() {
+    [['recent-box', true], ['bud-box', false]].forEach(function (x) {
+      var el = $(x[0]), v = null;
+      try { v = localStorage.getItem('moneva-fold-' + x[0]); } catch (e) {}
+      el.open = v == null ? x[1] : v === '1';
+      el.addEventListener('toggle', function () { try { localStorage.setItem('moneva-fold-' + x[0], el.open ? '1' : '0'); } catch (e) {} });
+    });
+  })();
   fillSelect($('rc'), OUT);
   setType('out');
   $('date').value = ds(now);
