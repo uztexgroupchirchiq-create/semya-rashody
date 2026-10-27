@@ -348,6 +348,25 @@ details.fold { display: block; padding: 0; }
 .fold .chev { width: 38px; height: 30px; padding: 5px 10px; box-sizing: border-box; border-radius: 15px; background: linear-gradient(135deg, var(--g1), var(--g2)); color: var(--gink); stroke-width: 2.8; box-shadow: 0 3px 10px rgba(10, 190, 150, 0.35); }
 .updbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 40; display: flex; align-items: center; gap: 12px; background: var(--ink); color: var(--bg); padding: 8px 8px 8px 16px; border-radius: 999px; font-size: 0.9rem; max-width: 92vw; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
 @media (max-width: 380px) { .cur-select { width: 90px; padding: 0 21px 0 9px; font-size: 0.84rem; background-position: right 7px center; } .months .icon-btn { width: 24px; } .months .label { font-size: 0.85rem; } .ctrl { gap: 5px; } .lang-btn { padding: 0 7px 0 5px; gap: 2px; font-size: 0.76rem; } .lang-btn svg.ic { width: 16px; height: 16px; } }
+/* v11 */
+.fold .chev { width: 30px; height: 30px; padding: 6px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: var(--accent); stroke-width: 2.6; box-shadow: none; }
+.swatches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.swatch { gap: 6px; padding: 6px 8px 6px 6px; font-size: 0.8rem; justify-content: flex-start; min-width: 0; }
+.swatch i { width: 18px; height: 18px; }
+.swatch span { overflow: hidden; text-overflow: ellipsis; }
+details.more { margin-top: 4px; }
+details.more > summary { cursor: pointer; color: var(--muted); font-size: 0.86rem; padding: 6px 0; list-style: none; }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::before { content: '›'; display: inline-block; margin-right: 6px; transition: transform 0.2s; }
+details.more[open] > summary::before { transform: rotate(90deg); }
+/* v11b: плитки тем — метка сверху, название под ней; две кнопки «О приложении» в одну строку */
+.swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.swatch { flex-direction: column; align-items: center; justify-content: flex-start; gap: 5px; padding: 8px 4px 7px; border-radius: 14px; white-space: normal; text-align: center; line-height: 1.15; font-size: 0.78rem; }
+.swatch i { width: 36px; height: 20px; border-radius: 7px; }
+.swatch span { overflow: visible; text-overflow: clip; hyphens: auto; -webkit-hyphens: auto; }
+.row-actions.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-items: stretch; }
+.row-actions.two .btn { display: flex; align-items: center; justify-content: center; }
+.row-actions.two .btn { padding: 9px 6px; font-size: 0.84rem; white-space: normal; text-align: center; line-height: 1.2; }
 </style>
 </head>
 <body>
@@ -644,26 +663,29 @@ details.fold { display: block; padding: 0; }
       </form>
     </section>
 
-    <section class="panel" aria-labelledby="bk-title">
-      <h2 id="bk-title">Резервные копии</h2>
-      <p class="hint">Записи хранятся в памяти этого устройства, обновление приложения их не трогает. Приложение само делает копии внутри устройства, но если очистить данные сайта в браузере, сменить телефон или поставить приложение на экран «Домой» (там память отдельная от Safari), записи придётся вернуть из файла. Сохраняйте копию в файл раз в неделю и отправляйте себе в мессенджер.</p>
-      <p class="msg" id="bk-status"></p>
+    <details class="panel fold" id="bk-box">
+      <summary><span class="fold-ic"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg></span><span class="fold-t">Резервные копии</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
+      <p class="hint">Записи хранятся только в памяти этого устройства, обновление приложения их не трогает. Но если очистить данные сайта или сменить телефон, вернуть их можно только из файла. Сохраняйте копию в файл раз в неделю.</p>
       <p class="msg" id="bk-last"></p>
       <div class="row-actions">
         <button class="btn" type="button" id="bk-export">Сохранить копию в файл</button>
-        <button class="btn ghost" type="button" id="bk-share">Отправить копию</button>
+        <button class="btn ghost" type="button" id="bk-share" hidden>Отправить копию</button>
         <label class="btn ghost" for="bk-file" style="cursor:pointer">Восстановить из файла</label>
         <input type="file" id="bk-file" accept="application/json,.json" hidden>
       </div>
       <div id="bk-confirm"></div>
-      <div id="bk-snaps"></div>
       <p class="msg" id="bk-msg" role="status" aria-live="polite"></p>
-    </section>
+      <details class="more" id="bk-more">
+        <summary>Подробности и копии на устройстве</summary>
+        <p class="msg" id="bk-status"></p>
+        <div id="bk-snaps"></div>
+      </details>
+    </details>
 
     <section class="panel" aria-labelledby="ab-title">
       <h2 id="ab-title">О приложении</h2>
       <p class="hint" id="ver-line"></p>
-      <div class="row-actions"><button class="btn ghost small" type="button" id="upd-btn">Проверить обновление</button></div>
+      <div class="row-actions two"><button class="btn ghost small" type="button" id="upd-btn">Проверить обновление</button><button class="btn ghost small" type="button" id="cache-btn">Очистить кэш</button></div>
       <p class="msg" id="upd-msg" role="status" aria-live="polite"></p>
     </section>
 
@@ -754,7 +776,7 @@ details.fold { display: block; padding: 0; }
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '10';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '11';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -976,7 +998,7 @@ details.fold { display: block; padding: 0; }
   }
 
   /* ---------- оформление ---------- */
-  var THEMES = { light: 'Светлая', emerald: 'Изумрудная', dark: 'Тёмная', slate: 'Сине-серая', beige: 'Бежевая', ios: 'iOS' };
+  var THEMES = { light: 'Светлая', emerald: 'Изумрудная', slate: 'Сине-серая', dark: 'Тёмная', beige: 'Бежевая', ios: 'Apple' };
   var THEME_COLOR = { light: '#f2f4f3', emerald: '#ecf3ef', dark: '#0b0f0e', slate: '#e8edf3', beige: '#f3ecdd', ios: '#f2f2f7' };
   var PREVIEW = { light: ['#f2f4f3', '#0b6152'], emerald: ['#ecf3ef', '#0a6b52'], dark: ['#0b0f0e', '#46d6a6'], slate: ['#e8edf3', '#2f5496'], beige: ['#f3ecdd', '#86591a'], ios: ['#f2f2f7', '#007aff'] };
   var FONTS = { system: 'Системный (стандартный)', cambria: 'Cambria', franklin: 'Franklin Gothic Medium', times: 'Times New Roman', sitka: 'Sitka Small Semibold', pmingliu: 'PMingLiU-ExtB' };
@@ -1762,6 +1784,8 @@ details.fold { display: block; padding: 0; }
       bits.push(store.persisted === true ? _t('Браузер обещал не очищать данные автоматически.') : store.persisted === false ? _t('Браузер может очистить данные при нехватке места: храните файл-копию.') : '');
       st.textContent = bits.filter(Boolean).join(' ');
     }
+    $('bk-share').hidden = !canShareFiles();
+    if (state.pendingImport || store.safe) $('bk-box').open = true;
     var c = clear($('bk-confirm'));
     if (state.pendingImport) {
       var pi = state.pendingImport;
@@ -2269,21 +2293,32 @@ details.fold { display: block; padding: 0; }
   })();
 
   (function foldState() {
-    [['recent-box', true], ['bud-box', false]].forEach(function (x) {
+    [['recent-box', true], ['bud-box', false], ['bk-box', false]].forEach(function (x) {
       var el = $(x[0]), v = null;
       try { v = localStorage.getItem('moneva-fold-' + x[0]); } catch (e) {}
       el.open = v == null ? x[1] : v === '1';
       el.addEventListener('toggle', function () { try { localStorage.setItem('moneva-fold-' + x[0], el.open ? '1' : '0'); } catch (e) {} });
     });
   })();
-  $('upd-btn').addEventListener('click', function () {
-    setMsg('upd-msg', 'Проверяю обновление…');
+  function dropCachesAndReload() {
     var go = function () { location.reload(); };
     if (!('serviceWorker' in navigator) || location.protocol === 'file:') { go(); return; }
-    navigator.serviceWorker.getRegistration().then(function (reg) { return reg ? reg.update() : null; })
+    navigator.serviceWorker.getRegistrations().then(function (regs) { return Promise.all(regs.map(function (r) { return r.unregister(); })); })
       .then(function () { return window.caches ? caches.keys() : []; })
       .then(function (keys) { return Promise.all(keys.map(function (k) { return caches.delete(k); })); })
       .then(go, go);
+  }
+  $('upd-btn').addEventListener('click', function () {
+    setMsg('upd-msg', 'Проверяю обновление…');
+    fetch('index.html', { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
+      var m = /APPVER = '(\d+)'/.exec(t);
+      if (m && m[1] !== APPVER) { setMsg('upd-msg', 'Найдена новая версия, обновляю…'); dropCachesAndReload(); }
+      else setMsg('upd-msg', 'У вас последняя версия.');
+    }).catch(function () { setMsg('upd-msg', 'Нет связи с интернетом, проверить не удалось.', true); });
+  });
+  $('cache-btn').addEventListener('click', function () {
+    setMsg('upd-msg', 'Кэш очищается, приложение перезагрузится. Ваши записи не затрагиваются.');
+    dropCachesAndReload();
   });
   function showUpdateBar() {
     if ($('upd-bar')) return;
