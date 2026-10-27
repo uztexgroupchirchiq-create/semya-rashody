@@ -367,6 +367,43 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 .row-actions.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-items: stretch; }
 .row-actions.two .btn { display: flex; align-items: center; justify-content: center; }
 .row-actions.two .btn { padding: 9px 6px; font-size: 0.84rem; white-space: normal; text-align: center; line-height: 1.2; }
+/* v12: единый список выбора, плитки тем, долги по валютам, курсы */
+.dd-native { position: absolute !important; width: 1px !important; height: 1px !important; opacity: 0; pointer-events: none; overflow: hidden; clip: rect(0 0 0 0); }
+.dd-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-width: 0; padding: 8px 10px 8px 12px; font-size: 16px; text-align: left; background: var(--field); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; min-height: 42px; }
+.dd-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.dd-t { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dd-btn svg.ic { width: 16px; height: 16px; color: var(--muted); stroke-width: 2.2; }
+.dd-menu { position: fixed; z-index: 90; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.26); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 4px; }
+.dd-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0; background: none; color: inherit; font-size: 1rem; padding: 0 10px; min-height: 42px; border-radius: 10px; cursor: pointer; }
+.dd-item:hover, .dd-item:focus-visible { background: var(--field); outline: none; }
+.dd-item .ck { width: 18px; height: 18px; flex: none; color: var(--accent); visibility: hidden; stroke-width: 2.6; }
+.dd-item[aria-selected="true"] { font-weight: 650; }
+.dd-item[aria-selected="true"] .ck { visibility: visible; }
+.dd-item span { min-width: 0; }
+.swatches { gap: 7px; }
+.swatch { gap: 4px; padding: 6px 3px 5px; border: 1px solid var(--line); border-radius: 10px; font-size: 0.74rem; background: transparent; }
+.swatch i { width: 30px; height: 14px; border-radius: 5px; }
+.swatch[aria-pressed="true"] { border: 2px solid var(--accent); padding: 5px 2px 4px; background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.dtbl { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); gap: 0 12px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 4px 12px; }
+.dtbl > span { padding: 8px 0; border-top: 1px solid var(--line); min-width: 0; }
+.dtbl > .dh { border-top: 0; font-size: 0.74rem; color: var(--muted); text-align: right; }
+.dtbl > .dc { font-weight: 650; font-size: 0.92rem; }
+.dtbl > .dv { text-align: right; font-weight: 650; font-size: 0.95rem; overflow-wrap: anywhere; }
+.payrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 10px; padding: 2px 0; }
+.payedit { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; padding: 6px 0; align-items: center; }
+.debt-edit { border: 1px solid var(--accent); border-radius: 12px; padding: 10px; }
+#bk-box { border-width: 2px; border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.upd-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 11px 14px; font-size: 0.95rem; }
+.upd-btn svg.ic { width: 18px; height: 18px; stroke-width: 2.2; }
+.fxgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.fxc { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+.fxh { font-weight: 750; font-size: 0.95rem; margin-bottom: 3px; color: var(--accent); }
+.fxl { display: flex; justify-content: space-between; gap: 6px; font-size: 0.86rem; line-height: 1.55; }
+.fxl .fxu { color: var(--muted); flex: none; }
+.fxl .num { font-weight: 600; overflow-wrap: anywhere; text-align: right; }
+.fxmeta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin svg.ic { animation: spin 0.9s linear infinite; }
 </style>
 </head>
 <body>
@@ -392,6 +429,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 <symbol id="i-calendar" viewBox="0 0 24 24"><rect class="fl" x="4" y="5.5" width="16" height="14.5" rx="2.2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
 <symbol id="i-wallet" viewBox="0 0 24 24"><path class="fl" d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect class="fl" x="4" y="8" width="16" height="11.5" rx="2.5"/><circle cx="16" cy="13.8" r="1.1"/></symbol>
 <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.2M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.2M20 20v-4h-4"/></symbol>
 <symbol id="i-clock" viewBox="0 0 24 24"><circle class="fl" cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
 <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M9.5 7V5h5v2M7 7l.8 12h8.4L17 7M10.5 11v5M13.5 11v5"/></symbol>
 </defs></svg>
@@ -409,6 +447,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
         <option value="UZS">Сум</option>
         <option value="RUB">Рубль</option>
         <option value="TJS">Сомони</option>
+        <option value="USD">Доллар</option>
       </select>
       <button class="lang-btn" id="lang-btn" type="button" aria-label="Язык" aria-haspopup="true" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg><span id="lang-code">RU</span></button>
       <div class="pop" id="mpick" hidden>
@@ -428,14 +467,17 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       <div><p class="cap">Свободные средства<button type="button" class="info" id="free-info" aria-label="Что такое свободные средства" aria-expanded="false">i</button></p><p class="val in num" id="free"></p><p class="mini" id="free-hint" hidden>Доходы месяца минус обязательные расходы: жильё, еда, транспорт, коммунальные, связь, здоровье, ребёнок, одежда.</p></div>
     </section>
 
-    <section class="panel" aria-label="Кошельки и долги">
+    <section class="panel" aria-label="Кошельки">
       <div class="wallets" id="wallet-grid"></div>
-      <div class="dsum">
-        <div class="wallet"><p class="cap">Мне должны</p><p class="val in num" id="hd-owed"></p></div>
-        <div class="wallet"><p class="cap">Я должен</p><p class="val out num" id="hd-owe"></p></div>
-      </div>
       <p class="hint out" id="debt-alert" hidden></p>
     </section>
+
+    <details class="panel fold" id="fx-box" open>
+      <summary><span class="fold-ic"><svg class="ic" aria-hidden="true"><use href="#i-ops"/></svg></span><span class="fold-t">Курсы валют</span><span class="fold-n" id="fx-note"></span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
+      <div class="fxgrid" id="fx-grid"></div>
+      <div class="fxmeta"><p class="msg" id="fx-msg" role="status" aria-live="polite"></p><button type="button" class="link-btn" id="fx-refresh">Обновить курсы</button></div>
+      <p class="mini">Курсы справочные и только для сравнения: записи они не меняют. В банке и на рынке курс может отличаться.</p>
+    </details>
 
     <section class="panel" aria-labelledby="voice-title">
       <h2 id="voice-title">Быстрая запись</h2>
@@ -505,20 +547,6 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       <div class="list" id="list-all"></div>
     </section>
 
-    <details class="panel manual" id="tr-box">
-      <summary>Перевод между кошельками</summary>
-      <p class="hint" style="margin-top:8px">Например, сняли наличные с карты. Перевод меняет остатки кошельков, но не считается ни расходом, ни доходом.</p>
-      <form id="tr-form" autocomplete="off">
-        <div class="fields">
-          <div class="field"><label for="tf">Откуда</label><select id="tf"></select></div>
-          <div class="field"><label for="tt">Куда</label><select id="tt"></select></div>
-          <div class="field"><label for="tam">Сумма</label><input type="text" id="tam" inputmode="decimal"></div>
-          <div class="field"><label for="tdate">Дата</label><input type="date" id="tdate"></div>
-        </div>
-        <div class="row-actions" style="margin-top:12px"><button class="btn small" type="submit">Перевести</button><p class="msg" id="tr-msg" role="status" aria-live="polite"></p></div>
-      </form>
-    </details>
-
     <section class="panel" aria-labelledby="rec-title">
       <h2 id="rec-title">Регулярные платежи</h2>
       <p class="hint">Аренда, интернет, связь. Запишите один раз, а каждый месяц нажимайте «Внести».</p>
@@ -540,11 +568,8 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   <main id="tab-debts" class="tab" style="display:contents" hidden>
     <section class="panel" aria-labelledby="debt-title">
       <h2 id="debt-title">Долги</h2>
-      <p class="hint">Долги не считаются ни расходом, ни доходом. Они меняют только остаток кошелька, поэтому итоги по месяцу остаются честными.</p>
-      <div class="dsum">
-        <div class="wallet"><p class="cap">Мне должны</p><p class="val in num" id="ds-owed"></p></div>
-        <div class="wallet"><p class="cap">Я должен</p><p class="val out num" id="ds-owe"></p></div>
-      </div>
+      <p class="hint">Долги видны во всех валютах сразу, какая бы валюта ни была выбрана сверху. Они не считаются ни расходом, ни доходом и меняют только остаток кошелька. На главной их нет.</p>
+      <div id="ds-table"></div>
       <p class="hint out" id="ds-alert" hidden></p>
     </section>
     <section class="panel" aria-labelledby="debt-add-title">
@@ -554,6 +579,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
           <div class="field"><label for="ddir">Что произошло</label><select id="ddir"><option value="owed">Я дал в долг (мне должны)</option><option value="owe">Я взял в долг (я должен)</option></select></div>
           <div class="field"><label for="dw">Имя</label><input type="text" id="dw" maxlength="60" placeholder="Кто"></div>
           <div class="field"><label for="da" id="da-label">Сумма</label><input type="text" id="da" inputmode="decimal"></div>
+          <div class="field"><label for="dcur">Валюта долга</label><select id="dcur"><option value="UZS">Сум</option><option value="USD">Доллар $</option><option value="RUB">Рубль ₽</option><option value="TJS">Сомони</option></select></div>
           <div class="field"><label for="dwal">Кошелёк</label><select id="dwal"></select></div>
           <div class="field"><label for="ddate">Дата</label><input type="date" id="ddate"></div>
           <div class="field"><label for="ddue">Вернуть до</label><input type="date" id="ddue"></div>
@@ -685,13 +711,14 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     <section class="panel" aria-labelledby="ab-title">
       <h2 id="ab-title">О приложении</h2>
       <p class="hint" id="ver-line"></p>
-      <div class="row-actions two"><button class="btn ghost small" type="button" id="upd-btn">Проверить обновление</button><button class="btn ghost small" type="button" id="cache-btn">Очистить кэш</button></div>
+      <button class="btn ghost upd-btn" type="button" id="upd-btn"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg><span>Обновить приложение</span></button>
+      <p class="mini">Проверяет новую версию и заново загружает файлы приложения. Ваши записи при этом не удаляются.</p>
       <p class="msg" id="upd-msg" role="status" aria-live="polite"></p>
     </section>
 
     <section class="panel" aria-labelledby="cur-title">
       <h2 id="cur-title">Про валюты</h2>
-      <p class="hint">Каждая валюта ведёт отдельный учёт. Записи в сумах не пересчитываются в рубли или сомони при переключении. Валюта выбирается вверху страницы.</p>
+      <p class="hint">Каждая валюта ведёт отдельный учёт: сум, доллар, рубль, сомони. Записи не пересчитываются при переключении. Валюта выбирается вверху страницы. Долги видны во всех валютах сразу.</p>
     </section>
   </main>
 </div>
@@ -711,8 +738,12 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 (function () {
   'use strict';
 
-  var CUR = { UZS: 'сум', RUB: '₽', TJS: 'сомони' };
-  var OUT = ['Аренда квартиры', 'Питание', 'Транспорт', 'Топливо', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Одежда', 'Ребёнок', 'Образование', 'Развлечения', 'Подарки', 'Красота и уход', 'Товары для дома', 'Домашние животные', 'Кредиты и рассрочки', 'Лишние траты', 'Прочее'];
+  var CUR = { UZS: 'сум', RUB: '₽', TJS: 'сомони', USD: '$' };
+  var CURORDER = ['UZS', 'USD', 'RUB', 'TJS'];
+  var OUT = ['Аренда квартиры', 'Питание', 'Транспорт', 'Топливо', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Одежда', 'Ребёнок', 'Образование', 'Развлечения', 'Подарки', 'Красота и уход', 'Товары для дома', 'Кредиты и рассрочки', 'Прочее'];
+  /* Две категории убраны из выбора. Старые записи с ними остаются и показываются как раньше. */
+  var OUT_OLD = ['Домашние животные', 'Лишние траты'];
+  var OUT_ALL = OUT.concat(OUT_OLD);
   var INC = ['Зарплата', 'Подработка', 'Подарок', 'Продажа', 'Возврат денег', 'Прочий доход'];
   var WALLET = { cash: 'Наличные', card: 'Карта' };
   var KEY = 'moneva-v1';
@@ -776,7 +807,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '11';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '12';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -912,7 +943,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   }
 
   var now = new Date();
-  var state = { escope: 'month', pickYear: 0, tab: 'home', month: ym(now), type: 'out', pd: null, editC: null, editQuick: false, qEdit: null, pendingImport: null, pendingSnap: null, period: 'month', pDay: ds(now), pFrom: ds(new Date(now.getFullYear(), now.getMonth(), 1)), pTo: ds(now), sel: {}, dtab: 'owed', rgroup: 'months' };
+  var state = { escope: 'month', pickYear: 0, tab: 'home', month: ym(now), type: 'out', pd: null, editC: null, editQuick: false, qEdit: null, pendingImport: null, pendingSnap: null, period: 'month', pDay: ds(now), pFrom: ds(new Date(now.getFullYear(), now.getMonth(), 1)), pTo: ds(now), sel: {}, dtab: 'owed', dedit: null, pedit: null, rgroup: 'months' };
 
   function $(id) { return document.getElementById(id); }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -920,7 +951,12 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   function ds(d) { return ym(d) + '-' + pad(d.getDate()); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   function cname() { return I18.cur(db.cur) || CUR[db.cur]; }
-  function fmt(n) { return Math.round(n).toLocaleString('ru-RU') + ' ' + cname(); }
+  function numC(n, c) {
+    var dec = c === 'USD' && Math.abs(n - Math.round(n)) > 0.004 ? 2 : 0;
+    return n.toLocaleString('ru-RU', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  }
+  function fmtC(n, c) { return numC(n, c) + ' ' + (I18.cur(c) || CUR[c] || c); }
+  function fmt(n) { return fmtC(n, db.cur); }
   function signed(n) { return (n < 0 ? '−' : '') + fmt(Math.abs(n)); }
   function parseAmount(s) { return parseFloat(String(s).replace(/\s/g, '').replace(',', '.')); }
   function shiftMonth(key, delta) { var p = key.split('-'); var d = new Date(+p[0], +p[1] - 1 + delta, 1); return ym(d); }
@@ -989,7 +1025,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     return db.entries.some(function (e) { return e.wallet === id; }) || db.recurring.some(function (r) { return r.wallet === id; }) || db.debts.some(function (d) { return d.wallet === id; });
   }
   function fillWallets() {
-    ['wallet', 'rw', 'dwal', 'tf', 'tt'].forEach(function (id) {
+    ['wallet', 'rw', 'dwal'].forEach(function (id) {
       var sel = $(id), cur = sel.value;
       clear(sel);
       db.wallets.forEach(function (w) { sel.appendChild(h('option', { value: w.id, text: w.name })); });
@@ -998,7 +1034,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   }
 
   /* ---------- оформление ---------- */
-  var THEMES = { light: 'Светлая', emerald: 'Изумрудная', slate: 'Сине-серая', dark: 'Тёмная', beige: 'Бежевая', ios: 'Apple' };
+  var THEMES = { light: 'Светлая', emerald: 'Изумрудная', slate: 'Сине-серая', dark: 'Тёмная', beige: 'Бежевая', ios: 'Лазурная' };
   var THEME_COLOR = { light: '#f2f4f3', emerald: '#ecf3ef', dark: '#0b0f0e', slate: '#e8edf3', beige: '#f3ecdd', ios: '#f2f2f7' };
   var PREVIEW = { light: ['#f2f4f3', '#0b6152'], emerald: ['#ecf3ef', '#0a6b52'], dark: ['#0b0f0e', '#46d6a6'], slate: ['#e8edf3', '#2f5496'], beige: ['#f3ecdd', '#86591a'], ios: ['#f2f2f7', '#007aff'] };
   var FONTS = { system: 'Системный (стандартный)', cambria: 'Cambria', franklin: 'Franklin Gothic Medium', times: 'Times New Roman', sitka: 'Sitka Small Semibold', pmingliu: 'PMingLiU-ExtB' };
@@ -1012,16 +1048,16 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 
   /* ---------- долги: статистика ---------- */
   function dmy(x) { return x ? x.split('-').reverse().join('.') : ''; }
-  function debtLeft(d) { return Math.max(0, d.amount - (d.paid || 0)); }
-  function dname(d) { return d.who + ' (' + fmt(debtLeft(d)) + ')'; }
+  function debtLeft(d) { return Math.max(0, Math.round((d.amount - (d.paid || 0)) * 100) / 100); }
+  function dname(d) { return d.who + ' (' + fmtC(debtLeft(d), d.cur || 'UZS') + ')'; }
   function debtStats() {
-    var r = { owe: 0, owed: 0, late: [], soon: [] }, today = ds(new Date()), lim = new Date();
+    var r = { by: {}, late: [], soon: [] }, today = ds(new Date()), lim = new Date();
     lim.setDate(lim.getDate() + 3);
     var limS = ds(lim);
     db.debts.forEach(function (d) {
-      if (d.cur !== db.cur) return;
       var left = debtLeft(d); if (!left) return;
-      if (d.dir === 'owe') r.owe += left; else r.owed += left;
+      var c = d.cur || 'UZS', o = r.by[c] || (r.by[c] = { owe: 0, owed: 0 });
+      if (d.dir === 'owe') o.owe += left; else o.owed += left;
       if (d.due) { if (d.due < today) r.late.push(d); else if (d.due <= limS) r.soon.push(d); }
     });
     return r;
@@ -1106,8 +1142,6 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     });
 
     var dst = debtStats();
-    $('hd-owed').textContent = fmt(dst.owed);
-    $('hd-owe').textContent = fmt(dst.owe);
     var at = alertText(dst);
     $('debt-alert').hidden = !at; $('debt-alert').textContent = at;
 
@@ -1140,7 +1174,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       var isNew = state.qEdit === 'new', cur = isNew ? { label: '', cat: 'Питание', note: '' } : db.quick[state.qEdit];
       if (cur) {
         var li = h('input', { type: 'text', maxlength: '24', placeholder: 'Название кнопки', 'aria-label': 'Название кнопки' }); li.value = cur.label;
-        var ci = h('select', { 'aria-label': 'Категория' }); OUT.forEach(function (c) { ci.appendChild(h('option', { value: c, text: c })); }); ci.value = cur.cat;
+        var ci = h('select', { 'aria-label': 'Категория' }); (OUT.indexOf(cur.cat) < 0 && cur.cat ? OUT.concat([cur.cat]) : OUT).forEach(function (c) { ci.appendChild(h('option', { value: c, text: c })); }); ci.value = cur.cat;
         qe.appendChild(h('div', { class: 'vcard' },
           h('div', { class: 'edit-row' }, li, ci),
           h('div', { class: 'inline' },
@@ -1152,6 +1186,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
             } }),
             isNew ? null : h('button', { type: 'button', class: 'link-btn danger', text: 'Удалить', onclick: function () { db.quick.splice(state.qEdit, 1); state.qEdit = null; save(); render(); } }),
             h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.qEdit = null; render(); } }))));
+        enhanceSelect(ci);
       }
     }
 
@@ -1482,7 +1517,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       series: series,
       ops: info.list.filter(function (e) { return e.type !== 'xfer'; }).map(function (e) { return row(e, e.type === 'in' ? 1 : -1); }),
       other: info.list.filter(function (e) { return e.type === 'xfer'; }).map(function (e) { return row(e, e.sign); }),
-      money: function (n, nc) { var t = Math.round(n).toLocaleString('ru-RU').replace(/[\s  ]/g, ' '); return nc ? t : t + ' ' + cur; },
+      money: function (n, nc) { var t = numC(n, db.cur).replace(/[\s\u00a0\u202f]/g, ' '); return nc ? t : t + ' ' + cur; },
       compact: function (v) { return v >= 1e6 ? (v / 1e6).toFixed(1).replace('.0', '').replace('.', ',') + ' ' + _t('млн') : v >= 1e3 ? Math.round(v / 1e3) + ' ' + _t('тыс') : String(Math.round(v)); },
       logo: logo
     };
@@ -1615,7 +1650,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     // сравнение
     var prevKey = shiftMonth(state.month, -1);
     var cur = byCat(monthEnts(state.month)), prev = byCat(monthEnts(prevKey));
-    var rows = OUT.filter(function (c) { return (cur[c] || 0) || (prev[c] || 0); });
+    var rows = OUT_ALL.filter(function (c) { return (cur[c] || 0) || (prev[c] || 0); });
     var wrap = clear($('cmp'));
     if (!rows.length) { wrap.appendChild(h('p', { class: 'empty', text: 'Пока нечего сравнивать. Добавьте расходы за этот и прошлый месяц.' })); return; }
     var tb = h('tbody'), tp = 0, tc = 0;
@@ -1635,7 +1670,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 
   /* ---------- ПЛАНЫ ---------- */
   function addEntry(o) {
-    var e = { id: uid(), cur: db.cur, type: o.type, amount: o.amount, cat: o.cat, wallet: o.wallet || 'card', date: o.date, note: o.note || '', extra: !!o.extra, rec: o.rec || null, sign: o.sign || 0, debt: o.debt || null, ts: Date.now() };
+    var e = { id: uid(), cur: o.cur || db.cur, type: o.type, amount: o.amount, cat: o.cat, wallet: o.wallet || 'card', date: o.date, note: o.note || '', extra: !!o.extra, rec: o.rec || null, sign: o.sign || 0, debt: o.debt || null, ts: Date.now() };
     db.entries.push(e);
     return e;
   }
@@ -1687,64 +1722,164 @@ details.more[open] > summary::before { transform: rotate(90deg); }
         h('div', { class: 'hint num', text: g.saved >= g.target ? _f('{0}% · цель достигнута', Math.round(ratio * 100)) : _f('{0}% · осталось {1}', Math.round(ratio * 100), fmt(g.target - g.saved)) }), acts));
     });
 
-    // долги
+    // долги: все валюты сразу, выбранная сверху валюта на них не влияет
     var dl = clear($('debt-list'));
-    var all2 = db.debts.filter(function (d) { return d.cur === db.cur; });
     var st2 = debtStats();
-    $('ds-owed').textContent = fmt(st2.owed);
-    $('ds-owe').textContent = fmt(st2.owe);
+    renderDebtSummary(st2);
     var at2 = alertText(st2);
     $('ds-alert').hidden = !at2; $('ds-alert').textContent = at2;
     document.querySelectorAll('input[name="dtab"]').forEach(function (r) { r.checked = r.value === state.dtab; });
-    var items = all2.filter(function (d) { return d.dir === state.dtab; });
+    var items = db.debts.filter(function (d) { return d.dir === state.dtab; });
     if (!items.length) dl.appendChild(h('p', { class: 'empty', text: state.dtab === 'owed' ? 'Вам никто не должен.' : 'У вас нет долгов.' }));
     items.sort(function (a, b) {
       var da = debtLeft(a) <= 0 ? 1 : 0, dbb = debtLeft(b) <= 0 ? 1 : 0;
-      return da - dbb || (a.due || '9').localeCompare(b.due || '9');
-    }).forEach(function (d) {
-      var paid = d.paid || 0, left = debtLeft(d), done = left <= 0;
-      var late = !done && d.due && d.due < ds(now);
-      var ratio = d.amount > 0 ? paid / d.amount : 0;
-      var fill = h('div', { class: 'fill' }); fill.style.width = Math.min(100, ratio * 100) + '%';
-      var acts = h('div', { class: 'inline' });
-      if (!done) {
-        var inp = h('input', { type: 'text', inputmode: 'decimal', id: 'dp-' + d.id, placeholder: _t('Пусто = всё: ') + fmt(left), 'aria-label': _f('Сумма возврата: {0}', d.who) });
-        acts.appendChild(inp);
-        acts.appendChild(h('button', { type: 'button', class: 'btn small', text: d.dir === 'owed' ? 'Мне вернули' : 'Я вернул', onclick: function () {
-          var v = inp.value.trim() ? parseAmount(inp.value) : left;
-          if (!(v > 0)) { toast('Введите сумму больше нуля'); return; }
-          if (v > left) v = left;
-          d.paid = (d.paid || 0) + v;
-          d.pays.push({ date: ds(new Date()), amount: v });
-          addEntry({ type: 'xfer', sign: d.dir === 'owed' ? 1 : -1, amount: v, cat: 'Долг', wallet: walletOk(d.wallet) ? d.wallet : db.wallets[0].id, date: ds(new Date()), note: (d.dir === 'owed' ? 'Вернули: ' : 'Вернул: ') + d.who, debt: d.id });
-          save(); render(); toast(_f('Записано: {0}', fmt(v)));
-        } }));
-      }
-      delBtn('d' + d.id, function () {
-        db.entries = db.entries.filter(function (x) { return x.debt !== d.id; });
-        db.debts = db.debts.filter(function (x) { return x.id !== d.id; });
-        save(); render();
-      }, d.who).forEach(function (b) { acts.appendChild(b); });
-      var mp = [];
-      if (d.issued) mp.push((d.dir === 'owed' ? _t('Дал ') : _t('Взял ')) + dmy(d.issued));
-      mp.push(d.due ? _f('вернуть до {0}', dmy(d.due)) : _t('без срока'));
-      if (late) mp.push(_t('просрочено'));
-      if (done) mp.push(_t('возвращён полностью'));
-      mp.push(_t(wname(d.wallet)));
-      var meta = mp.join(' · ');
-      var hist = null;
-      if (d.pays.length || paid) {
-        var sumPays = d.pays.reduce(function (a, x) { return a + x.amount; }, 0);
-        hist = h('div', { class: 'hist' }, h('div', { text: 'История погашений:' }),
-          paid - sumPays > 0 ? h('div', { class: 'num', text: _f('раньше · {0}', fmt(paid - sumPays)) }) : null,
-          d.pays.map(function (x) { return h('div', { class: 'num', text: dmy(x.date) + ' · ' + fmt(x.amount) }); }));
-      }
-      dl.appendChild(h('div', { class: 'item' + (done ? ' done' : '') },
-        h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: paid ? _f('остаток {0} из {1}', fmt(left), fmt(d.amount)) : _f('остаток {0}', fmt(left)) })),
-        paid ? h('div', { class: 'track' }, fill) : null,
-        h('div', { class: 'hint' + (late ? ' out' : ''), text: meta }),
-        d.note ? h('div', { class: 'rn', text: d.note }) : null, hist, acts));
+      return da - dbb || (a.due || '9').localeCompare(b.due || '9') || CURORDER.indexOf(a.cur) - CURORDER.indexOf(b.cur);
+    }).forEach(function (d) { dl.appendChild(state.dedit === d.id ? debtEditor(d) : debtItem(d)); });
+  }
+
+  /* ---------- долги: итоги, строка, правка ---------- */
+  var CURTITLE = { UZS: 'Сум', USD: 'Доллар', RUB: 'Рубль', TJS: 'Сомони' };
+  function r2(x) { return Math.round(x * 100) / 100; }
+  function renderDebtSummary(st) {
+    var box = clear($('ds-table'));
+    var cs = CURORDER.concat(Object.keys(st.by).filter(function (c) { return CURORDER.indexOf(c) < 0; })).filter(function (c) { return st.by[c]; });
+    if (!cs.length) { box.appendChild(h('p', { class: 'empty', text: 'Открытых долгов нет.' })); return; }
+    var g = h('div', { class: 'dtbl' }, h('span', { class: 'dh' }), h('span', { class: 'dh', text: 'Мне должны' }), h('span', { class: 'dh', text: 'Я должен' }));
+    cs.forEach(function (c) {
+      var o = st.by[c];
+      g.appendChild(h('span', { class: 'dc', text: CURTITLE[c] || c }));
+      g.appendChild(h('span', { class: 'num dv in', text: o.owed ? numC(o.owed, c) : '—' }));
+      g.appendChild(h('span', { class: 'num dv out', text: o.owe ? numC(o.owe, c) : '—' }));
     });
+    box.appendChild(g);
+  }
+  var DPFX = ['Дал в долг: ', 'Взял в долг: ', 'Вернули: ', 'Вернул: '];
+  function debtEntries(d) { return db.entries.filter(function (x) { return x.debt === d.id; }); }
+  function isIssue(x) { return !!x.note && (x.note.indexOf(DPFX[0]) === 0 || x.note.indexOf(DPFX[1]) === 0); }
+  /* Каждому возврату ставим ссылку на его запись, чтобы правка суммы или даты меняла и остаток кошелька. */
+  function assignEids(d) {
+    var list = debtEntries(d).filter(function (x) { return !isIssue(x); }), claimed = {};
+    d.pays.forEach(function (p) { if (p.eid) claimed[p.eid] = 1; });
+    d.pays.forEach(function (p) {
+      if (p.eid) return;
+      var f = list.filter(function (x) { return !claimed[x.id] && x.amount === p.amount && x.date === p.date; })[0];
+      if (f) { p.eid = f.id; claimed[f.id] = 1; }
+    });
+  }
+  function paySum(d) { return d.pays.reduce(function (a, x) { return a + x.amount; }, 0); }
+  function savePay(d, i, amtStr, dateStr) {
+    var v = parseAmount(amtStr);
+    if (!(v > 0)) { toast('Введите сумму больше нуля'); return false; }
+    assignEids(d);
+    var before = paySum(d), legacy = Math.max(0, (d.paid || 0) - before), p = d.pays[i], others = before - p.amount;
+    if (legacy + others + v > d.amount + 0.001) { toast(_f('Возвраты не могут быть больше долга. Можно не больше {0}', fmtC(Math.max(0, d.amount - legacy - others), d.cur))); return false; }
+    var en = p.eid ? db.entries.filter(function (x) { return x.id === p.eid; })[0] : null;
+    p.amount = v; if (dateStr) p.date = dateStr;
+    if (en) { en.amount = v; en.date = p.date; }
+    d.paid = r2(legacy + others + v);
+    save(); return true;
+  }
+  function delPay(d, i) {
+    assignEids(d);
+    var before = paySum(d), legacy = Math.max(0, (d.paid || 0) - before), p = d.pays[i];
+    if (p.eid) db.entries = db.entries.filter(function (x) { return x.id !== p.eid; });
+    d.pays.splice(i, 1);
+    d.paid = r2(legacy + paySum(d));
+    save();
+  }
+  function debtItem(d) {
+    var c = d.cur || 'UZS', F = function (n) { return fmtC(n, c); };
+    var paid = d.paid || 0, left = debtLeft(d), done = left <= 0;
+    var late = !done && d.due && d.due < ds(now);
+    var ratio = d.amount > 0 ? paid / d.amount : 0;
+    var fill = h('div', { class: 'fill' }); fill.style.width = Math.min(100, ratio * 100) + '%';
+    var acts = h('div', { class: 'inline' });
+    if (!done) {
+      var inp = h('input', { type: 'text', inputmode: 'decimal', id: 'dp-' + d.id, placeholder: _t('Пусто = всё: ') + F(left), 'aria-label': _f('Сумма возврата: {0}', d.who) });
+      acts.appendChild(inp);
+      acts.appendChild(h('button', { type: 'button', class: 'btn small', text: d.dir === 'owed' ? 'Мне вернули' : 'Я вернул', onclick: function () {
+        var v = inp.value.trim() ? parseAmount(inp.value) : left;
+        if (!(v > 0)) { toast('Введите сумму больше нуля'); return; }
+        if (v > left) v = left;
+        var e = addEntry({ cur: c, type: 'xfer', sign: d.dir === 'owed' ? 1 : -1, amount: v, cat: 'Долг', wallet: walletOk(d.wallet) ? d.wallet : db.wallets[0].id, date: ds(new Date()), note: (d.dir === 'owed' ? 'Вернули: ' : 'Вернул: ') + d.who, debt: d.id });
+        d.paid = r2((d.paid || 0) + v);
+        d.pays.push({ date: ds(new Date()), amount: v, eid: e.id });
+        save(); render(); toast(_f('Записано: {0}', F(v)));
+      } }));
+    }
+    acts.appendChild(h('button', { type: 'button', class: 'link-btn', text: 'Изменить', 'aria-label': _f('Изменить долг: {0}', d.who), onclick: function () { state.dedit = d.id; state.pedit = null; state.pd = null; render(); } }));
+    delBtn('d' + d.id, function () {
+      db.entries = db.entries.filter(function (x) { return x.debt !== d.id; });
+      db.debts = db.debts.filter(function (x) { return x.id !== d.id; });
+      save(); render();
+    }, d.who).forEach(function (b) { acts.appendChild(b); });
+    var mp = [_t(CURTITLE[c] || c)];
+    if (d.issued) mp.push((d.dir === 'owed' ? _t('Дал ') : _t('Взял ')) + dmy(d.issued));
+    mp.push(d.due ? _f('вернуть до {0}', dmy(d.due)) : _t('без срока'));
+    if (late) mp.push(_t('просрочено'));
+    if (done) mp.push(_t('возвращён полностью'));
+    mp.push(_t(wname(d.wallet)));
+    var hist = null;
+    if (d.pays.length || paid) {
+      var legacy = paid - paySum(d);
+      hist = h('div', { class: 'hist' }, h('div', { text: 'История погашений:' }),
+        legacy > 0.004 ? h('div', { class: 'num', text: _f('раньше · {0}', F(legacy)) }) : null,
+        d.pays.map(function (x, i) {
+          var key = d.id + ':' + i;
+          if (state.pedit === key) {
+            var pd = h('input', { type: 'date', 'aria-label': 'Дата' }); pd.value = x.date;
+            var pa = h('input', { type: 'text', inputmode: 'decimal', 'aria-label': 'Сумма' }); pa.value = String(x.amount);
+            return h('div', { class: 'payedit' }, pd, pa,
+              h('button', { type: 'button', class: 'btn small', text: 'Сохранить', onclick: function () { if (savePay(d, i, pa.value, pd.value)) { state.pedit = null; render(); toast('Возврат изменён'); } } }),
+              h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.pedit = null; render(); } }));
+          }
+          var row = h('div', { class: 'payrow' }, h('span', { class: 'num', text: dmy(x.date) + ' · ' + F(x.amount) }));
+          var pa2 = h('span', { class: 'inline' }, h('button', { type: 'button', class: 'link-btn', text: 'Изменить', 'aria-label': _f('Изменить возврат: {0}', dmy(x.date) + ' ' + F(x.amount)), onclick: function () { state.pedit = key; state.pd = null; render(); } }));
+          delBtn('p' + key, function () { delPay(d, i); render(); toast('Возврат удалён'); }, dmy(x.date)).forEach(function (b) { pa2.appendChild(b); });
+          row.appendChild(pa2);
+          return row;
+        }));
+    }
+    return h('div', { class: 'item' + (done ? ' done' : '') },
+      h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: paid ? _f('остаток {0} из {1}', F(left), F(d.amount)) : _f('остаток {0}', F(left)) })),
+      paid ? h('div', { class: 'track' }, fill) : null,
+      h('div', { class: 'hint' + (late ? ' out' : ''), text: mp.join(' · ') }),
+      d.note ? h('div', { class: 'rn', text: d.note }) : null, hist, acts);
+  }
+  function debtEditor(d) {
+    var c = d.cur || 'UZS';
+    var fw = h('input', { type: 'text', maxlength: '60', 'aria-label': 'Имя' }); fw.value = d.who;
+    var fa = h('input', { type: 'text', inputmode: 'decimal', 'aria-label': 'Сумма' }); fa.value = String(d.amount);
+    var fc = h('select', { 'aria-label': 'Валюта долга' });
+    CURORDER.forEach(function (k) { fc.appendChild(h('option', { value: k, text: CURTITLE[k] })); }); fc.value = c;
+    var fl = h('select', { 'aria-label': 'Кошелёк' });
+    db.wallets.forEach(function (w) { fl.appendChild(h('option', { value: w.id, text: w.name })); }); fl.value = walletOk(d.wallet) ? d.wallet : db.wallets[0].id;
+    var fd = h('input', { type: 'date', 'aria-label': 'Дата' }); fd.value = d.issued || '';
+    var fu = h('input', { type: 'date', 'aria-label': 'Вернуть до' }); fu.value = d.due || '';
+    var fn = h('input', { type: 'text', maxlength: '140', 'aria-label': 'Комментарий' }); fn.value = d.note || '';
+    var msg = h('p', { class: 'msg err', role: 'status' });
+    function field(lbl, el, wide) { return h('div', { class: 'field' + (wide ? ' wide' : '') }, h('label', { text: lbl }), el); }
+    var box = h('div', { class: 'item vcard debt-edit' },
+      h('div', { class: 'item-head' }, h('span', { class: 'name', text: 'Изменить долг' })),
+      h('div', { class: 'fields' }, field('Имя', fw, true), field('Сумма', fa), field('Валюта долга', fc), field('Кошелёк', fl), field('Дата', fd), field('Вернуть до', fu), field('Комментарий', fn, true)),
+      msg,
+      h('div', { class: 'inline' },
+        h('button', { type: 'button', class: 'btn small', text: 'Сохранить', onclick: function () {
+          var who = fw.value.trim(), a = parseAmount(fa.value);
+          if (!who) { msg.textContent = _t('Введите имя.'); return; }
+          if (!(a > 0)) { msg.textContent = _t('Введите сумму больше нуля.'); return; }
+          if (a < (d.paid || 0) - 0.001) { msg.textContent = _f('Сумма не может быть меньше уже возвращённой: {0}', fmtC(d.paid || 0, c)); return; }
+          d.who = who; d.amount = a; d.cur = fc.value; d.wallet = fl.value; d.issued = fd.value || d.issued || ''; d.due = fu.value || ''; d.note = fn.value.trim();
+          debtEntries(d).forEach(function (x) {
+            x.cur = d.cur; x.wallet = d.wallet;
+            for (var i = 0; i < DPFX.length; i++) if (x.note && x.note.indexOf(DPFX[i]) === 0) { x.note = DPFX[i] + who; break; }
+            if (isIssue(x)) { x.amount = a; if (d.issued) x.date = d.issued; }
+          });
+          save(); state.dedit = null; render(); toast('Долг изменён');
+        } }),
+        h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.dedit = null; render(); } })));
+    enhanceSelect(fc); enhanceSelect(fl);
+    return box;
   }
 
   /* ---------- КОПИИ ---------- */
@@ -1870,6 +2005,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   function applyCur() {
     applySettings();
     $('cur').value = db.cur;
+    $('dcur').value = db.cur;
     document.querySelector('label[for="amount"]').textContent = _f('Сумма, {0}', cname());
   }
 
@@ -1883,7 +2019,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     });
     document.querySelector('.months').hidden = state.tab === 'debts' || state.tab === 'settings';
     fillWallets();
-    renderHome(); renderOps(); renderReports(); renderPlans(); renderSettings();
+    renderHome(); renderOps(); renderReports(); renderPlans(); renderSettings(); renderFx();
     relabel($('cat')); relabel($('rc'));
     document.querySelectorAll('#escope .chip').forEach(function (b) { var on = b.dataset.s === state.escope; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
     localizeStatic();
@@ -1908,7 +2044,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   }
 
   document.querySelectorAll('nav.tabs button').forEach(function (b) {
-    b.addEventListener('click', function () { state.tab = b.dataset.tab; state.pd = null; state.editC = null; render(); $('scroller').scrollTo(0, 0); });
+    b.addEventListener('click', function () { state.tab = b.dataset.tab; state.pd = null; state.editC = null; state.dedit = null; state.pedit = null; render(); $('scroller').scrollTo(0, 0); });
   });
   $('all-link').addEventListener('click', function () { state.tab = 'ops'; render(); $('scroller').scrollTo(0, 0); });
   $('wallet-form').addEventListener('submit', function (ev) {
@@ -1968,9 +2104,10 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     if (!w) { setMsg('debt-msg', 'Введите имя.', true); return; }
     if (!(a > 0)) { setMsg('debt-msg', 'Введите сумму больше нуля.', true); return; }
     var issued = $('ddate').value || ds(new Date());
-    var d = { id: uid(), cur: db.cur, who: w, amount: a, paid: 0, pays: [], dir: $('ddir').value, wallet: $('dwal').value, issued: issued, due: $('ddue').value || '', note: $('dnote').value.trim() };
+    var dc = $('dcur').value; if (!CUR[dc]) dc = db.cur;
+    var d = { id: uid(), cur: dc, who: w, amount: a, paid: 0, pays: [], dir: $('ddir').value, wallet: $('dwal').value, issued: issued, due: $('ddue').value || '', note: $('dnote').value.trim() };
     db.debts.push(d);
-    addEntry({ type: 'xfer', sign: d.dir === 'owed' ? -1 : 1, amount: a, cat: 'Долг', wallet: d.wallet, date: issued, note: (d.dir === 'owed' ? 'Дал в долг: ' : 'Взял в долг: ') + w, debt: d.id });
+    addEntry({ cur: dc, type: 'xfer', sign: d.dir === 'owed' ? -1 : 1, amount: a, cat: 'Долг', wallet: d.wallet, date: issued, note: (d.dir === 'owed' ? 'Дал в долг: ' : 'Взял в долг: ') + w, debt: d.id });
     save(); $('dw').value = ''; $('da').value = ''; $('ddue').value = ''; $('dnote').value = ''; state.dtab = d.dir; render(); setMsg('debt-msg', 'Долг записан.');
   });
 
@@ -1986,7 +2123,6 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     ['Образование', ['образован', 'школ', 'курс', 'обучен', 'репетитор', 'учеб', 'универ', 'институт', 'тетрад', 'книг', 'контракт', 'английск', 'лицей', 'кружок', 'секци']],
     ['Подарки', ['подарок', 'подарк', 'цветы', 'цветов', 'букет', 'свадьб', 'той=', 'садака', 'благотвор', 'рождени', 'поздравл']],
     ['Красота и уход', ['красот', 'парикмахер', 'стрижк', 'барбер', 'маникюр', 'педикюр', 'салон', 'косметик', 'шампун', 'духи', 'ресниц', 'массаж', 'крем=', 'уход']],
-    ['Домашние животные', ['кошк', 'кот=', 'собак', 'ветеринар', 'зоомагазин', 'питомц', 'попугай', 'корм=', 'корма=']],
     ['Товары для дома', ['мебел', 'посуд', 'бытов', 'хозтовар', 'хозяйств', 'порошок', 'стирал', 'пылесос', 'холодильник', 'телевизор', 'техник', 'ремонт', 'лампочк', 'постел', 'одеял', 'для дома', 'инструмент']],
     ['Кредиты и рассрочки', ['кредит', 'рассрочк', 'ипотек', 'займ', 'заем', 'насия', 'kredit', 'взнос']],
     ['Транспорт', ['taksi', 'таксӣ', 'такси', 'транспорт', 'метро', 'автобус', 'проезд', 'маршрутк', 'парковк', 'мойк', 'яндекс', 'поездк', 'самолет', 'авиабилет', 'поезд', 'автосервис', 'шиномонтаж', 'запчаст', 'страховк', 'штраф', 'dostavka', 'билет']],
@@ -2038,7 +2174,6 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     var back = words.indexOf('позавчера') >= 0 ? 2 : words.indexOf('вчера') >= 0 ? 1 : 0;
     if (back) { var d0 = new Date(); d0.setDate(d0.getDate() - back); res.date = ds(d0); }
     res.extra = res.type === 'out' && wordHit(words, ['лишн', 'зря', 'ненужн']);
-    if (res.extra && res.cat === 'Прочее') res.cat = 'Лишние траты';
     res.note = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : '';
     return res;
   }
@@ -2105,6 +2240,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       h('div', { class: 'rn', text: _f('Распознано: «{0}»', res.note) }),
       warn,
       h('div', { class: 'inline' }, add, h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { clear($('voice-card')); pendingVoice = null; } }))));
+    enhanceSelect(cat); enhanceSelect(wal);
     setT(res.type);
     if (res.type === typ) { cat.value = res.cat; warn.textContent = res.cat === 'Прочее' ? W_CAT : ''; }
   }
@@ -2211,19 +2347,6 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   $('pc-to').addEventListener('change', function () { state.pTo = $('pc-to').value || state.pTo; render(); });
   document.querySelectorAll('#rgroup .chip').forEach(function (b) { b.addEventListener('click', function () { state.rgroup = b.dataset.g; render(); }); });
   document.querySelectorAll('input[name="dtab"]').forEach(function (r) { r.addEventListener('change', function () { state.dtab = r.value; $('ddir').value = r.value; render(); }); });
-  $('tr-form').addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    var a = parseAmount($('tam').value), from = $('tf').value, to = $('tt').value, d = $('tdate').value || ds(new Date());
-    if (from === to) { setMsg('tr-msg', 'Выберите два разных кошелька.', true); return; }
-    if (!(a > 0)) { setMsg('tr-msg', 'Введите сумму больше нуля.', true); return; }
-    var id = uid();
-    [-1, 1].forEach(function (sg) {
-      var e = addEntry({ type: 'xfer', sign: sg, amount: a, cat: 'Перевод', wallet: sg < 0 ? from : to, date: d, note: 'Перевод: ' + wname(from) + ' → ' + wname(to) });
-      e.tr = id;
-    });
-    if (!save()) return;
-    $('tam').value = ''; render(); setMsg('tr-msg', _f('Переведено: {0}.', fmt(a)));
-  });
   $('ex-pdf').addEventListener('click', function () { exportFile('pdf'); });
   $('ex-xlsx').addEventListener('click', function () { exportFile('xlsx'); });
   $('ex-share').addEventListener('click', function () {
@@ -2279,6 +2402,136 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   document.addEventListener('click', function (ev) { if (!ev.target.closest || !ev.target.closest('.pop')) closePops(); });
   document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') closePops(); });
 
+
+  /* ---------- единый компактный список выбора: одинаковый на Samsung, iPhone и компьютере ---------- */
+  var ddOpen = null;
+  function closeDD() { if (ddOpen) { try { ddOpen.menu.remove(); } catch (e) {} ddOpen.btn.setAttribute('aria-expanded', 'false'); ddOpen = null; } }
+  function svgIcon(id, cls) {
+    var sv0 = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sv0.setAttribute('class', 'ic' + (cls ? ' ' + cls : '')); sv0.setAttribute('aria-hidden', 'true');
+    var u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#' + id); sv0.appendChild(u); return sv0;
+  }
+  function enhanceSelect(sel) {
+    if (!sel || sel.__dd || !sel.parentNode) return;
+    var btn = h('button', { type: 'button', class: 'dd-btn', 'aria-haspopup': 'listbox', 'aria-expanded': 'false' });
+    var lab = h('span', { class: 'dd-t' });
+    btn.appendChild(lab); btn.appendChild(svgIcon('i-down'));
+    var pd = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+    function title() {
+      var l = sel.id ? document.querySelector('label[for="' + sel.id + '"]') : null;
+      return (l && l.textContent) || sel.getAttribute('aria-label') || '';
+    }
+    function sync() {
+      var o = sel.options[sel.selectedIndex];
+      lab.textContent = o ? o.textContent : '';
+      btn.setAttribute('aria-label', title() + (o ? ': ' + o.textContent : ''));
+      btn.disabled = sel.disabled;
+    }
+    Object.defineProperty(sel, 'value', { configurable: true, get: function () { return pd.get.call(sel); }, set: function (v) { pd.set.call(sel, v); sync(); } });
+    sel.classList.add('dd-native'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
+    sel.parentNode.insertBefore(btn, sel.nextSibling);
+    new MutationObserver(sync).observe(sel, { childList: true, subtree: true, characterData: true });
+    sel.addEventListener('change', sync);
+    function openMenu() {
+      if (ddOpen && ddOpen.btn === btn) { closeDD(); return; }
+      closeDD();
+      var menu = h('div', { class: 'dd-menu', role: 'listbox', 'aria-label': title() });
+      Array.prototype.forEach.call(sel.options, function (o) {
+        var it = h('button', { type: 'button', class: 'dd-item', role: 'option', 'aria-selected': o.value === sel.value ? 'true' : 'false' });
+        it.appendChild(svgIcon('i-check', 'ck')); it.appendChild(h('span')); it.lastChild.textContent = o.textContent;
+        it.addEventListener('click', function () { sel.value = o.value; sel.dispatchEvent(new Event('change', { bubbles: true })); closeDD(); try { btn.focus(); } catch (e) {} });
+        it.addEventListener('keydown', function (ev) {
+          var n = ev.key === 'ArrowDown' ? it.nextSibling : ev.key === 'ArrowUp' ? it.previousSibling : null;
+          if (n) { ev.preventDefault(); n.focus(); }
+        });
+        menu.appendChild(it);
+      });
+      document.body.appendChild(menu);
+      function place() {
+        var r = btn.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
+        if (r.bottom < 56 || r.top > vh - 70) { closeDD(); return; }
+        var w = Math.min(Math.max(Math.min(r.width, 270), 220), vw - 16), left = Math.min(Math.max(8, r.left), vw - w - 8);
+        var below = vh - r.bottom - 80, above = r.top - 64, want = Math.min(menu.scrollHeight + 8, 300);
+        var down = below >= Math.min(want, 200) || below >= above;
+        var mh = Math.max(120, Math.min(want, down ? below : above));
+        menu.style.width = w + 'px'; menu.style.left = left + 'px'; menu.style.maxHeight = mh + 'px';
+        menu.style.top = down ? (r.bottom + 4) + 'px' : Math.max(8, r.top - 4 - Math.min(menu.scrollHeight, mh)) + 'px';
+      }
+      place();
+      btn.setAttribute('aria-expanded', 'true');
+      ddOpen = { menu: menu, btn: btn, place: place };
+      var cur = menu.querySelector('[aria-selected="true"]') || menu.firstChild;
+      if (cur) { try { cur.focus({ preventScroll: true }); } catch (e) {} menu.scrollTop = Math.max(0, cur.offsetTop - menu.clientHeight / 2 + 21); }
+    }
+    btn.addEventListener('click', openMenu);
+    btn.addEventListener('keydown', function (ev) { if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); openMenu(); } });
+    sel.__dd = { sync: sync };
+    sync();
+  }
+  document.addEventListener('pointerdown', function (ev) { if (ddOpen && !(ev.target.closest && (ev.target.closest('.dd-menu') || ev.target.closest('.dd-btn')))) closeDD(); }, true);
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') closeDD(); });
+  window.addEventListener('resize', function () { if (ddOpen) ddOpen.place(); });
+  $('scroller').addEventListener('scroll', function () { if (ddOpen) ddOpen.place(); }, { passive: true });
+  Array.prototype.forEach.call(document.querySelectorAll('select'), function (sel) { if (sel.id !== 'cur') enhanceSelect(sel); });
+
+  /* ---------- курсы валют: раз в день из интернета, без ключей; без сети показываем последние сохранённые ---------- */
+  var FXKEY = 'moneva-rates', fx = null, fxBusy = false, fxErr = false;
+  try { var fxs = JSON.parse(localStorage.getItem(FXKEY)); if (fxs && fxs.r && fxs.r.UZS > 0 && fxs.r.RUB > 0 && fxs.r.TJS > 0) fx = fxs; } catch (e) {}
+  var FXBASE = { USD: 1, RUB: 100, TJS: 10, UZS: 10000 };
+  function fxNum(v) {
+    var d = v >= 100 ? 0 : v >= 1 ? 2 : 3;
+    return v.toLocaleString('ru-RU', { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  function renderFx() {
+    var g = clear($('fx-grid'));
+    $('fx-refresh').disabled = fxBusy;
+    $('fx-refresh').textContent = _t(fxBusy ? 'Обновляю…' : 'Обновить курсы');
+    if (!fx) {
+      g.hidden = true; $('fx-note').textContent = '';
+      setMsg('fx-msg', fxBusy ? 'Загружаю курсы…' : fxErr ? 'Курсы не загрузились. Проверьте интернет и нажмите «Обновить курсы».' : 'Курсы ещё не загружены.', fxErr && !fxBusy);
+      return;
+    }
+    g.hidden = false;
+    $('fx-note').textContent = '$ ' + Math.round(fx.r.UZS).toLocaleString('ru-RU');
+    ['USD', 'RUB', 'TJS', 'UZS'].forEach(function (a) {
+      var card = h('div', { class: 'fxc' }, h('div', { class: 'fxh', text: fmtC(FXBASE[a], a) }));
+      ['UZS', 'USD', 'RUB', 'TJS'].forEach(function (b) {
+        if (b === a) return;
+        card.appendChild(h('div', { class: 'fxl' }, h('span', { class: 'num', text: fxNum(FXBASE[a] * fx.r[b] / fx.r[a]) }), h('span', { class: 'fxu', text: I18.cur(b) || CUR[b] })));
+      });
+      g.appendChild(card);
+    });
+    setMsg('fx-msg', fxBusy ? 'Обновляю…' : _f(fxErr ? 'Нет связи. Показаны сохранённые курсы от {0}' : 'Обновлено: {0}', fmtDT(fx.t)), false);
+  }
+  function fxTake(a, b, c) {
+    var u = +a, r = +b, t = +c;
+    if (!(u > 0 && r > 0 && t > 0)) throw new Error('bad');
+    return { UZS: u, RUB: r, TJS: t, USD: 1 };
+  }
+  function fxFetch(force) {
+    var today = ds(new Date());
+    if (fxBusy || (!force && fx && fx.d === today && Date.now() - fx.t < 6 * 3600000)) return;
+    fxBusy = true; fxErr = false; renderFx();
+    var srcs = [
+      ['https://open.er-api.com/v6/latest/USD', function (j) { return fxTake(j.rates.UZS, j.rates.RUB, j.rates.TJS); }],
+      ['https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json', function (j) { return fxTake(j.usd.uzs, j.usd.rub, j.usd.tjs); }]
+    ];
+    function one(i) {
+      if (i >= srcs.length) return Promise.reject(new Error('none'));
+      var ac = window.AbortController ? new AbortController() : null, tm = ac ? setTimeout(function () { ac.abort(); }, 9000) : null;
+      return fetch(srcs[i][0], ac ? { signal: ac.signal, cache: 'no-store' } : { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
+        .then(function (j) { clearTimeout(tm); return srcs[i][1](j); })
+        .catch(function () { clearTimeout(tm); return one(i + 1); });
+    }
+    one(0).then(function (r) {
+      fx = { t: Date.now(), d: today, r: r };
+      try { localStorage.setItem(FXKEY, JSON.stringify(fx)); } catch (e) {}
+      fxErr = false;
+    }).catch(function () { fxErr = true; }).then(function () { fxBusy = false; renderFx(); });
+  }
+  $('fx-refresh').addEventListener('click', function () { fxFetch(true); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) fxFetch(false); });
+
   (function buildAppearance() {
     var sw = $('swatches');
     Object.keys(THEMES).forEach(function (k) {
@@ -2293,7 +2546,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   })();
 
   (function foldState() {
-    [['recent-box', true], ['bud-box', false], ['bk-box', false]].forEach(function (x) {
+    [['recent-box', true], ['bud-box', false], ['bk-box', false], ['fx-box', true]].forEach(function (x) {
       var el = $(x[0]), v = null;
       try { v = localStorage.getItem('moneva-fold-' + x[0]); } catch (e) {}
       el.open = v == null ? x[1] : v === '1';
@@ -2309,17 +2562,21 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       .then(go, go);
   }
   $('upd-btn').addEventListener('click', function () {
+    var btn = $('upd-btn');
+    if (btn.disabled) return;
+    btn.disabled = true; btn.classList.add('spin');
     setMsg('upd-msg', 'Проверяю обновление…');
-    fetch('index.html', { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
-      var m = /APPVER = '(\d+)'/.exec(t);
-      if (m && m[1] !== APPVER) { setMsg('upd-msg', 'Найдена новая версия, обновляю…'); dropCachesAndReload(); }
-      else setMsg('upd-msg', 'У вас последняя версия.');
-    }).catch(function () { setMsg('upd-msg', 'Нет связи с интернетом, проверить не удалось.', true); });
+    fetch('index.html', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('http'); return r.text(); }).then(function (t) {
+      var m = /APPVER = '(\d+)'/.exec(t), v = m ? m[1] : APPVER;
+      try { sessionStorage.setItem('moneva-upd', v); } catch (e) {}
+      setMsg('upd-msg', v !== APPVER ? 'Найдена новая версия, обновляю…' : 'Загружаю файлы заново…');
+      dropCachesAndReload();
+    }).catch(function () {
+      btn.disabled = false; btn.classList.remove('spin');
+      setMsg('upd-msg', 'Нет связи с интернетом. Приложение осталось как было, записи на месте.', true);
+    });
   });
-  $('cache-btn').addEventListener('click', function () {
-    setMsg('upd-msg', 'Кэш очищается, приложение перезагрузится. Ваши записи не затрагиваются.');
-    dropCachesAndReload();
-  });
+  try { var uv = sessionStorage.getItem('moneva-upd'); if (uv) { sessionStorage.removeItem('moneva-upd'); setTimeout(function () { toast(_f('Готово: версия {0}. Записи на месте.', uv)); }, 700); } } catch (e) {}
   function showUpdateBar() {
     if ($('upd-bar')) return;
     var bar = h('div', { id: 'upd-bar', class: 'updbar', role: 'status' }, h('span', { text: 'Вышла новая версия' }), h('button', { type: 'button', class: 'btn small', text: 'Обновить', onclick: function () { location.reload(); } }));
@@ -2329,11 +2586,11 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   setType('out');
   $('date').value = ds(now);
   $('ddate').value = ds(now);
-  $('tdate').value = ds(now);
   applyCur();
   render();
   renderBanner();
   startStorage();
+  renderFx(); fxFetch(false);
 
   // напоминание о копии
   if (db.entries.length > 10 && (!db.lastBackup || Date.now() - db.lastBackup > 14 * 86400000)) {

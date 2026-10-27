@@ -1,6 +1,6 @@
 // Кэш для работы без интернета. Сначала сеть (чтобы телефон всегда получал свежую версию), при плохой связи или без интернета — кэш.
 // Данные пользователя здесь не хранятся и не удаляются: они лежат в памяти браузера, а не в этом кэше.
-var CACHE = 'moneva-v11';
+var CACHE = 'moneva-v12';
 var FILES = ['./', './index.html', './manifest.json', './i18n.js', './pdf.js', './pdf-fonts.js', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './logo-mark.png', './apple-touch-icon.png', './favicon-32.png'];
 
 self.addEventListener('install', function (e) {

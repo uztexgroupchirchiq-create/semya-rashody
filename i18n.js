@@ -60,7 +60,39 @@
     ['Памперсы', 'Taglik', 'Памперс'],
     ['Сум', 'So‘m', 'Сӯм'],
     ['Рубль', 'Rubl', 'Рубл'],
-    ['Сомони', 'Somoni', 'Сомонӣ']
+    ['Сомони', 'Somoni', 'Сомонӣ'],
+    ['Доллар', 'Dollar', 'Доллар'],
+    ['Доллар $', 'Dollar $', 'Доллар $'],
+    ['Рубль ₽', 'Rubl ₽', 'Рубл ₽'],
+    ['Лазурная', 'Moviy', 'Осмонӣ'],
+    ['Каждая валюта ведёт отдельный учёт: сум, доллар, рубль, сомони. Записи не пересчитываются при переключении. Валюта выбирается вверху страницы. Долги видны во всех валютах сразу.', 'Har bir valyuta alohida hisoblanadi: so‘m, dollar, rubl, somoni. Almashtirganda yozuvlar qayta hisoblanmaydi. Valyuta sahifaning yuqorisidan tanlanadi. Qarzlar barcha valyutalarda birdan ko‘rinadi.', 'Ҳар асъор алоҳида ҳисоб карда мешавад: сӯм, доллар, рубл, сомонӣ. Ҳангоми иваз кардан сабтҳо аз нав ҳисоб намешаванд. Асъор дар болои саҳифа интихоб мешавад. Қарзҳо дар ҳамаи асъорҳо якбора намоён аст.'],
+    ['Курсы валют', 'Valyuta kurslari', 'Қурби асъор'],
+    ['Обновить курсы', 'Kurslarni yangilash', 'Навсозии қурбҳо'],
+    ['Обновляю…', 'Yangilanmoqda…', 'Навсозӣ мешавад…'],
+    ['Загружаю курсы…', 'Kurslar yuklanmoqda…', 'Қурбҳо бор мешаванд…'],
+    ['Курсы ещё не загружены.', 'Kurslar hali yuklanmagan.', 'Қурбҳо ҳанӯз бор нашудаанд.'],
+    ['Курсы не загрузились. Проверьте интернет и нажмите «Обновить курсы».', 'Kurslar yuklanmadi. Internetni tekshiring va «Kurslarni yangilash» tugmasini bosing.', 'Қурбҳо бор нашуданд. Интернетро санҷед ва «Навсозии қурбҳо»-ро пахш кунед.'],
+    ['Нет связи. Показаны сохранённые курсы от {0}', 'Aloqa yo‘q. Saqlangan kurslar ko‘rsatilmoqda: {0}', 'Пайвастшавӣ нест. Қурбҳои захирашуда аз {0} нишон дода мешаванд'],
+    ['Обновлено: {0}', 'Yangilandi: {0}', 'Навсозӣ шуд: {0}'],
+    ['Курсы справочные и только для сравнения: записи они не меняют. В банке и на рынке курс может отличаться.', 'Kurslar ma’lumot uchun va faqat taqqoslash uchun: yozuvlarni o‘zgartirmaydi. Bank va bozorda kurs boshqacha bo‘lishi mumkin.', 'Қурбҳо маълумотномавӣ ва танҳо барои муқоиса: сабтҳоро тағйир намедиҳанд. Дар бонк ва бозор қурб фарқ карда метавонад.'],
+    ['Обновить приложение', 'Ilovani yangilash', 'Навсозии барнома'],
+    ['Проверяет новую версию и заново загружает файлы приложения. Ваши записи при этом не удаляются.', 'Yangi versiyani tekshiradi va ilova fayllarini qayta yuklaydi. Yozuvlaringiz o‘chirilmaydi.', 'Версияи навро месанҷад ва файлҳои барномаро аз нав бор мекунад. Сабтҳои шумо нест намешаванд.'],
+    ['Загружаю файлы заново…', 'Fayllar qayta yuklanmoqda…', 'Файлҳо аз нав бор мешаванд…'],
+    ['Нет связи с интернетом. Приложение осталось как было, записи на месте.', 'Internet yo‘q. Ilova avvalgidek qoldi, yozuvlar joyida.', 'Интернет нест. Барнома ҳамон тавр монд, сабтҳо дар ҷояшон.'],
+    ['Готово: версия {0}. Записи на месте.', 'Tayyor: {0}-versiya. Yozuvlar joyida.', 'Тайёр: версияи {0}. Сабтҳо дар ҷояшон.'],
+    ['Валюта долга', 'Qarz valyutasi', 'Асъори қарз'],
+    ['Изменить долг', 'Qarzni o‘zgartirish', 'Тағйири қарз'],
+    ['Изменить долг: {0}', 'Qarzni o‘zgartirish: {0}', 'Тағйири қарз: {0}'],
+    ['Изменить возврат: {0}', 'Qaytarishni o‘zgartirish: {0}', 'Тағйири баргардонӣ: {0}'],
+    ['Изменить', 'O‘zgartirish', 'Тағйир додан'],
+    ['Возврат изменён', 'Qaytarish o‘zgartirildi', 'Баргардонӣ тағйир ёфт'],
+    ['Возврат удалён', 'Qaytarish o‘chirildi', 'Баргардонӣ нест шуд'],
+    ['Долг изменён', 'Qarz o‘zgartirildi', 'Қарз тағйир ёфт'],
+    ['Открытых долгов нет.', 'Ochiq qarzlar yo‘q.', 'Қарзҳои кушод нест.'],
+    ['Сумма не может быть меньше уже возвращённой: {0}', 'Summa allaqachon qaytarilganidan kam bo‘lishi mumkin emas: {0}', 'Маблағ аз баргардонидашуда кам буда наметавонад: {0}'],
+    ['Возвраты не могут быть больше долга. Можно не больше {0}', 'Qaytarishlar qarzdan ko‘p bo‘lishi mumkin emas. Ko‘pi bilan {0}', 'Баргардонӣ аз қарз зиёд буда наметавонад. Ҳадди аксар {0}'],
+    ['Здесь видны долги во всех валютах сразу, какая бы валюта ни была выбрана сверху.', 'Bu yerda qarzlar barcha valyutalarda birdan ko‘rinadi, yuqorida qaysi valyuta tanlangani muhim emas.', 'Дар ин ҷо қарзҳо дар ҳамаи асъорҳо якбора намоён аст, новобаста аз асъори интихобшуда.'],
+    ['Долги видны во всех валютах сразу, какая бы валюта ни была выбрана сверху. Они не считаются ни расходом, ни доходом и меняют только остаток кошелька. На главной их нет.', 'Qarzlar barcha valyutalarda birdan ko‘rinadi, yuqorida qaysi valyuta tanlangani muhim emas. Ular xarajat ham, daromad ham hisoblanmaydi va faqat hamyon qoldig‘ini o‘zgartiradi. Bosh sahifada ular yo‘q.', 'Қарзҳо дар ҳамаи асъорҳо якбора намоён аст, новобаста аз асъори интихобшуда. Онҳо на хароҷот ва на даромад ҳисоб мешаванд ва танҳо бақияи ҳамёнро тағйир медиҳанд. Дар саҳифаи асосӣ нестанд.'],
   ]);
 
   /* ---- разделы и шапка ---- */
@@ -116,7 +148,6 @@
     ['Нажмите на микрофон и скажите, например: «Коммуналка двадцать пять тысяч». Остановите запись ещё одним нажатием или словом «всё»: запись подготовится сама, останется нажать «Добавить».', 'Mikrofonni bosing va ayting, masalan: «Kommunal yigirma besh ming». Yozishni yana bir marta bosish yoki «hammasi» so‘zi bilan to‘xtating: yozuv o‘zi tayyorlanadi, «Qo‘shish» tugmasini bosish qoladi. Ovozli tanib olish hozircha rus tilini tushunadi, boshqa tilda raqamlar bilan yozing.', 'Микрофонро пахш кунед ва бигӯед, масалан: «Коммуналка бисту панҷ ҳазор». Сабтро бо як пахши дигар ё бо калимаи «ҳама» қатъ кунед: сабт худаш омода мешавад, «Илова кардан» мемонад. Шинохтани овоз ҳоло русиро мефаҳмад, ба забони дигар бо рақамҳо нависед.'],
     ['Очистить', 'Tozalash', 'Тоза кардан'],
     ['Быстрый ввод', 'Tezkor kiritish', 'Воридкунии зуд'],
-    ['Изменить', 'O‘zgartirish', 'Тағйир додан'],
     ['Готово', 'Tayyor', 'Тайёр'],
     ['+ Добавить', '+ Qo‘shish', '+ Илова'],
     ['Название кнопки', 'Tugma nomi', 'Номи тугма'],
@@ -444,14 +475,14 @@
     tg: ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']
   };
   var CURN = {
-    ru: { UZS: 'сум', RUB: '₽', TJS: 'сомони' },
-    uz: { UZS: 'so‘m', RUB: '₽', TJS: 'somoni' },
-    tg: { UZS: 'сӯм', RUB: '₽', TJS: 'сомонӣ' }
+    ru: { UZS: 'сум', RUB: '₽', TJS: 'сомони', USD: '$' },
+    uz: { UZS: 'so‘m', RUB: '₽', TJS: 'somoni', USD: '$' },
+    tg: { UZS: 'сӯм', RUB: '₽', TJS: 'сомонӣ', USD: '$' }
   };
   var CURPDF = {
-    ru: { UZS: 'сум', RUB: 'руб.', TJS: 'сомони' },
-    uz: { UZS: 'so‘m', RUB: 'rubl', TJS: 'somoni' },
-    tg: { UZS: 'сӯм', RUB: 'рубл', TJS: 'сомонӣ' }
+    ru: { UZS: 'сум', RUB: 'руб.', TJS: 'сомони', USD: '$' },
+    uz: { UZS: 'so‘m', RUB: 'rubl', TJS: 'somoni', USD: '$' },
+    tg: { UZS: 'сӯм', RUB: 'рубл', TJS: 'сомонӣ', USD: '$' }
   };
   var NAMES = { ru: 'Русский', uz: 'Oʻzbekcha', tg: 'Тоҷикӣ' };
   var CODES = { ru: 'RU', uz: 'UZ', tg: 'TJ' };
