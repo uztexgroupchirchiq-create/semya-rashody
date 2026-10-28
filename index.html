@@ -384,11 +384,12 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 .swatch { gap: 4px; padding: 6px 3px 5px; border: 1px solid var(--line); border-radius: 10px; font-size: 0.74rem; background: transparent; }
 .swatch i { width: 30px; height: 14px; border-radius: 5px; }
 .swatch[aria-pressed="true"] { border: 2px solid var(--accent); padding: 5px 2px 4px; background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
-.dtbl { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); gap: 0 12px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 4px 12px; }
+.dtbl { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.1fr) minmax(0, 1.1fr); gap: 0 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 4px 12px; }
 .dtbl > span { padding: 8px 0; border-top: 1px solid var(--line); min-width: 0; }
 .dtbl > .dh { border-top: 0; font-size: 0.74rem; color: var(--muted); text-align: right; }
 .dtbl > .dc { font-weight: 650; font-size: 0.92rem; }
-.dtbl > .dv { text-align: right; font-weight: 650; font-size: 0.95rem; overflow-wrap: anywhere; }
+.dtbl > .dv { text-align: right; font-weight: 650; font-size: 0.9rem; white-space: nowrap; }
+.dtbl > .dc { overflow-wrap: anywhere; }
 .payrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 10px; padding: 2px 0; }
 .payedit { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; padding: 6px 0; align-items: center; }
 .debt-edit { border: 1px solid var(--accent); border-radius: 12px; padding: 10px; }
@@ -417,10 +418,10 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 .fx-pill { max-width: 62%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; line-height: 18px; padding: 0 9px; color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
 .swatch[aria-pressed="true"] { border-width: 1.5px; padding: 5.5px 2.5px 4.5px; }
 .dd-menu { border-width: 1px; }
-.btn, .chip, .link-btn, .icon-btn, .swatch, .dd-btn, .dd-item, .fold > summary, .manual > summary, nav.tabs button, .mic, .send, .lang-btn, .months .label { -webkit-tap-highlight-color: transparent; transition: transform 0.1s ease, box-shadow 0.12s ease, background-color 0.12s ease, filter 0.12s ease; touch-action: manipulation; }
+.btn, .chip, .link-btn, .icon-btn, .swatch, .dd-btn, .dd-item, .fold > summary, .manual > summary, nav.tabs button, .mic, .send, .lang-btn, .months .label { -webkit-tap-highlight-color: transparent; transition: box-shadow 0.12s ease, background-color 0.12s ease, filter 0.12s ease; touch-action: manipulation; }
 .btn:not(.ghost) { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.12); }
 .btn.ghost { border-width: 1px; background: color-mix(in srgb, var(--accent) 5%, transparent); }
-.btn:active, .chip:active, .icon-btn:active, .swatch:active, .dd-btn:active, .lang-btn:active, .mic:active, .send:active { transform: scale(0.96); filter: brightness(0.93); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 24%, transparent); }
+.btn:active, .chip:active, .icon-btn:active, .swatch:active, .dd-btn:active, .lang-btn:active, .mic:active, .send:active { filter: brightness(0.9); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 24%, transparent); }
 .link-btn:active { background: color-mix(in srgb, var(--accent) 16%, transparent); border-radius: 8px; }
 .dd-item:active { background: color-mix(in srgb, var(--accent) 18%, var(--surface)); }
 .fold > summary:active, .manual > summary:active { background: color-mix(in srgb, var(--accent) 10%, transparent); border-radius: 12px; }
@@ -497,7 +498,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   <!-- ГЛАВНАЯ -->
   <main id="tab-home" class="tab" style="display:contents">
     <section class="summary" aria-label="Итоги">
-      <div><p class="cap">Общий баланс</p><p class="val big num" id="balance"></p></div>
+      <div><p class="cap">Общий баланс на конец месяца</p><p class="val big num" id="balance"></p></div>
       <div><p class="cap">Доходы</p><p class="val in num" id="income"></p></div>
       <div><p class="cap">Расходы</p><p class="val out num" id="expense"></p></div>
       <div><p class="cap">Свободные средства<button type="button" class="info" id="free-info" aria-label="Что такое свободные средства" aria-expanded="false">i</button></p><p class="val in num" id="free"></p><p class="mini" id="free-hint" hidden>Доходы месяца минус обязательные расходы: жильё, еда, транспорт, коммунальные, связь, здоровье, ребёнок, одежда.</p></div>
@@ -743,7 +744,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
 
     <section class="panel" aria-labelledby="w-title">
       <h2 id="w-title">Кошельки и карты</h2>
-      <p class="hint">Можно завести несколько: наличные, Uzcard, Humo, копилка. Название меняется прямо в строке. Удалить можно только кошелёк без записей. «Начальный остаток» — сколько денег уже было в кошельке до первой записи.</p>
+      <p class="hint">Можно завести несколько: наличные, Uzcard, Humo, копилка. Название меняется прямо в строке. Удалить можно только кошелёк без записей.</p>
       <div id="wlist"></div>
       <form id="wallet-form" autocomplete="off">
         <div class="inline">
@@ -854,13 +855,27 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '13';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '14';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
   function dataCount(d) {
     if (!d) return 0;
     return ['entries', 'debts', 'recurring', 'goals'].reduce(function (a, k) { return a + (Array.isArray(d[k]) ? d[k].length : 0); }, 0);
+  }
+  /* Добавляет в dst всё, чего там нет (по id), ничего не удаляя и не меняя. Возвращает, сколько добавлено. */
+  function mergeMissing(dst, src) {
+    var n = 0;
+    ['entries', 'debts', 'recurring', 'goals'].forEach(function (k) {
+      if (!Array.isArray(src[k])) return;
+      if (!Array.isArray(dst[k])) dst[k] = [];
+      var have = {};
+      dst[k].forEach(function (x) { if (x && x.id) have[x.id] = 1; });
+      src[k].forEach(function (x) { if (x && x.id && !have[x.id]) { dst[k].push(x); have[x.id] = 1; n++; } });
+    });
+    if (Array.isArray(src.wallets)) src.wallets.forEach(function (w) { if (w && w.id && !dst.wallets.some(function (x) { return x.id === w.id; })) dst.wallets.push(w); });
+    if (Array.isArray(src.quick)) src.quick.forEach(function (q) { if (q && !dst.quick.some(function (x) { return x.label === q.label && x.cat === q.cat; })) dst.quick.push(q); });
+    return n;
   }
   function unreadable(raw, why) {
     store.safe = true; store.why = why;
@@ -878,6 +893,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     return normalize(d);
   }
   var db = load();
+  store.lastWrite = db.savedAt || 0;
   function readLang() {
     var l = db.settings && db.settings.lang;
     if (l !== 'uz' && l !== 'tg' && l !== 'ru') l = lsGet('moneva-lang');
@@ -940,7 +956,16 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   }
   function save() {
     if (store.safe) { toast('Данные не прочитаны, поэтому я ничего не записываю. Откройте Отчёты → Резервные копии.'); return false; }
+    /* Если другое окно или старая вкладка успели записать данные позже нас, сначала подтягиваем их записи, а потом сохраняем. Так устаревшее окно не затирает свежие данные. */
+    try {
+      var cur = lsGet(KEY), cd = cur ? JSON.parse(cur) : null;
+      if (cd && (cd.savedAt || 0) > (store.lastWrite || 0) && Array.isArray(cd.entries)) {
+        var added = mergeMissing(db, normalize(cd));
+        if (added) { store.merged = (store.merged || 0) + added; setTimeout(function () { toast(_f('Подтянуты записи, сохранённые в другом окне: {0}', added)); render(); }, 0); }
+      }
+    } catch (e) {}
     db.savedAt = Date.now();
+    store.lastWrite = db.savedAt;
     var json = JSON.stringify(db);
     var ok = lsSet(KEY, json);
     idbMirror(json);
@@ -972,8 +997,15 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
         if (m && (m.v === 1 || Array.isArray(m.entries))) {
           store.mirror = m;
           if (store.fresh && dataCount(db) === 0 && dataCount(m) > 0) { adopt(m, 'Данные восстановлены из копии на этом устройстве.'); }
-          else if (!store.safe && (m.savedAt || 0) > (db.savedAt || 0) + 1000 && dataCount(m) >= dataCount(db)) {
-            return takeSnapshot('before-restore').then(function () { adopt(m, 'Подтянуты более новые данные из копии на устройстве.'); });
+          else if (!store.safe && !store.fresh) {
+            // ничего не удаляем: только возвращаем записи, которые есть в копии на устройстве, а в основных данных пропали
+            var probe = normalize(JSON.parse(JSON.stringify(db)));
+            if (mergeMissing(probe, normalize(m)) > 0) {
+              return takeSnapshot('before-restore').then(function () {
+                var n = mergeMissing(db, normalize(m));
+                save(); applyCur(); render(); toast(_f('Восстановлено записей из копии на устройстве: {0}', n));
+              });
+            }
           }
         }
         if (!store.safe && !store.fresh) idbMirror(JSON.stringify(db));
@@ -1033,6 +1065,13 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   function clear(el) { el.textContent = ''; return el; }
 
   var toastTimer = null;
+  var errAt = 0;
+  function reportErr(err) {
+    var t = Date.now(); if (t - errAt < 4000) return; errAt = t;
+    try { localStorage.setItem('moneva-lasterr', String(err && (err.stack || err.message || err)).slice(0, 600)); } catch (e) {}
+    toast('Ошибка отображения: ' + String(err && err.message || err).slice(0, 80) + '. Запись сохранена. Сообщите разработчику этот текст.');
+  }
+  window.addEventListener('error', function (ev) { reportErr(ev.error || ev.message); });
   function toast(msg) {
     var el = $('toast'); el.textContent = _t(msg); el.hidden = false;
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.hidden = true; }, 3200);
@@ -1064,7 +1103,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   var MAND = ['Аренда квартиры', 'Питание', 'Транспорт', 'Топливо', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Ребёнок', 'Одежда'];
   /* Влияние записи на деньги в кошельках. Записи долгов в баланс не входят: долги считаются отдельно на вкладке «Долги». */
   function effect(e) { if (e.debt) return 0; return e.type === 'in' ? e.amount : e.type === 'out' ? -e.amount : e.sign * e.amount; }
-  function openOf(w) { var v = w && w.open && +w.open[db.cur]; return isFinite(v) ? v : 0; }
+  function openOf() { return 0; }
   function openTotal() { return db.wallets.reduce(function (a, w) { return a + openOf(w); }, 0); }
   function wname(id) {
     for (var i = 0; i < db.wallets.length; i++) if (db.wallets[i].id === id) return db.wallets[i].name;
@@ -1171,9 +1210,10 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   /* ---------- ГЛАВНАЯ ---------- */
   function renderHome() {
     var all = ents(), list = monthEnts(state.month);
+    var upto = state.month + '-' + pad(daysIn(state.month));
     var total = openTotal(), bal = {};
     db.wallets.forEach(function (w) { bal[w.id] = openOf(w); });
-    all.forEach(function (e) { var v = effect(e); total += v; bal[e.wallet] = (bal[e.wallet] || 0) + v; });
+    all.forEach(function (e) { if (e.date > upto) return; var v = effect(e); total += v; bal[e.wallet] = (bal[e.wallet] || 0) + v; });
     var inM = 0, outM = 0, mand = 0;
     list.forEach(function (e) {
       if (e.type === 'in') inM += e.amount;
@@ -1630,16 +1670,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
         if (walletUsed(w.id)) act.appendChild(h('span', { class: 'hint', text: 'есть записи' }));
         else delBtn('w' + w.id, function () { db.wallets = db.wallets.filter(function (x) { return x.id !== w.id; }); save(); render(); }, w.name).forEach(function (b) { act.appendChild(b); });
       }
-      var op = h('input', { type: 'text', inputmode: 'decimal', 'aria-label': _f('Начальный остаток, {0}', cname()) });
-      op.value = openOf(w) ? String(openOf(w)) : '';
-      op.addEventListener('change', function () {
-        var raw = op.value.trim(), v = raw ? parseAmount(raw) : 0;
-        if (!isFinite(v)) { toast('Введите число'); op.value = openOf(w) ? String(openOf(w)) : ''; return; }
-        if (!w.open || typeof w.open !== 'object') w.open = {};
-        if (v) w.open[db.cur] = v; else delete w.open[db.cur];
-        save(); render(); toast('Начальный остаток сохранён');
-      });
-      el.appendChild(h('div', { class: 'wrow' }, inp, act, h('label', { class: 'wopen' }, h('span', { text: _f('Начальный остаток, {0}', cname()) }), op)));
+      el.appendChild(h('div', { class: 'wrow' }, inp, act));
     });
     renderBackup();
   }
@@ -1820,7 +1851,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     var uz = uzsPer(), tot = { owed: 0, owe: 0 }, allOk = cs.length > 1;
     cs.forEach(function (c) { if (!uz[c]) allOk = false; else { tot.owed += st.by[c].owed * uz[c]; tot.owe += st.by[c].owe * uz[c]; } });
     if (allOk) {
-      g.appendChild(h('span', { class: 'dc', text: 'Всего ≈ в сумах' }));
+      g.appendChild(h('span', { class: 'dc', text: '≈ в сумах' }));
       g.appendChild(h('span', { class: 'num dv in', text: tot.owed ? numC(tot.owed, 'UZS') : '—' }));
       g.appendChild(h('span', { class: 'num dv out', text: tot.owe ? numC(tot.owe, 'UZS') : '—' }));
     }
@@ -1962,6 +1993,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   var SNAPTAG = { auto: 'Автоматическая копия', 'before-update': 'Перед обновлением приложения', 'before-restore': 'Перед восстановлением' };
   function downloadText(text, name, type) { saveBlob(new Blob([text], { type: type || 'application/json' }), name); }
 
+  function openRestore() { state.tab = 'reports'; render(); $('bk-box').open = true; $('bk-box').scrollIntoView(); }
   function renderBanner() {
     var b = clear($('safe-banner'));
     if (store.safe) {
@@ -1971,12 +2003,17 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
       var acts = h('div', { class: 'inline' });
       if (store.mirror && dataCount(store.mirror)) acts.appendChild(h('button', { type: 'button', class: 'btn small', text: _f('Восстановить из копии на устройстве (записей: {0})', dataCount(store.mirror)), onclick: function () { restoreData(store.mirror, 'Данные восстановлены.').then(function () { renderBanner(); }); } }));
       acts.appendChild(h('button', { type: 'button', class: 'btn ghost small', text: 'Скачать повреждённые данные', onclick: function () { downloadText(lsGet(CORRUPT) || '', 'moneva-povrezhdeno.txt', 'text/plain'); } }));
-      acts.appendChild(h('button', { type: 'button', class: 'btn ghost small', text: 'Восстановить из файла', onclick: function () { state.tab = 'settings'; render(); $('scroller').scrollTo(0, 0); } }));
+      acts.appendChild(h('button', { type: 'button', class: 'btn ghost small', text: 'Восстановить из файла', onclick: openRestore }));
       acts.appendChild(h('button', { type: 'button', class: 'link-btn danger', text: 'Начать с пустой базы', onclick: function () {
         if (!window.confirm(_t('Начать с пустой базы? Прежние данные останутся в памяти устройства, их можно будет скачать из этого сообщения.'))) return;
         store.safe = false; renderBanner(); save(); render();
       } }));
       b.appendChild(acts);
+    } else if (store.fresh && !dataCount(db) && !state.hideFresh) {
+      b.hidden = false;
+      b.appendChild(h('div', { class: 't', text: 'Записей пока нет' }));
+      b.appendChild(h('div', { class: 'hint', text: 'Если вы уже вели учёт и записи пропали, восстановите их из файла копии. Если приложение новое, просто начните записывать.' }));
+      b.appendChild(h('div', { class: 'inline' }, h('button', { type: 'button', class: 'btn small', text: 'Восстановить из файла', onclick: openRestore }), h('button', { type: 'button', class: 'link-btn', text: 'Скрыть', onclick: function () { state.hideFresh = true; renderBanner(); } })));
     } else if (store.volatile) {
       b.hidden = false;
       b.appendChild(h('div', { class: 't', text: 'Память браузера недоступна' }));
@@ -2140,12 +2177,13 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     if (!(amount > 0)) { setMsg('msg', 'Введите сумму больше нуля.', true); $('amount').focus(); return; }
     var date = $('date').value;
     if (!date) { setMsg('msg', 'Выберите дату.', true); return; }
-    addEntry({ type: state.type, amount: amount, cat: $('cat').value, wallet: $('wallet').value, date: date, note: $('note').value.trim(), extra: state.type === 'out' && $('extra-flag').checked });
-    if (!save()) return;
+    var added = addEntry({ type: state.type, amount: amount, cat: $('cat').value || (state.type === 'in' ? 'Прочий доход' : 'Прочее'), wallet: $('wallet').value || db.wallets[0].id, date: date, note: $('note').value.trim(), extra: state.type === 'out' && $('extra-flag').checked });
+    if (!save()) { db.entries = db.entries.filter(function (x) { return x !== added; }); setMsg('msg', 'Запись не сохранена: память устройства недоступна. Ничего не потеряно, попробуйте ещё раз.', true); return; }
     state.month = date.slice(0, 7);
     var msg = _f(state.type === 'in' ? 'Доход добавлен: {0}' : 'Расход добавлен: {0}', fmt(amount));
     $('amount').value = ''; $('note').value = ''; $('extra-flag').checked = false;
-    render(); setMsg('msg', msg); $('amount').focus();
+    try { render(); } catch (err) { reportErr(err); }
+    setMsg('msg', msg); toast(msg);
   });
   $('save-quick').addEventListener('click', function () {
     if (state.type !== 'out') { setMsg('msg', 'Быстрый ввод сохраняется для расходов.', true); return; }
