@@ -404,6 +404,42 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 .fxmeta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin svg.ic { animation: spin 0.9s linear infinite; }
+/* v13: тонкие рамки, компактные элементы, подсветка нажатия, графики на широких экранах */
+.panel, .summary, .wallet, .fxc, .dtbl, .seg, .months, .lang-btn, .cur-select, .dd-btn, .fold-n { border-width: 1px; border-color: color-mix(in srgb, var(--line) 75%, transparent); }
+#bk-box { border-width: 1px; border-color: color-mix(in srgb, var(--line) 75%, transparent); }
+.panel { border-radius: 14px; }
+.fold > summary { min-height: 46px; padding: 8px 12px; gap: 9px; }
+.fold-ic { width: 28px; height: 28px; border-radius: 9px; }
+.fold-ic svg.ic { width: 16px; height: 16px; }
+.fold .chev { width: 26px; height: 26px; padding: 5px; stroke-width: 2.4; }
+.fold-t { font-size: 0.98rem; }
+.fold-n { height: 20px; font-size: 0.74rem; }
+.fx-pill { max-width: 62%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; line-height: 18px; padding: 0 9px; color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+.swatch[aria-pressed="true"] { border-width: 1.5px; padding: 5.5px 2.5px 4.5px; }
+.dd-menu { border-width: 1px; }
+.btn, .chip, .link-btn, .icon-btn, .swatch, .dd-btn, .dd-item, .fold > summary, .manual > summary, nav.tabs button, .mic, .send, .lang-btn, .months .label { -webkit-tap-highlight-color: transparent; transition: transform 0.1s ease, box-shadow 0.12s ease, background-color 0.12s ease, filter 0.12s ease; touch-action: manipulation; }
+.btn:not(.ghost) { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.12); }
+.btn.ghost { border-width: 1px; background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.btn:active, .chip:active, .icon-btn:active, .swatch:active, .dd-btn:active, .lang-btn:active, .mic:active, .send:active { transform: scale(0.96); filter: brightness(0.93); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 24%, transparent); }
+.link-btn:active { background: color-mix(in srgb, var(--accent) 16%, transparent); border-radius: 8px; }
+.dd-item:active { background: color-mix(in srgb, var(--accent) 18%, var(--surface)); }
+.fold > summary:active, .manual > summary:active { background: color-mix(in srgb, var(--accent) 10%, transparent); border-radius: 12px; }
+nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.btn:focus-visible, .chip:focus-visible, .link-btn:focus-visible, .icon-btn:focus-visible, nav.tabs button:focus-visible, .fold > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chart svg { max-width: 380px; margin: 0 auto; }
+.chart svg text { font-weight: 400; }
+.cards3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cards3 .wallet.wide { grid-column: 1 / -1; }
+.cards3 .val.big2 { font-size: 1.15rem; }
+.ibar { height: 8px; border-radius: 5px; background: color-mix(in srgb, var(--in) 30%, var(--line)); overflow: hidden; }
+.ibar i { display: block; height: 100%; width: 0; border-radius: 5px; background: var(--out); transition: width 0.3s; }
+.amt-row { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: 8px; align-items: stretch; }
+.wopen { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); }
+.wopen input { max-width: 150px; padding-top: 6px; padding-bottom: 6px; }
+.fxctl { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.fxconv { display: flex; align-items: center; gap: 10px; }
+.fxconv input { flex: 1 1 50%; min-width: 0; }
+.fxconv .num { flex: 1 1 50%; font-weight: 650; text-align: right; overflow-wrap: anywhere; }
 </style>
 </head>
 <body>
@@ -469,11 +505,20 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 
     <section class="panel" aria-label="Кошельки">
       <div class="wallets" id="wallet-grid"></div>
+      <p class="mini">Баланс считает только наличные и деньги на картах. Долги не входят в него: смотрите их на вкладке «Долги».</p>
       <p class="hint out" id="debt-alert" hidden></p>
     </section>
 
-    <details class="panel fold" id="fx-box" open>
-      <summary><span class="fold-ic"><svg class="ic" aria-hidden="true"><use href="#i-ops"/></svg></span><span class="fold-t">Курсы валют</span><span class="fold-n" id="fx-note"></span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
+    <details class="panel fold" id="fx-box">
+      <summary><span class="fold-t">Курсы валют</span><span class="fold-n fx-pill" id="fx-note"></span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
+      <div class="fxctl">
+        <div class="field"><label for="fx-cur">Валюта</label><select id="fx-cur"><option value="USD">Доллар $</option><option value="RUB">Рубль ₽</option><option value="TJS">Сомони</option></select></div>
+        <div class="field"><label for="fx-man" id="fx-man-l">1 $ = … сум</label><input type="text" id="fx-man" inputmode="decimal" autocomplete="off"></div>
+      </div>
+      <div class="row-actions"><button type="button" class="btn small" id="fx-save">Сохранить курс</button><button type="button" class="link-btn" id="fx-reset" hidden>Вернуть курс из интернета</button></div>
+      <p class="mini" id="fx-src"></p>
+      <p class="msg" id="fx-man-msg" role="status" aria-live="polite"></p>
+      <div class="fxconv"><input type="text" id="fx-amt" inputmode="decimal" placeholder="Сумма" aria-label="Сумма в выбранной валюте" autocomplete="off"><span class="num" id="fx-res"></span></div>
       <div class="fxgrid" id="fx-grid"></div>
       <div class="fxmeta"><p class="msg" id="fx-msg" role="status" aria-live="polite"></p><button type="button" class="link-btn" id="fx-refresh">Обновить курсы</button></div>
       <p class="mini">Курсы справочные и только для сравнения: записи они не меняют. В банке и на рынке курс может отличаться.</p>
@@ -568,7 +613,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   <main id="tab-debts" class="tab" style="display:contents" hidden>
     <section class="panel" aria-labelledby="debt-title">
       <h2 id="debt-title">Долги</h2>
-      <p class="hint">Долги видны во всех валютах сразу, какая бы валюта ни была выбрана сверху. Они не считаются ни расходом, ни доходом и меняют только остаток кошелька. На главной их нет.</p>
+      <p class="hint">Долги видны во всех валютах сразу, какая бы валюта ни была выбрана сверху. Они не считаются ни расходом, ни доходом и не входят в баланс кошельков. На главной их нет.</p>
       <div id="ds-table"></div>
       <p class="hint out" id="ds-alert" hidden></p>
     </section>
@@ -578,8 +623,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
         <div class="fields">
           <div class="field"><label for="ddir">Что произошло</label><select id="ddir"><option value="owed">Я дал в долг (мне должны)</option><option value="owe">Я взял в долг (я должен)</option></select></div>
           <div class="field"><label for="dw">Имя</label><input type="text" id="dw" maxlength="60" placeholder="Кто"></div>
-          <div class="field"><label for="da" id="da-label">Сумма</label><input type="text" id="da" inputmode="decimal"></div>
-          <div class="field"><label for="dcur">Валюта долга</label><select id="dcur"><option value="UZS">Сум</option><option value="USD">Доллар $</option><option value="RUB">Рубль ₽</option><option value="TJS">Сомони</option></select></div>
+          <div class="field wide"><label for="da" id="da-label">Сумма и валюта</label><div class="amt-row"><input type="text" id="da" inputmode="decimal" placeholder="0"><select id="dcur" aria-label="Валюта долга"><option value="UZS">Сум</option><option value="USD">Доллар $</option><option value="RUB">Рубль ₽</option><option value="TJS">Сомони</option></select></div></div>
           <div class="field"><label for="dwal">Кошелёк</label><select id="dwal"></select></div>
           <div class="field"><label for="ddate">Дата</label><input type="date" id="ddate"></div>
           <div class="field"><label for="ddue">Вернуть до</label><input type="date" id="ddue"></div>
@@ -605,6 +649,8 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     <section class="panel" aria-labelledby="rs-title">
       <h2 id="rs-title">Итоги месяца</h2>
       <div class="cards3" id="rsum"></div>
+      <div class="ibar" id="ibar" aria-hidden="true"><i></i></div>
+      <p class="hint" id="ibar-t"></p>
       <p class="hint" id="rcmp"></p>
     </section>
     <section class="panel" aria-labelledby="pie-title">
@@ -663,32 +709,6 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       <div class="row-actions"><a class="btn ghost small" id="ex-open" href="#" target="_blank" rel="noopener" hidden><span>Открыть PDF</span></a><button class="btn ghost small" type="button" id="ex-share" hidden><svg class="ic" aria-hidden="true" style="width:18px;height:18px"><use href="#i-share"/></svg> <span>Поделиться PDF</span></button></div>
       <p class="msg" id="exp-msg" role="status" aria-live="polite"></p>
     </section>
-  </main>
-
-  <!-- НАСТРОЙКИ -->
-  <main id="tab-settings" class="tab" style="display:contents" hidden>
-    <section class="panel" aria-labelledby="ap-title">
-      <h2 id="ap-title">Оформление</h2>
-      <div class="swatches" id="swatches" role="group" aria-label="Тема оформления"></div>
-      <div class="fields">
-        <div class="field"><label for="set-font">Шрифт</label><select id="set-font"></select></div>
-        <div class="field"><label for="set-size">Размер текста</label><select id="set-size"></select></div>
-      </div>
-    </section>
-
-    <section class="panel" aria-labelledby="w-title">
-      <h2 id="w-title">Кошельки и карты</h2>
-      <p class="hint">Можно завести несколько: наличные, Uzcard, Humo, копилка. Название меняется прямо в строке. Удалить можно только кошелёк без записей.</p>
-      <div id="wlist"></div>
-      <form id="wallet-form" autocomplete="off">
-        <div class="inline">
-          <input type="text" id="wnew" maxlength="30" placeholder="Название нового кошелька" aria-label="Название нового кошелька">
-          <button class="btn small" type="submit">Добавить</button>
-        </div>
-        <p class="msg" id="w-msg" role="status" aria-live="polite"></p>
-      </form>
-    </section>
-
     <details class="panel fold" id="bk-box">
       <summary><span class="fold-ic"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg></span><span class="fold-t">Резервные копии</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
       <p class="hint">Записи хранятся только в памяти этого устройства, обновление приложения их не трогает. Но если очистить данные сайта или сменить телефон, вернуть их можно только из файла. Сохраняйте копию в файл раз в неделю.</p>
@@ -707,6 +727,32 @@ details.more[open] > summary::before { transform: rotate(90deg); }
         <div id="bk-snaps"></div>
       </details>
     </details>
+
+  </main>
+
+  <!-- НАСТРОЙКИ -->
+  <main id="tab-settings" class="tab" style="display:contents" hidden>
+    <section class="panel" aria-labelledby="ap-title">
+      <h2 id="ap-title">Оформление</h2>
+      <div class="swatches" id="swatches" role="group" aria-label="Тема оформления"></div>
+      <div class="fields">
+        <div class="field"><label for="set-font">Шрифт</label><select id="set-font"></select></div>
+        <div class="field"><label for="set-size">Размер текста</label><select id="set-size"></select></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="w-title">
+      <h2 id="w-title">Кошельки и карты</h2>
+      <p class="hint">Можно завести несколько: наличные, Uzcard, Humo, копилка. Название меняется прямо в строке. Удалить можно только кошелёк без записей. «Начальный остаток» — сколько денег уже было в кошельке до первой записи.</p>
+      <div id="wlist"></div>
+      <form id="wallet-form" autocomplete="off">
+        <div class="inline">
+          <input type="text" id="wnew" maxlength="30" placeholder="Название нового кошелька" aria-label="Название нового кошелька">
+          <button class="btn small" type="submit">Добавить</button>
+        </div>
+        <p class="msg" id="w-msg" role="status" aria-live="polite"></p>
+      </form>
+    </section>
 
     <section class="panel" aria-labelledby="ab-title">
       <h2 id="ab-title">О приложении</h2>
@@ -740,11 +786,11 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 
   var CUR = { UZS: 'сум', RUB: '₽', TJS: 'сомони', USD: '$' };
   var CURORDER = ['UZS', 'USD', 'RUB', 'TJS'];
-  var OUT = ['Аренда квартиры', 'Питание', 'Транспорт', 'Топливо', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Одежда', 'Ребёнок', 'Образование', 'Развлечения', 'Подарки', 'Красота и уход', 'Товары для дома', 'Кредиты и рассрочки', 'Прочее'];
+  var OUT = ['Аренда квартиры', 'Питание', 'Транспорт', 'Топливо', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Одежда', 'Ребёнок', 'Образование', 'Развлечения', 'Подарки', 'Красота и уход', 'Товары для дома', 'Кредиты и рассрочки', 'Документы', 'Прочее'];
   /* Две категории убраны из выбора. Старые записи с ними остаются и показываются как раньше. */
   var OUT_OLD = ['Домашние животные', 'Лишние траты'];
   var OUT_ALL = OUT.concat(OUT_OLD);
-  var INC = ['Зарплата', 'Подработка', 'Подарок', 'Продажа', 'Возврат денег', 'Прочий доход'];
+  var INC = ['Зарплата', 'Аванс', 'Подработка', 'Подарок', 'Продажа', 'Возврат денег', 'Прочий доход'];
   var WALLET = { cash: 'Наличные', card: 'Карта' };
   var KEY = 'moneva-v1';
   var I18 = window.MonevaI18N || (function () {
@@ -792,6 +838,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       if (['system', 'cambria', 'franklin', 'times', 'sitka', 'pmingliu'].indexOf(st.font) >= 0) f.settings.font = st.font;
       if (['small', 'normal', 'large'].indexOf(st.size) >= 0) f.settings.size = st.size;
       if (['ru', 'uz', 'tg'].indexOf(st.lang) >= 0) f.settings.lang = st.lang;
+      if (st.fxManual && typeof st.fxManual === 'object') { var fm = {}; ['USD', 'RUB', 'TJS'].forEach(function (c) { if (+st.fxManual[c] > 0) fm[c] = +st.fxManual[c]; }); f.settings.fxManual = fm; }
     }
     // старые подсказки «Хлеб» и «Памперсы» заменяем, если пользователь их не менял
     var oldSet = ['Хлеб', 'Продукты', 'Такси', 'Памперсы'];
@@ -807,7 +854,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '12';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '13';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -892,7 +939,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     return day;
   }
   function save() {
-    if (store.safe) { toast('Данные не прочитаны, поэтому я ничего не записываю. Откройте Настройки → Резервные копии.'); return false; }
+    if (store.safe) { toast('Данные не прочитаны, поэтому я ничего не записываю. Откройте Отчёты → Резервные копии.'); return false; }
     db.savedAt = Date.now();
     var json = JSON.stringify(db);
     var ok = lsSet(KEY, json);
@@ -1015,7 +1062,10 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 
   /* ---------- кошельки ---------- */
   var MAND = ['Аренда квартиры', 'Питание', 'Транспорт', 'Топливо', 'Коммунальные', 'Связь и интернет', 'Здоровье', 'Ребёнок', 'Одежда'];
-  function effect(e) { return e.type === 'in' ? e.amount : e.type === 'out' ? -e.amount : e.sign * e.amount; }
+  /* Влияние записи на деньги в кошельках. Записи долгов в баланс не входят: долги считаются отдельно на вкладке «Долги». */
+  function effect(e) { if (e.debt) return 0; return e.type === 'in' ? e.amount : e.type === 'out' ? -e.amount : e.sign * e.amount; }
+  function openOf(w) { var v = w && w.open && +w.open[db.cur]; return isFinite(v) ? v : 0; }
+  function openTotal() { return db.wallets.reduce(function (a, w) { return a + openOf(w); }, 0); }
   function wname(id) {
     for (var i = 0; i < db.wallets.length; i++) if (db.wallets[i].id === id) return db.wallets[i].name;
     return 'Кошелёк';
@@ -1121,8 +1171,8 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   /* ---------- ГЛАВНАЯ ---------- */
   function renderHome() {
     var all = ents(), list = monthEnts(state.month);
-    var total = 0, bal = {};
-    db.wallets.forEach(function (w) { bal[w.id] = 0; });
+    var total = openTotal(), bal = {};
+    db.wallets.forEach(function (w) { bal[w.id] = openOf(w); });
     all.forEach(function (e) { var v = effect(e); total += v; bal[e.wallet] = (bal[e.wallet] || 0) + v; });
     var inM = 0, outM = 0, mand = 0;
     list.forEach(function (e) {
@@ -1215,7 +1265,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     var max = Math.max.apply(null, ins.concat(outs).concat([1]));
     var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Доходы и расходы' });
     svg.appendChild(sv('line', { x1: L, y1: H - B, x2: W - R, y2: H - B, stroke: 'var(--line)', 'stroke-width': 1 }));
-    svg.appendChild(sv('text', { x: L, y: 11, fill: 'var(--muted)', 'font-size': 10 }, _t('до') + ' ' + sh(max)));
+    if (max > 1) svg.appendChild(sv('text', { x: L, y: 11, fill: 'var(--muted)', 'font-size': 10 }, _t('до') + ' ' + sh(max)));
     var gw = (W - L - R) / keys.length, bw = Math.max(1.5, Math.min(16, gw / 2 - 1.5));
     keys.forEach(function (k, i) {
       var xc = L + gw * i + gw / 2, ch = H - B - T;
@@ -1262,7 +1312,14 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     var rs = clear($('rsum'));
     rs.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: 'Доходы' }), h('p', { class: 'val in num', text: fmt(cur.i) })));
     rs.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: 'Расходы' }), h('p', { class: 'val out num', text: fmt(cur.o) })));
-    rs.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: 'Разница' }), h('p', { class: 'val num ' + (diff < 0 ? 'out' : 'in'), text: signed(diff) })));
+    rs.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: 'Итог месяца' }), h('p', { class: 'val num ' + (diff < 0 ? 'out' : 'in'), text: signed(diff) })));
+    var endK = state.month + '-' + pad(daysIn(state.month));
+    var balEnd = openTotal() + ents().filter(function (e) { return e.date <= endK; }).reduce(function (a, e) { return a + effect(e); }, 0);
+    rs.appendChild(h('div', { class: 'wallet wide' }, h('p', { class: 'cap', text: 'Баланс на конец месяца (наличные и карты)' }), h('p', { class: 'val big2 num ' + (balEnd < 0 ? 'out' : ''), text: signed(balEnd) })));
+    var used = cur.i > 0 ? cur.o / cur.i * 100 : (cur.o > 0 ? 100 : 0);
+    $('ibar').firstChild.style.width = Math.min(100, used) + '%';
+    $('ibar').classList.toggle('over', cur.o > cur.i);
+    $('ibar-t').textContent = cur.i > 0 ? _f('Расходы составили {0}% доходов за месяц.', Math.round(used)) : (cur.o > 0 ? _t('Доходов в этом месяце нет, расходы есть.') : _t('В этом месяце записей пока нет.'));
     var mcat = byCat(list), top = Object.keys(mcat).sort(function (a, b) { return mcat[b] - mcat[a]; });
     var cmpText = prev.i || prev.o
       ? _f('К прошлому месяцу: доходы {0}, расходы {1}.', prev.i ? trend(cur.i, prev.i) : _t('нет данных'), prev.o ? trend(cur.o, prev.o) : _t('нет данных'))
@@ -1292,7 +1349,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     drawBars($('dyn'), keys, keys.map(function (k) { return sumBy('in', k); }), keys.map(function (k) { return sumBy('out', k); }), labels);
     var mk = [];
     for (var j = 5; j >= 0; j--) mk.push(shiftMonth(state.month, -j));
-    var bals = mk.map(function (k) { return all.filter(function (e) { return e.date.slice(0, 7) <= k; }).reduce(function (a, e) { return a + effect(e); }, 0); });
+    var bals = mk.map(function (k) { return openTotal() + all.filter(function (e) { return e.date.slice(0, 7) <= k; }).reduce(function (a, e) { return a + effect(e); }, 0); });
     drawLine($('sav'), mk, bals);
   }
 
@@ -1320,7 +1377,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       if (e.type === 'in') { inc += e.amount; ops++; }
       else if (e.type === 'out') { out += e.amount; cats[e.cat] = (cats[e.cat] || 0) + e.amount; ops++; }
     });
-    var bal = all.filter(function (e) { return e.date <= end; }).reduce(function (a, e) { return a + effect(e); }, 0);
+    var bal = openTotal() + all.filter(function (e) { return e.date <= end; }).reduce(function (a, e) { return a + effect(e); }, 0);
     var catList = Object.keys(cats).sort(function (a, b) { return cats[b] - cats[a]; });
     var base = 'moneva-' + (scope === 'month' ? state.month : scope === 'year' ? state.month.slice(0, 4) : 'vse') + '-' + db.cur;
     return { scope: scope, list: list, label: label, end: end, inc: inc, out: out, cats: cats, catList: catList, bal: bal, count: list.length, ops: ops, base: base };
@@ -1573,7 +1630,16 @@ details.more[open] > summary::before { transform: rotate(90deg); }
         if (walletUsed(w.id)) act.appendChild(h('span', { class: 'hint', text: 'есть записи' }));
         else delBtn('w' + w.id, function () { db.wallets = db.wallets.filter(function (x) { return x.id !== w.id; }); save(); render(); }, w.name).forEach(function (b) { act.appendChild(b); });
       }
-      el.appendChild(h('div', { class: 'wrow' }, inp, act));
+      var op = h('input', { type: 'text', inputmode: 'decimal', 'aria-label': _f('Начальный остаток, {0}', cname()) });
+      op.value = openOf(w) ? String(openOf(w)) : '';
+      op.addEventListener('change', function () {
+        var raw = op.value.trim(), v = raw ? parseAmount(raw) : 0;
+        if (!isFinite(v)) { toast('Введите число'); op.value = openOf(w) ? String(openOf(w)) : ''; return; }
+        if (!w.open || typeof w.open !== 'object') w.open = {};
+        if (v) w.open[db.cur] = v; else delete w.open[db.cur];
+        save(); render(); toast('Начальный остаток сохранён');
+      });
+      el.appendChild(h('div', { class: 'wrow' }, inp, act, h('label', { class: 'wopen' }, h('span', { text: _f('Начальный остаток, {0}', cname()) }), op)));
     });
     renderBackup();
   }
@@ -1751,7 +1817,15 @@ details.more[open] > summary::before { transform: rotate(90deg); }
       g.appendChild(h('span', { class: 'num dv in', text: o.owed ? numC(o.owed, c) : '—' }));
       g.appendChild(h('span', { class: 'num dv out', text: o.owe ? numC(o.owe, c) : '—' }));
     });
+    var uz = uzsPer(), tot = { owed: 0, owe: 0 }, allOk = cs.length > 1;
+    cs.forEach(function (c) { if (!uz[c]) allOk = false; else { tot.owed += st.by[c].owed * uz[c]; tot.owe += st.by[c].owe * uz[c]; } });
+    if (allOk) {
+      g.appendChild(h('span', { class: 'dc', text: 'Всего ≈ в сумах' }));
+      g.appendChild(h('span', { class: 'num dv in', text: tot.owed ? numC(tot.owed, 'UZS') : '—' }));
+      g.appendChild(h('span', { class: 'num dv out', text: tot.owe ? numC(tot.owe, 'UZS') : '—' }));
+    }
     box.appendChild(g);
+    if (allOk) box.appendChild(h('p', { class: 'mini', text: 'Пересчёт по курсам из блока «Курсы валют» на главной.' }));
   }
   var DPFX = ['Дал в долг: ', 'Взял в долг: ', 'Вернули: ', 'Вернул: '];
   function debtEntries(d) { return db.entries.filter(function (x) { return x.debt === d.id; }); }
@@ -1861,7 +1935,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     function field(lbl, el, wide) { return h('div', { class: 'field' + (wide ? ' wide' : '') }, h('label', { text: lbl }), el); }
     var box = h('div', { class: 'item vcard debt-edit' },
       h('div', { class: 'item-head' }, h('span', { class: 'name', text: 'Изменить долг' })),
-      h('div', { class: 'fields' }, field('Имя', fw, true), field('Сумма', fa), field('Валюта долга', fc), field('Кошелёк', fl), field('Дата', fd), field('Вернуть до', fu), field('Комментарий', fn, true)),
+      h('div', { class: 'fields' }, field('Имя', fw, true), field('Сумма и валюта', h('div', { class: 'amt-row' }, fa, fc), true), field('Кошелёк', fl), field('Дата', fd), field('Вернуть до', fu), field('Комментарий', fn, true)),
       msg,
       h('div', { class: 'inline' },
         h('button', { type: 'button', class: 'btn small', text: 'Сохранить', onclick: function () {
@@ -2114,6 +2188,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   /*PARSER_START*/
   var NW = { ноль: 0, один: 1, одна: 1, одну: 1, два: 2, две: 2, три: 3, четыре: 4, пять: 5, шесть: 6, семь: 7, восемь: 8, девять: 9, десять: 10, одиннадцать: 11, двенадцать: 12, тринадцать: 13, четырнадцать: 14, пятнадцать: 15, шестнадцать: 16, семнадцать: 17, восемнадцать: 18, девятнадцать: 19, двадцать: 20, тридцать: 30, сорок: 40, пятьдесят: 50, шестьдесят: 60, семьдесят: 70, восемьдесят: 80, девяносто: 90, сто: 100, двести: 200, триста: 300, четыреста: 400, пятьсот: 500, шестьсот: 600, семьсот: 700, восемьсот: 800, девятьсот: 900 };
   var CAT_RULES = [
+    ['Документы', ['документ', 'справк', 'нотариус', 'апостил', 'загранпаспорт', 'паспорт', 'госпошлин', 'пошлин', 'визу=', 'виза=', 'визы=', 'доверенност', 'легализац']],
     ['Ребёнок', ['памперс', 'подгузник', 'смесь', 'смеси', 'мазь', 'присыпк', 'детск', 'малыш', 'ребен', 'игрушк', 'коляск', 'соск', 'пеленк', 'садик', 'детсад', 'сад=']],
     ['Здоровье', ['dori', 'дору', 'здоровь', 'медицин', 'аптек', 'лекарств', 'врач', 'доктор', 'больниц', 'анализ', 'стоматолог', 'зуб', 'таблетк', 'витамин', 'поликлиник', 'лечен', 'терапевт', 'узи=', 'рентген', 'операци', 'очки=', 'линзы', 'капли']],
     ['Аренда квартиры', ['ijara', 'иҷора', 'аренд', 'квартир', 'съем', 'снимаю', 'жиль', 'жилье']],
@@ -2165,7 +2240,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     var res = { amount: findAmount(raw), type: 'out', cat: 'Прочее', wallet: defWallet || 'card', date: ds(new Date()), extra: false, note: '' };
     if (wordHit(words, INC_WORDS)) {
       res.type = 'in';
-      res.cat = wordHit(words, ['зарплат', 'аванс', 'премия', 'премию']) ? 'Зарплата' : wordHit(words, ['подработк', 'заработал', 'заработала']) ? 'Подработка' : wordHit(words, ['продал', 'продала']) ? 'Продажа' : wordHit(words, ['подарили']) ? 'Подарок' : wordHit(words, ['возврат', 'кэшбэк', 'кешбэк']) ? 'Возврат денег' : 'Прочий доход';
+      res.cat = wordHit(words, ['аванс']) ? 'Аванс' : wordHit(words, ['зарплат', 'премия', 'премию']) ? 'Зарплата' : wordHit(words, ['подработк', 'заработал', 'заработала']) ? 'Подработка' : wordHit(words, ['продал', 'продала']) ? 'Продажа' : wordHit(words, ['подарили']) ? 'Подарок' : wordHit(words, ['возврат', 'кэшбэк', 'кешбэк']) ? 'Возврат денег' : 'Прочий доход';
     } else {
       for (var i = 0; i < CAT_RULES.length; i++) { if (wordHit(words, CAT_RULES[i][1])) { res.cat = CAT_RULES[i][0]; break; } }
     }
@@ -2184,6 +2259,15 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   var MAXMS = 30000, SILENCE_MS = 4000, STOPWORDS = ['всё', 'все', 'готово', 'стоп', 'хватит'];
   var vt = { max: null, silence: null, kill: null, restarts: 0, got: false, err: '' };
 
+  /* На некоторых Android (Xiaomi/POCO) распознавание повторяет фразу дважды: «такси 30000 такси 30000». Оставляем одну. */
+  function unDouble(t) {
+    var w = t.split(/\s+/).filter(Boolean);
+    if (w.length >= 2 && w.length % 2 === 0) {
+      var a = w.slice(0, w.length / 2).join(' ').toLowerCase(), b = w.slice(w.length / 2).join(' ').toLowerCase();
+      if (a === b) return w.slice(0, w.length / 2).join(' ');
+    }
+    return t;
+  }
   function stripStop(text) {
     var words = String(text || '').trim().split(/\s+/).filter(Boolean);
     var last = words.length ? words[words.length - 1].toLowerCase().replace(/[.,!?]/g, '') : '';
@@ -2286,12 +2370,13 @@ details.more[open] > summary::before { transform: rotate(90deg); }
     try {
       releaseMic();
       var r = new SR(); rec = r;
-      r.lang = 'ru-RU'; r.interimResults = true; r.continuous = true; r.maxAlternatives = 1;
+      var droid = /Android/i.test(navigator.userAgent);
+      r.lang = 'ru-RU'; r.interimResults = true; r.continuous = !droid; r.maxAlternatives = 1;
       r.onstart = function () { setListening(true); };
       r.onresult = function (ev) {
         var t = '';
         for (var i = 0; i < ev.results.length; i++) t += ev.results[i][0].transcript + ' ';
-        t = t.trim();
+        t = unDouble(t.trim());
         if (!t) return;
         vt.got = true;
         var c = stripStop(t);
@@ -2312,7 +2397,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
           'audio-capture': 'Микрофон не найден.',
           'language-not-supported': 'Этот язык не поддерживается распознаванием в вашем браузере.'
         };
-        vt.err = m[e] || 'Не получилось распознать голос. Напишите фразу в строке.';
+        vt.err = (m[e] || 'Не получилось распознать голос. Напишите фразу в строке.') + ' (' + e + ')';
         wantListen = false;
       };
       r.onend = function () {
@@ -2476,32 +2561,60 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   /* ---------- курсы валют: раз в день из интернета, без ключей; без сети показываем последние сохранённые ---------- */
   var FXKEY = 'moneva-rates', fx = null, fxBusy = false, fxErr = false;
   try { var fxs = JSON.parse(localStorage.getItem(FXKEY)); if (fxs && fxs.r && fxs.r.UZS > 0 && fxs.r.RUB > 0 && fxs.r.TJS > 0) fx = fxs; } catch (e) {}
-  var FXBASE = { USD: 1, RUB: 100, TJS: 10, UZS: 10000 };
+  var FXBASE = { USD: 1, RUB: 100, TJS: 10, UZS: 10000 }, fxSel = 'USD';
   function fxNum(v) {
     var d = v >= 100 ? 0 : v >= 1 ? 2 : 3;
     return v.toLocaleString('ru-RU', { minimumFractionDigits: d, maximumFractionDigits: d });
   }
+  function fxManual() { var m = db.settings.fxManual; return m && typeof m === 'object' ? m : {}; }
+  function autoUz(c) { return fx ? (c === 'USD' ? fx.r.UZS : fx.r.UZS / fx.r[c]) : 0; }
+  /* Сколько сум стоит 1 единица валюты: ваш курс, а если его нет, то курс из интернета. */
+  function uzsPer() {
+    var m = fxManual(), o = { UZS: 1 };
+    ['USD', 'RUB', 'TJS'].forEach(function (c) { var v = +m[c] > 0 ? +m[c] : autoUz(c); if (v > 0) o[c] = v; });
+    return o;
+  }
   function renderFx() {
-    var g = clear($('fx-grid'));
+    var g = clear($('fx-grid')), uz = uzsPer(), have = !!(uz.USD && uz.RUB && uz.TJS), man = fxManual();
     $('fx-refresh').disabled = fxBusy;
     $('fx-refresh').textContent = _t(fxBusy ? 'Обновляю…' : 'Обновить курсы');
-    if (!fx) {
-      g.hidden = true; $('fx-note').textContent = '';
+    $('fx-note').textContent = uz.USD ? '1 $ = ' + fxNum(uz.USD) + ' ' + (I18.cur('UZS') || 'сум') : '';
+    g.hidden = !have;
+    // выбранная валюта и ручной курс
+    var inp = $('fx-man');
+    if (document.activeElement !== inp) inp.value = uz[fxSel] ? String(Math.round(uz[fxSel] * 100) / 100) : '';
+    $('fx-cur').value = fxSel;
+    $('fx-src').textContent = _t(+man[fxSel] > 0 ? 'Сейчас используется ваш курс.' : uz[fxSel] ? 'Сейчас курс из интернета.' : 'Курс ещё не загружен: введите свой или нажмите «Обновить курсы».');
+    $('fx-reset').hidden = !(+man[fxSel] > 0);
+    $('fx-man-l').textContent = _f('1 {0} = … сум', CUR[fxSel] === '$' ? '$' : CUR[fxSel]);
+    var amt = parseAmount($('fx-amt').value);
+    $('fx-res').textContent = amt > 0 && uz[fxSel] ? '= ' + fmtC(amt * uz[fxSel], 'UZS') : '';
+    if (!have) {
       setMsg('fx-msg', fxBusy ? 'Загружаю курсы…' : fxErr ? 'Курсы не загрузились. Проверьте интернет и нажмите «Обновить курсы».' : 'Курсы ещё не загружены.', fxErr && !fxBusy);
       return;
     }
-    g.hidden = false;
-    $('fx-note').textContent = '$ ' + Math.round(fx.r.UZS).toLocaleString('ru-RU');
     ['USD', 'RUB', 'TJS', 'UZS'].forEach(function (a) {
       var card = h('div', { class: 'fxc' }, h('div', { class: 'fxh', text: fmtC(FXBASE[a], a) }));
       ['UZS', 'USD', 'RUB', 'TJS'].forEach(function (b) {
         if (b === a) return;
-        card.appendChild(h('div', { class: 'fxl' }, h('span', { class: 'num', text: fxNum(FXBASE[a] * fx.r[b] / fx.r[a]) }), h('span', { class: 'fxu', text: I18.cur(b) || CUR[b] })));
+        card.appendChild(h('div', { class: 'fxl' }, h('span', { class: 'num', text: fxNum(FXBASE[a] * uz[a] / uz[b]) }), h('span', { class: 'fxu', text: I18.cur(b) || CUR[b] })));
       });
       g.appendChild(card);
     });
-    setMsg('fx-msg', fxBusy ? 'Обновляю…' : _f(fxErr ? 'Нет связи. Показаны сохранённые курсы от {0}' : 'Обновлено: {0}', fmtDT(fx.t)), false);
+    setMsg('fx-msg', fxBusy ? 'Обновляю…' : fx ? _f(fxErr ? 'Нет связи. Показаны сохранённые курсы от {0}' : 'Обновлено: {0}', fmtDT(fx.t)) : '', false);
   }
+  $('fx-cur').addEventListener('change', function () { fxSel = $('fx-cur').value; $('fx-man').blur(); renderFx(); });
+  $('fx-amt').addEventListener('input', function () { renderFx(); });
+  $('fx-save').addEventListener('click', function () {
+    var v = parseAmount($('fx-man').value);
+    if (!(v > 0) || !isFinite(v)) { setMsg('fx-man-msg', 'Введите курс больше нуля.', true); return; }
+    var m = Object.assign({}, fxManual()); m[fxSel] = v; db.settings.fxManual = m;
+    save(); setMsg('fx-man-msg', 'Курс сохранён. Он используется в курсах и в итогах долгов.'); render();
+  });
+  $('fx-reset').addEventListener('click', function () {
+    var m = Object.assign({}, fxManual()); delete m[fxSel]; db.settings.fxManual = m;
+    save(); setMsg('fx-man-msg', 'Возвращён курс из интернета.'); render();
+  });
   function fxTake(a, b, c) {
     var u = +a, r = +b, t = +c;
     if (!(u > 0 && r > 0 && t > 0)) throw new Error('bad');
@@ -2546,7 +2659,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
   })();
 
   (function foldState() {
-    [['recent-box', true], ['bud-box', false], ['bk-box', false], ['fx-box', true]].forEach(function (x) {
+    [['recent-box', true], ['bud-box', false], ['bk-box', false], ['fx-box', false]].forEach(function (x) {
       var el = $(x[0]), v = null;
       try { v = localStorage.getItem('moneva-fold-' + x[0]); } catch (e) {}
       el.open = v == null ? x[1] : v === '1';
@@ -2594,7 +2707,7 @@ details.more[open] > summary::before { transform: rotate(90deg); }
 
   // напоминание о копии
   if (db.entries.length > 10 && (!db.lastBackup || Date.now() - db.lastBackup > 14 * 86400000)) {
-    setTimeout(function () { toast('Сделайте резервную копию: Настройки → Резервные копии.'); }, 1200);
+    setTimeout(function () { toast('Сделайте резервную копию: Отчёты → Резервные копии.'); }, 1200);
   }
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
