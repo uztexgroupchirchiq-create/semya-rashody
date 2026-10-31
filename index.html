@@ -861,7 +861,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '15';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '16';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -1204,6 +1204,15 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
       } else {
         if (e.note) mid.appendChild(h('div', { class: 'rn', text: noteText(e.note) }));
         actions.appendChild(h('button', { type: 'button', class: 'link-btn', text: e.note ? 'Изменить комментарий' : '+ Комментарий', onclick: function () { state.editC = e.id; render(); } }));
+        if (e.type === 'in' && e.cat === 'Зарплата' && !e.advOf) {
+          var advs = advanceOpen(e.cur || db.cur, e.date.slice(0, 7)), asum = advs.reduce(function (t, x) { return t + x.amount; }, 0);
+          if (asum > 0 && e.amount > asum) actions.appendChild(h('button', { type: 'button', class: 'link-btn', text: _f('Вычесть аванс {0}', fmt(asum)), onclick: function () {
+            if (!window.confirm(_f('Зарплата {0} минус аванс {1} = {2}. Изменить запись?', fmt(e.amount), fmt(asum), fmt(e.amount - asum)))) return;
+            var was = e.amount; e.advOf = advs.map(function (x) { return x.id; }); e.amount = r2(was - asum);
+            e.note = (e.note ? e.note + ' · ' : '') + _f('Зарплата {0} минус аванс {1}', fmt(was), fmt(asum));
+            save(); render(); toast(_f('Записано: {0}', fmt(e.amount)));
+          } }));
+        }
         if (!e.debt) delBtn('e' + elId + e.id, function () { db.entries = db.entries.filter(function (x) { return e.tr ? x.tr !== e.tr : x.id !== e.id; }); save(); render(); }, e.cat).forEach(function (b) { actions.appendChild(b); });
       }
       el.appendChild(h('div', { class: 'row' },
@@ -2309,6 +2318,13 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     else if (words.some(function (w) { return w.indexOf('карт') === 0; })) res.wallet = 'card';
     var back = words.indexOf('позавчера') >= 0 ? 2 : words.indexOf('вчера') >= 0 ? 1 : 0;
     if (back) { var d0 = new Date(); d0.setDate(d0.getDate() - back); res.date = ds(d0); }
+    res.cur = null;
+    words.forEach(function (w) {
+      if (/^(доллар|долар|бакс|dollar|usd)/.test(w)) res.cur = 'USD';
+      else if (/^(рубл|руб$|rubl|rub$)/.test(w)) res.cur = 'RUB';
+      else if (/^(сомон|somon|смн)/.test(w)) res.cur = 'TJS';
+      else if (/^(сум|сумов|сумах|сўм|сӯм|som|sum)$/.test(w)) res.cur = 'UZS';
+    });
     res.extra = res.type === 'out' && wordHit(words, ['лишн', 'зря', 'ненужн']);
     res.note = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : '';
     return res;
@@ -2348,6 +2364,8 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     var typ = res.type;
     var amt = h('input', { type: 'text', inputmode: 'decimal', 'aria-label': 'Сумма' }); amt.value = String(res.amount);
     var cat = h('select', { 'aria-label': 'Категория' });
+    var vcur = h('select', { 'aria-label': 'Валюта' });
+    CURORDER.forEach(function (k) { vcur.appendChild(h('option', { value: k, text: k })); }); vcur.value = CUR[res.cur] ? res.cur : db.cur;
     var wal = h('select', { 'aria-label': 'Кошелёк' });
     db.wallets.forEach(function (w) { wal.appendChild(h('option', { value: w.id, text: w.name })); }); wal.value = res.wallet;
     var dt = h('input', { type: 'date', 'aria-label': 'Дата' }); dt.value = res.date;
@@ -2368,25 +2386,27 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
       if (!(a > 0)) { warn.textContent = _t('Проверьте сумму: она должна быть больше нуля.'); amt.focus(); return; }
       if (!dt.value) { warn.textContent = _t('Выберите дату.'); return; }
       saved = true; add.disabled = true;
-      var entry = { type: typ, amount: a, cat: cat.value, wallet: wal.value, date: dt.value, note: res.note, extra: typ === 'out' && !!res.extra };
+      var entry = { cur: vcur.value, type: typ, amount: a, cat: cat.value, wallet: wal.value, date: dt.value, note: res.note, extra: typ === 'out' && !!res.extra };
       entry = advanceAsk(entry); a = entry.amount;
       addEntry(entry);
       if (!save()) { db.entries.pop(); saved = false; add.disabled = false; return; }
       state.month = entry.date.slice(0, 7);
+      var switched = entry.cur !== db.cur;
+      if (switched) { db.cur = entry.cur; save(); applyCur(); }
       $('say').value = ''; clear($('voice-card')); pendingVoice = null;
-      render(); toast(_f(typ === 'in' ? 'Доход добавлен: {0}' : 'Расход добавлен: {0}', fmt(a)));
+      render(); toast(_f(typ === 'in' ? 'Доход добавлен: {0}' : 'Расход добавлен: {0}', fmtC(a, entry.cur)) + (switched ? ' · ' + _t('Валюта: ') + entry.cur : ''));
     } });
     box.appendChild(h('div', { class: 'vcard' },
       h('div', { class: 'inline' }, bo, bi),
       h('div', { class: 'fields' },
-        h('div', { class: 'field' }, h('label', { text: _f('Сумма, {0}', cname()) }), amt),
+        h('div', { class: 'field wide' }, h('label', { text: 'Сумма и валюта' }), h('div', { class: 'amt-row' }, amt, vcur)),
         h('div', { class: 'field' }, h('label', { text: 'Категория' }), cat),
         h('div', { class: 'field' }, h('label', { text: 'Кошелёк' }), wal),
         h('div', { class: 'field' }, h('label', { text: 'Дата' }), dt)),
       h('div', { class: 'rn', text: _f('Распознано: «{0}»', res.note) }),
       warn,
       h('div', { class: 'inline' }, add, h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { clear($('voice-card')); pendingVoice = null; } }))));
-    enhanceSelect(cat); enhanceSelect(wal);
+    enhanceSelect(cat); enhanceSelect(wal); enhanceSelect(vcur);
     setT(res.type);
     if (res.type === typ) { cat.value = res.cat; warn.textContent = res.cat === 'Прочее' ? W_CAT : ''; }
   }
