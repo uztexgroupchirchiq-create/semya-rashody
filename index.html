@@ -434,7 +434,13 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
 .cards3 .val.big2 { font-size: 1.15rem; }
 .ibar { height: 8px; border-radius: 5px; background: color-mix(in srgb, var(--in) 30%, var(--line)); overflow: hidden; }
 .ibar i { display: block; height: 100%; width: 0; border-radius: 5px; background: var(--out); transition: width 0.3s; }
-.amt-row { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: 8px; align-items: stretch; }
+
+.item.dcard { border: 1px solid var(--line); border-left: 4px solid var(--in); border-radius: 12px; padding: 10px 12px; margin-top: 10px; background: var(--field); }
+.item.dcard.owe { border-left-color: var(--out); }
+.item.dcard.done { opacity: 0.7; }
+.item.dcard:first-child { border-top: 1px solid var(--line); }
+.dtbl > .dc { font-size: 0.8rem; letter-spacing: 0.04em; }
+.amt-row { display: grid; grid-template-columns: minmax(0, 1fr) 84px; gap: 8px; align-items: stretch; }
 .wopen { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); }
 .wopen input { max-width: 150px; padding-top: 6px; padding-bottom: 6px; }
 .fxctl { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
@@ -624,7 +630,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
         <div class="fields">
           <div class="field"><label for="ddir">Что произошло</label><select id="ddir"><option value="owed">Я дал в долг (мне должны)</option><option value="owe">Я взял в долг (я должен)</option></select></div>
           <div class="field"><label for="dw">Имя</label><input type="text" id="dw" maxlength="60" placeholder="Кто"></div>
-          <div class="field wide"><label for="da" id="da-label">Сумма и валюта</label><div class="amt-row"><input type="text" id="da" inputmode="decimal" placeholder="0"><select id="dcur" aria-label="Валюта долга"><option value="UZS">Сум</option><option value="USD">Доллар $</option><option value="RUB">Рубль ₽</option><option value="TJS">Сомони</option></select></div></div>
+          <div class="field wide"><label for="da" id="da-label">Сумма и валюта</label><div class="amt-row"><input type="text" id="da" inputmode="decimal" placeholder="0"><select id="dcur" aria-label="Валюта долга"><option value="UZS">UZS</option><option value="USD">USD</option><option value="RUB">RUB</option><option value="TJS">TJS</option></select></div></div>
           <div class="field"><label for="dwal">Кошелёк</label><select id="dwal"></select></div>
           <div class="field"><label for="ddate">Дата</label><input type="date" id="ddate"></div>
           <div class="field"><label for="ddue">Вернуть до</label><input type="date" id="ddue"></div>
@@ -855,7 +861,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '14';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '15';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -1766,8 +1772,24 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   }
 
   /* ---------- ПЛАНЫ ---------- */
+  /* аванс уже получен в этом месяце → зарплату можно записать полностью, а аванс вычесть */
+  function advanceOpen(cur, month) {
+    var used = {};
+    db.entries.forEach(function (x) { (x.advOf || []).forEach(function (id) { used[id] = true; }); });
+    return db.entries.filter(function (x) { return x.type === 'in' && x.cat === 'Аванс' && (x.cur || db.cur) === cur && x.date.slice(0, 7) === month && !used[x.id]; });
+  }
+  function advanceAsk(o) {
+    if (o.type !== 'in' || o.cat !== 'Зарплата') return o;
+    var c = o.cur || db.cur, adv = advanceOpen(c, o.date.slice(0, 7));
+    var sum = adv.reduce(function (t, x) { return t + x.amount; }, 0);
+    if (!adv.length || !(sum > 0) || !(o.amount > sum)) return o;
+    var q = _f('В этом месяце уже есть аванс: {0}. Зарплата записана полностью ({1})? Вычесть аванс, чтобы не считать его дважды? Будет записано: {2}.', fmt(sum), fmt(o.amount), fmt(o.amount - sum));
+    if (!window.confirm(q)) return o;
+    var n = o.note ? o.note + ' · ' : '';
+    return Object.assign({}, o, { amount: r2(o.amount - sum), advOf: adv.map(function (x) { return x.id; }), note: n + _f('Зарплата {0} минус аванс {1}', fmt(o.amount), fmt(sum)) });
+  }
   function addEntry(o) {
-    var e = { id: uid(), cur: o.cur || db.cur, type: o.type, amount: o.amount, cat: o.cat, wallet: o.wallet || 'card', date: o.date, note: o.note || '', extra: !!o.extra, rec: o.rec || null, sign: o.sign || 0, debt: o.debt || null, ts: Date.now() };
+    var e = { id: uid(), advOf: o.advOf || undefined, cur: o.cur || db.cur, type: o.type, amount: o.amount, cat: o.cat, wallet: o.wallet || 'card', date: o.date, note: o.note || '', extra: !!o.extra, rec: o.rec || null, sign: o.sign || 0, debt: o.debt || null, ts: Date.now() };
     db.entries.push(e);
     return e;
   }
@@ -1835,7 +1857,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   }
 
   /* ---------- долги: итоги, строка, правка ---------- */
-  var CURTITLE = { UZS: 'Сум', USD: 'Доллар', RUB: 'Рубль', TJS: 'Сомони' };
+  var CURTITLE = { UZS: 'UZS', USD: 'USD', RUB: 'RUB', TJS: 'TJS' };
   function r2(x) { return Math.round(x * 100) / 100; }
   function renderDebtSummary(st) {
     var box = clear($('ds-table'));
@@ -1945,7 +1967,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
           return row;
         }));
     }
-    return h('div', { class: 'item' + (done ? ' done' : '') },
+    return h('div', { class: 'item dcard ' + (d.dir === 'owe' ? 'owe' : 'owed') + (done ? ' done' : '') },
       h('div', { class: 'item-head' }, h('span', { class: 'name', text: d.who }), h('span', { class: 'num ' + (d.dir === 'owe' ? 'out' : 'in'), text: paid ? _f('остаток {0} из {1}', F(left), F(d.amount)) : _f('остаток {0}', F(left)) })),
       paid ? h('div', { class: 'track' }, fill) : null,
       h('div', { class: 'hint' + (late ? ' out' : ''), text: mp.join(' · ') }),
@@ -2177,7 +2199,8 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     if (!(amount > 0)) { setMsg('msg', 'Введите сумму больше нуля.', true); $('amount').focus(); return; }
     var date = $('date').value;
     if (!date) { setMsg('msg', 'Выберите дату.', true); return; }
-    var added = addEntry({ type: state.type, amount: amount, cat: $('cat').value || (state.type === 'in' ? 'Прочий доход' : 'Прочее'), wallet: $('wallet').value || db.wallets[0].id, date: date, note: $('note').value.trim(), extra: state.type === 'out' && $('extra-flag').checked });
+    var added = addEntry(advanceAsk({ type: state.type, amount: amount, cat: $('cat').value || (state.type === 'in' ? 'Прочий доход' : 'Прочее'), wallet: $('wallet').value || db.wallets[0].id, date: date, note: $('note').value.trim(), extra: state.type === 'out' && $('extra-flag').checked }));
+    amount = added.amount;
     if (!save()) { db.entries = db.entries.filter(function (x) { return x !== added; }); setMsg('msg', 'Запись не сохранена: память устройства недоступна. Ничего не потеряно, попробуйте ещё раз.', true); return; }
     state.month = date.slice(0, 7);
     var msg = _f(state.type === 'in' ? 'Доход добавлен: {0}' : 'Расход добавлен: {0}', fmt(amount));
@@ -2346,6 +2369,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
       if (!dt.value) { warn.textContent = _t('Выберите дату.'); return; }
       saved = true; add.disabled = true;
       var entry = { type: typ, amount: a, cat: cat.value, wallet: wal.value, date: dt.value, note: res.note, extra: typ === 'out' && !!res.extra };
+      entry = advanceAsk(entry); a = entry.amount;
       addEntry(entry);
       if (!save()) { db.entries.pop(); saved = false; add.disabled = false; return; }
       state.month = entry.date.slice(0, 7);
