@@ -283,7 +283,7 @@ button.leg[aria-pressed="true"] { background: var(--field); outline: 1px solid v
 .exp-btns .btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; text-align: center; }
 .exp-btns svg.ic { width: 20px; height: 20px; }
 @media (min-width: 561px) { .exp-btns { grid-template-columns: repeat(3, 1fr); } }
-#say::placeholder { font-size: 0.95rem; }
+#say::placeholder { font-size: 0.82rem; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 .tabs button .ti { display: grid; place-items: center; width: 52px; height: 28px; border-radius: 14px; }
 .tabs button .tl { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -440,6 +440,8 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
 .item.dcard.done { opacity: 0.7; }
 .item.dcard:first-child { border-top: 1px solid var(--line); }
 .dtbl > .dc { font-size: 0.8rem; letter-spacing: 0.04em; }
+.dmini { text-align: left; cursor: pointer; font: inherit; color: inherit; background: none; }
+#bal-split { margin-top: 4px; }
 .amt-row { display: grid; grid-template-columns: minmax(0, 1fr) 84px; gap: 8px; align-items: stretch; }
 .wopen { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); }
 .wopen input { max-width: 150px; padding-top: 6px; padding-bottom: 6px; }
@@ -447,6 +449,19 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
 .fxconv { display: flex; align-items: center; gap: 10px; }
 .fxconv input { flex: 1 1 50%; min-width: 0; }
 .fxconv .num { flex: 1 1 50%; font-weight: 650; text-align: right; overflow-wrap: anywhere; }
+
+/* v17: мягкие тени, цветные полоски у кошельков, плитки с иконкой */
+.panel, .summary { border-radius: 16px; box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 7%, transparent), 0 12px 26px -18px color-mix(in srgb, var(--accent) 45%, transparent); }
+.summary { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--surface)) 0%, var(--surface) 70%); }
+.wallet { position: relative; border-radius: 14px; padding-left: 16px; background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
+.wallet::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 4px; border-radius: 0 4px 4px 0; background: var(--accent); }
+.wallet.dmini:nth-of-type(1)::before { background: var(--in); }
+.wallet.dmini:nth-of-type(2)::before { background: var(--out); }
+.info, .fold-n, .tag { box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent); }
+.fold > summary { border-radius: 14px; }
+.row { border-radius: 12px; }
+nav.tabs button .ti { transition: background 0.2s, transform 0.15s; }
+nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--accent) 16%, transparent); transform: translateY(-1px); }
 </style>
 </head>
 <body>
@@ -504,7 +519,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   <!-- ГЛАВНАЯ -->
   <main id="tab-home" class="tab" style="display:contents">
     <section class="summary" aria-label="Итоги">
-      <div><p class="cap">Общий баланс на конец месяца</p><p class="val big num" id="balance"></p></div>
+      <div><p class="cap">Общий баланс на конец месяца</p><p class="val big num" id="balance"></p><p class="mini" id="bal-split"></p></div>
       <div><p class="cap">Доходы</p><p class="val in num" id="income"></p></div>
       <div><p class="cap">Расходы</p><p class="val out num" id="expense"></p></div>
       <div><p class="cap">Свободные средства<button type="button" class="info" id="free-info" aria-label="Что такое свободные средства" aria-expanded="false">i</button></p><p class="val in num" id="free"></p><p class="mini" id="free-hint" hidden>Доходы месяца минус обязательные расходы: жильё, еда, транспорт, коммунальные, связь, здоровье, ребёнок, одежда.</p></div>
@@ -512,6 +527,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
 
     <section class="panel" aria-label="Кошельки">
       <div class="wallets" id="wallet-grid"></div>
+      <div class="wallets" id="debt-mini"></div>
       <p class="mini">Баланс считает только наличные и деньги на картах. Долги не входят в него: смотрите их на вкладке «Долги».</p>
       <p class="hint out" id="debt-alert" hidden></p>
     </section>
@@ -861,7 +877,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '16';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '17';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -948,16 +964,20 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
       store.lastSnap = t;
       // храним не больше 8 автоматических и 8 «перед обновлением или восстановлением»
       var auto = store.snaps.filter(function (x) { return x.tag === 'auto'; }), other = store.snaps.filter(function (x) { return x.tag !== 'auto'; });
-      var drop = auto.slice(7).concat(other.slice(7));
+      var drop = auto.slice(2).concat(other.slice(4));
       return Promise.all(drop.map(function (x) { return idbReq('snaps', 'readwrite', function (os) { return os.delete(String(x.t)); }); }));
     }).then(loadSnaps);
   }
   function maybeSnapshot(json) {
     var day = new Date().toDateString();
-    if (dataCount(db) && Date.now() - store.lastSnap > 6 * 3600000) takeSnapshot('auto', json);
+    /* после каждого изменения через несколько секунд сохраняется новая копия на телефоне; старые автокопии удаляются, остаются три последние */
+    if (dataCount(db) && json !== store.lastSnapJson) {
+      clearTimeout(store.snapTimer);
+      store.snapTimer = setTimeout(function () { if (!store.safe && dataCount(db)) { var j = JSON.stringify(db); store.lastSnapJson = j; takeSnapshot('auto', j); } }, 4000);
+    }
     var bk = lsGet(LSBK), last = 0;
     try { last = bk ? JSON.parse(bk).t : 0; } catch (e) {}
-    if (dataCount(db) && Date.now() - last > 24 * 3600000) lsSet(LSBK, JSON.stringify({ t: Date.now(), json: json }));
+    if (dataCount(db) && Date.now() - last > 120000) lsSet(LSBK, JSON.stringify({ t: Date.now(), json: json }));
     return day;
   }
   function save() {
@@ -1189,6 +1209,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     sorted.forEach(function (e) {
       var p = e.date.split('-');
       var dd = (+p[2]) + ' ' + I18.mshort()[+p[1] - 1];
+      if (e.ts > 1e12) { var tt = new Date(e.ts); dd += ' · ' + pad(tt.getHours()) + ':' + pad(tt.getMinutes()); }
       var head = h('div', { class: 'rc' }, e.cat, h('span', { class: 'tag', text: wname(e.wallet) }), isExtra(e) ? h('span', { class: 'tag extra', text: 'лишнее' }) : null);
       var mid = h('div', null, head);
       var actions = h('div', { class: 'rx' });
@@ -1235,12 +1256,20 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
       else if (e.type === 'out') { outM += e.amount; if (MAND.indexOf(e.cat) >= 0 && !isExtra(e)) mand += e.amount; }
     });
     var free = inM - mand;
+    var mstart = state.month + '-01', prevT = openTotal();
+    all.forEach(function (e) { if (e.date < mstart) prevT += effect(e); });
     $('balance').textContent = signed(total);
+    $('bal-split').textContent = _f('С прошлых месяцев: {0} · за месяц: {1}', signed(prevT), signed(total - prevT));
     $('income').textContent = fmt(inM);
     $('expense').textContent = fmt(outM);
     $('free').textContent = signed(free);
     $('free').className = 'val num ' + (free < 0 ? 'out' : 'in');
 
+    var dm = clear($('debt-mini')), dst = debtStats().by[db.cur] || { owed: 0, owe: 0 };
+    [['Мне должны', dst.owed, 'in'], ['Я должен', dst.owe, 'out']].forEach(function (r) {
+      dm.appendChild(h('button', { type: 'button', class: 'wallet dmini', 'aria-label': r[0], onclick: function () { state.tab = 'debts'; render(); $('scroller').scrollTo(0, 0); } },
+        h('p', { class: 'cap', text: r[0] }), h('p', { class: 'val num ' + r[2], text: r[1] ? fmt(r[1]) : '—' })));
+    });
     var grid = clear($('wallet-grid'));
     db.wallets.forEach(function (w) {
       grid.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: w.name }), h('p', { class: 'val num', text: signed(bal[w.id] || 0) })));
@@ -2152,7 +2181,19 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
   }
 
   var TABS = ['home', 'ops', 'debts', 'reports', 'settings'];
+  var VEX = { UZS: 'Коммуналка двадцать пять тысяч', RUB: 'Коммуналка двести пятьдесят рублей', TJS: 'Коммуналка двадцать пять сомони', USD: 'Коммуналка двадцать пять долларов' };
+  var VPH = { UZS: 'Например: такси 30 000', RUB: 'Например: такси 300 рублей', TJS: 'Например: такси 30 сомони', USD: 'Например: такси 5 долларов' };
+  var vhBase = null;
+  function renderVoiceHint() {
+    var el = $('voice-hint'), nd = el && el.firstChild;
+    if (nd && nd.nodeType === 3) {
+      if (vhBase === null) vhBase = (nd.__ru || nd.nodeValue).trim();
+      nd.nodeValue = vhBase.replace(VEX.UZS, VEX[db.cur] || VEX.UZS) + ' '; nd.__ru = undefined;
+    }
+    var sy = $('say'); sy.setAttribute('placeholder', VPH[db.cur] || VPH.UZS); sy.__ru_placeholder = undefined;
+  }
   function render() {
+    renderVoiceHint();
     $('month-label').textContent = monthTitle(state.month);
     $('lang-code').textContent = I18.codes[I18.getLang()];
     TABS.forEach(function (t) { $('tab-' + t).hidden = state.tab !== t; });
@@ -2660,7 +2701,8 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
     var g = clear($('fx-grid')), uz = uzsPer(), have = !!(uz.USD && uz.RUB && uz.TJS), man = fxManual();
     $('fx-refresh').disabled = fxBusy;
     $('fx-refresh').textContent = _t(fxBusy ? 'Обновляю…' : 'Обновить курсы');
-    $('fx-note').textContent = uz.USD ? '1 $ = ' + fxNum(uz.USD) + ' ' + (I18.cur('UZS') || 'сум') : '';
+    var pa = parseAmount($('fx-amt').value); if (!(pa > 0)) pa = 1;
+    $('fx-note').textContent = uz[fxSel] ? (pa === Math.round(pa) ? numC(pa, 'UZS') : fxNum(pa)) + ' ' + (I18.cur(fxSel) || CUR[fxSel]) + ' = ' + fxNum(pa * uz[fxSel]) + ' ' + (I18.cur('UZS') || 'сум') : '';
     g.hidden = !have;
     // выбранная валюта и ручной курс
     var inp = $('fx-man');
