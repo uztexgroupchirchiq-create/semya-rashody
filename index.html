@@ -455,8 +455,6 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
 .summary { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--surface)) 0%, var(--surface) 70%); }
 .wallet { position: relative; border-radius: 14px; padding-left: 16px; background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
 .wallet::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 4px; border-radius: 0 4px 4px 0; background: var(--accent); }
-.wallet.dmini:nth-of-type(1)::before { background: var(--in); }
-.wallet.dmini:nth-of-type(2)::before { background: var(--out); }
 .info, .fold-n, .tag { box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent); }
 .fold > summary { border-radius: 14px; }
 .row { border-radius: 12px; }
@@ -522,20 +520,24 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
       <div><p class="cap">Общий баланс на конец месяца</p><p class="val big num" id="balance"></p><p class="mini" id="bal-split"></p></div>
       <div><p class="cap">Доходы</p><p class="val in num" id="income"></p></div>
       <div><p class="cap">Расходы</p><p class="val out num" id="expense"></p></div>
-      <div><p class="cap">Свободные средства<button type="button" class="info" id="free-info" aria-label="Что такое свободные средства" aria-expanded="false">i</button></p><p class="val in num" id="free"></p><p class="mini" id="free-hint" hidden>Доходы месяца минус обязательные расходы: жильё, еда, транспорт, коммунальные, связь, здоровье, ребёнок, одежда.</p></div>
+      <div><p class="cap">Свободные средства<button type="button" class="info" id="free-info" aria-label="Что такое свободные средства" aria-expanded="false">i</button></p><p class="val num" id="free"></p><p class="mini out" id="free-over" hidden></p><p class="mini" id="free-hint" hidden>Свободные средства — это то, что осталось от доходов месяца после всех расходов. Если расходов больше, чем доходов, показывается 0.</p></div>
     </section>
 
-    <section class="panel" aria-label="Кошельки">
-      <div class="wallets" id="wallet-grid"></div>
+    <section class="panel" aria-label="Долги">
       <div class="wallets" id="debt-mini"></div>
-      <p class="mini">Баланс считает только наличные и деньги на картах. Долги не входят в него: смотрите их на вкладке «Долги».</p>
       <p class="hint out" id="debt-alert" hidden></p>
     </section>
+
+    <details class="panel fold" id="wal-box">
+      <summary><span class="fold-t">Наличные и карты</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
+      <div class="wallets" id="wallet-grid"></div>
+      <p class="mini">Баланс считает только наличные и деньги на картах. Долги не входят в него: смотрите их на вкладке «Долги».</p>
+    </details>
 
     <details class="panel fold" id="fx-box">
       <summary><span class="fold-t">Курсы валют</span><span class="fold-n fx-pill" id="fx-note"></span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
       <div class="fxctl">
-        <div class="field"><label for="fx-cur">Валюта</label><select id="fx-cur"><option value="USD">Доллар $</option><option value="RUB">Рубль ₽</option><option value="TJS">Сомони</option></select></div>
+        <div class="field"><label for="fx-cur">Валюта</label><select id="fx-cur"><option value="UZS">Сум</option><option value="USD">Доллар $</option><option value="RUB">Рубль ₽</option><option value="TJS">Сомони</option></select></div>
         <div class="field"><label for="fx-man" id="fx-man-l">1 $ = … сум</label><input type="text" id="fx-man" inputmode="decimal" autocomplete="off"></div>
       </div>
       <div class="row-actions"><button type="button" class="btn small" id="fx-save">Сохранить курс</button><button type="button" class="link-btn" id="fx-reset" hidden>Вернуть курс из интернета</button></div>
@@ -560,8 +562,8 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
       <div id="quick-edit"></div>
     </section>
 
-    <section class="panel" aria-labelledby="hp-title">
-      <h2 id="hp-title">Куда уходят деньги</h2>
+    <details class="panel fold" id="hp-box">
+      <summary><span class="fold-ic"><svg class="ic" aria-hidden="true"><use href="#i-reports"/></svg></span><span class="fold-t" id="hp-title">Куда уходят деньги</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
       <div class="chips" id="period" role="group" aria-label="Период">
         <button type="button" class="chip" data-p="day">День</button>
         <button type="button" class="chip" data-p="week">Неделя</button>
@@ -574,7 +576,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
       <p class="hint" id="period-label"></p>
       <div id="hpie"></div>
       <div id="hpie-detail"></div>
-    </section>
+    </details>
 
     <details class="panel manual" id="manual">
       <summary>Добавить вручную</summary>
@@ -877,7 +879,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '17';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '18';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -1255,15 +1257,17 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
       if (e.type === 'in') inM += e.amount;
       else if (e.type === 'out') { outM += e.amount; if (MAND.indexOf(e.cat) >= 0 && !isExtra(e)) mand += e.amount; }
     });
-    var free = inM - mand;
+    var free = inM - outM;
     var mstart = state.month + '-01', prevT = openTotal();
     all.forEach(function (e) { if (e.date < mstart) prevT += effect(e); });
     $('balance').textContent = signed(total);
     $('bal-split').textContent = _f('С прошлых месяцев: {0} · за месяц: {1}', signed(prevT), signed(total - prevT));
     $('income').textContent = fmt(inM);
     $('expense').textContent = fmt(outM);
-    $('free').textContent = signed(free);
-    $('free').className = 'val num ' + (free < 0 ? 'out' : 'in');
+    $('free').textContent = fmt(Math.max(0, free));
+    $('free').className = 'val num ' + (free > 0 ? 'in' : '');
+    $('free-over').textContent = free < 0 ? _f('Расходы больше доходов на {0}', fmt(-free)) : '';
+    $('free-over').hidden = !(free < 0);
 
     var dm = clear($('debt-mini')), dst = debtStats().by[db.cur] || { owed: 0, owe: 0 };
     [['Мне должны', dst.owed, 'in'], ['Я должен', dst.owe, 'out']].forEach(function (r) {
@@ -2702,7 +2706,8 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     $('fx-refresh').disabled = fxBusy;
     $('fx-refresh').textContent = _t(fxBusy ? 'Обновляю…' : 'Обновить курсы');
     var pa = parseAmount($('fx-amt').value); if (!(pa > 0)) pa = 1;
-    $('fx-note').textContent = uz[fxSel] ? (pa === Math.round(pa) ? numC(pa, 'UZS') : fxNum(pa)) + ' ' + (I18.cur(fxSel) || CUR[fxSel]) + ' = ' + fxNum(pa * uz[fxSel]) + ' ' + (I18.cur('UZS') || 'сум') : '';
+    var pto = fxSel === 'UZS' ? 'USD' : 'UZS';
+    $('fx-note').textContent = uz[fxSel] && uz[pto] ? (pa === Math.round(pa) ? numC(pa, 'UZS') : fxNum(pa)) + ' ' + (I18.cur(fxSel) || CUR[fxSel]) + ' = ' + fxNum(pa * uz[fxSel] / uz[pto]) + ' ' + (I18.cur(pto) || CUR[pto]) : '';
     g.hidden = !have;
     // выбранная валюта и ручной курс
     var inp = $('fx-man');
@@ -2712,7 +2717,9 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     $('fx-reset').hidden = !(+man[fxSel] > 0);
     $('fx-man-l').textContent = _f('1 {0} = … сум', CUR[fxSel] === '$' ? '$' : CUR[fxSel]);
     var amt = parseAmount($('fx-amt').value);
-    $('fx-res').textContent = amt > 0 && uz[fxSel] ? '= ' + fmtC(amt * uz[fxSel], 'UZS') : '';
+    $('fx-res').textContent = amt > 0 && uz[fxSel] ? '= ' + ['UZS', 'USD', 'RUB', 'TJS'].filter(function (b) { return b !== fxSel && uz[b]; }).map(function (b) { var v = amt * uz[fxSel] / uz[b]; return (b === 'UZS' ? numC(v, 'UZS') : fxNum(v)) + ' ' + (I18.cur(b) || CUR[b]); }).join(' · ') : '';
+    var isUz = fxSel === 'UZS';
+    $('fx-man').disabled = isUz; $('fx-save').disabled = isUz;
     if (!have) {
       setMsg('fx-msg', fxBusy ? 'Загружаю курсы…' : fxErr ? 'Курсы не загрузились. Проверьте интернет и нажмите «Обновить курсы».' : 'Курсы ещё не загружены.', fxErr && !fxBusy);
       return;
@@ -2783,7 +2790,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
   })();
 
   (function foldState() {
-    [['recent-box', true], ['bud-box', false], ['bk-box', false], ['fx-box', false]].forEach(function (x) {
+    [['recent-box', true], ['bud-box', false], ['bk-box', false], ['fx-box', false], ['wal-box', false], ['hp-box', false]].forEach(function (x) {
       var el = $(x[0]), v = null;
       try { v = localStorage.getItem('moneva-fold-' + x[0]); } catch (e) {}
       el.open = v == null ? x[1] : v === '1';
