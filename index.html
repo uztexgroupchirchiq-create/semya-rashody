@@ -458,6 +458,7 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
 .wallet.dmini:nth-of-type(1)::before { background: var(--in); }
 .wallet.dmini:nth-of-type(2)::before { background: var(--out); }
 .wallet .wmini { margin: 4px 0 0; font-size: 0.74rem; color: var(--muted); }
+.check-row { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
 .info, .fold-n, .tag { box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent); }
 .fold > summary { border-radius: 14px; }
 .row { border-radius: 12px; }
@@ -879,7 +880,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '19';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '20';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -1203,6 +1204,12 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     for (var i = 0; i < NOTE_PREFIX.length; i++) if (n.indexOf(NOTE_PREFIX[i]) === 0) return _t(NOTE_PREFIX[i]) + n.slice(NOTE_PREFIX[i].length);
     return n;
   }
+  /* кошелёк, с которого эту категорию платили в последний раз: подставляется сам, чтобы не выбирать каждый раз */
+  function lastWalletFor(cat, type) {
+    var best = null;
+    db.entries.forEach(function (x) { if (x.cat === cat && x.type === (type || x.type) && !x.debt && walletOk(x.wallet) && (!best || (x.ts || 0) >= (best.ts || 0))) best = x; });
+    return best ? best.wallet : null;
+  }
   function entryList(elId, list, limit, emptyText) {
     var el = clear($(elId));
     if (!list.length) { el.appendChild(h('p', { class: 'empty', text: emptyText })); return; }
@@ -1215,7 +1222,23 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
       var head = h('div', { class: 'rc' }, e.cat, h('span', { class: 'tag', text: wname(e.wallet) }), isExtra(e) ? h('span', { class: 'tag extra', text: 'лишнее' }) : null);
       var mid = h('div', null, head);
       var actions = h('div', { class: 'rx' });
-      if (state.editC === e.id) {
+      if (state.editW === e.id && !e.debt) {
+        var wsel = h('select', { 'aria-label': 'Кошелёк' });
+        db.wallets.forEach(function (w) { wsel.appendChild(h('option', { value: w.id, text: w.name })); }); wsel.value = walletOk(e.wallet) ? e.wallet : db.wallets[0].id;
+        var same = db.entries.filter(function (x) { return x.cat === e.cat && x.type === e.type && x.cur === e.cur && !x.debt; });
+        var allc = h('input', { type: 'checkbox', id: 'wall-' + e.id });
+        var saveW = function () {
+          var targets = allc.checked ? same : [e];
+          if (allc.checked && same.length > 1 && !window.confirm(_f('Перенести {0} записей «{1}» на кошелёк «{2}»?', same.length, e.cat, wname(wsel.value)))) return;
+          targets.forEach(function (x) { x.wallet = wsel.value; });
+          state.editW = null; save(); render(); toast(_f('Кошелёк изменён: {0}', targets.length));
+        };
+        mid.appendChild(h('div', { class: 'edit-row' }, wsel,
+          h('button', { type: 'button', class: 'btn small', text: 'Сохранить', onclick: saveW }),
+          h('button', { type: 'button', class: 'link-btn', text: 'Отмена', onclick: function () { state.editW = null; render(); } })));
+        if (same.length > 1) mid.appendChild(h('div', { class: 'check-row' }, allc, h('label', { for: 'wall-' + e.id, text: _f('Для всех записей «{0}» ({1})', e.cat, same.length) })));
+        setTimeout(function () { enhanceSelect(wsel); }, 0);
+      } else if (state.editC === e.id) {
         var inp = h('input', { type: 'text', maxlength: '140', 'aria-label': 'Комментарий' });
         inp.value = e.note || '';
         var saveC = function () { e.note = inp.value.trim(); state.editC = null; save(); render(); };
@@ -1226,6 +1249,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
         setTimeout(function () { if (inp.offsetParent) inp.focus(); }, 0);
       } else {
         if (e.note) mid.appendChild(h('div', { class: 'rn', text: noteText(e.note) }));
+        if (!e.debt) actions.appendChild(h('button', { type: 'button', class: 'link-btn', text: 'Кошелёк', 'aria-label': _f('Сменить кошелёк: {0}', e.cat), onclick: function () { state.editW = e.id; state.editC = null; render(); } }));
         actions.appendChild(h('button', { type: 'button', class: 'link-btn', text: e.note ? 'Изменить комментарий' : '+ Комментарий', onclick: function () { state.editC = e.id; render(); } }));
         if (e.type === 'in' && e.cat === 'Зарплата' && !e.advOf) {
           var advs = advanceOpen(e.cur || db.cur, e.date.slice(0, 7)), asum = advs.reduce(function (t, x) { return t + x.amount; }, 0);
@@ -2178,7 +2202,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     state.type = t;
     $(t === 'out' ? 't-out' : 't-in').checked = true;
     fillSelect($('cat'), t === 'out' ? OUT : INC);
-    $('extra-row').hidden = t !== 'out';
+    $('extra-row').hidden = true;
   }
   function applyCur() {
     applySettings();
@@ -2250,6 +2274,10 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
   $('cur').addEventListener('change', function () { db.cur = $('cur').value; save(); applyCur(); state.pd = null; render(); });
   document.querySelectorAll('input[name="type"]').forEach(function (r) { r.addEventListener('change', function () { setType(r.value); }); });
 
+  $('cat').addEventListener('change', function () {
+    var lw = lastWalletFor($('cat').value, state.type);
+    if (lw) $('wallet').value = lw;
+  });
   $('form').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var amount = parseAmount($('amount').value);
@@ -2464,6 +2492,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     $('say').value = text;
     if (!text) { clear($('voice-card')); toast('Ничего не расслышал. Нажмите на микрофон и повторите или напишите фразу в строке.'); return; }
     var res = parsePhrase(text, $('wallet').value);
+    if (!/налич|кэш|кеш|карт/i.test(text)) { var lw = lastWalletFor(res.cat, res.type); if (lw) res.wallet = lw; }
     var low = text.toLowerCase();
     db.wallets.forEach(function (w) { if (w.id !== 'cash' && w.id !== 'card' && w.name.length >= 3 && low.indexOf(w.name.toLowerCase()) >= 0) res.wallet = w.id; });
     if (!walletOk(res.wallet)) res.wallet = db.wallets[0].id;
