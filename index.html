@@ -455,6 +455,9 @@ nav.tabs button:active { background: color-mix(in srgb, var(--accent) 14%, trans
 .summary { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--surface)) 0%, var(--surface) 70%); }
 .wallet { position: relative; border-radius: 14px; padding-left: 16px; background: color-mix(in srgb, var(--accent) 5%, var(--surface)); }
 .wallet::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 4px; border-radius: 0 4px 4px 0; background: var(--accent); }
+.wallet.dmini:nth-of-type(1)::before { background: var(--in); }
+.wallet.dmini:nth-of-type(2)::before { background: var(--out); }
+.wallet .wmini { margin: 4px 0 0; font-size: 0.74rem; color: var(--muted); }
 .info, .fold-n, .tag { box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent); }
 .fold > summary { border-radius: 14px; }
 .row { border-radius: 12px; }
@@ -523,14 +526,11 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
       <div><p class="cap">Свободные средства<button type="button" class="info" id="free-info" aria-label="Что такое свободные средства" aria-expanded="false">i</button></p><p class="val num" id="free"></p><p class="mini out" id="free-over" hidden></p><p class="mini" id="free-hint" hidden>Свободные средства — это то, что осталось от доходов месяца после всех расходов. Если расходов больше, чем доходов, показывается 0.</p></div>
     </section>
 
-    <section class="panel" aria-label="Долги">
-      <div class="wallets" id="debt-mini"></div>
-      <p class="hint out" id="debt-alert" hidden></p>
-    </section>
-
+    <p class="hint out" id="debt-alert" hidden></p>
     <details class="panel fold" id="wal-box">
-      <summary><span class="fold-t">Наличные и карты</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
+      <summary><span class="fold-t">Кошельки и долги</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
       <div class="wallets" id="wallet-grid"></div>
+      <div class="wallets" id="debt-mini"></div>
       <p class="mini">Баланс считает только наличные и деньги на картах. Долги не входят в него: смотрите их на вкладке «Долги».</p>
     </details>
 
@@ -562,8 +562,8 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
       <div id="quick-edit"></div>
     </section>
 
-    <details class="panel fold" id="hp-box">
-      <summary><span class="fold-ic"><svg class="ic" aria-hidden="true"><use href="#i-reports"/></svg></span><span class="fold-t" id="hp-title">Куда уходят деньги</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
+    <section class="panel" aria-labelledby="hp-title">
+      <h2 id="hp-title">Куда уходят деньги</h2>
       <div class="chips" id="period" role="group" aria-label="Период">
         <button type="button" class="chip" data-p="day">День</button>
         <button type="button" class="chip" data-p="week">Неделя</button>
@@ -576,7 +576,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
       <p class="hint" id="period-label"></p>
       <div id="hpie"></div>
       <div id="hpie-detail"></div>
-    </details>
+    </section>
 
     <details class="panel manual" id="manual">
       <summary>Добавить вручную</summary>
@@ -879,7 +879,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     return f;
   }
   /* ---------- хранение: ничего не стирается, при сомнении — только чтение ---------- */
-  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '18';
+  var LEGACY = 'semya-rashody-v1', PREV = 'moneva-prev', LSBK = 'moneva-bk', CORRUPT = 'moneva-corrupt', APPVER = '19';
   var store = { safe: false, why: '', fresh: false, volatile: false, persisted: null, mirror: null, snaps: [], idb: null, lastSnap: 0 };
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { store.volatile = true; return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -1276,7 +1276,10 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     });
     var grid = clear($('wallet-grid'));
     db.wallets.forEach(function (w) {
-      grid.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: w.name }), h('p', { class: 'val num', text: signed(bal[w.id] || 0) })));
+      var wi = 0, wo = 0;
+      list.forEach(function (e) { if (e.wallet !== w.id) return; if (e.type === 'in') wi += e.amount; else if (e.type === 'out') wo += e.amount; });
+      grid.appendChild(h('div', { class: 'wallet' }, h('p', { class: 'cap', text: w.name }), h('p', { class: 'val num', text: signed(bal[w.id] || 0) }),
+        h('p', { class: 'wmini num', text: _f('За месяц: +{0} · −{1}', numC(wi, db.cur), numC(wo, db.cur)) })));
     });
 
     var dst = debtStats();
@@ -2706,7 +2709,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
     $('fx-refresh').disabled = fxBusy;
     $('fx-refresh').textContent = _t(fxBusy ? 'Обновляю…' : 'Обновить курсы');
     var pa = parseAmount($('fx-amt').value); if (!(pa > 0)) pa = 1;
-    var pto = fxSel === 'UZS' ? 'USD' : 'UZS';
+    var pto = db.cur !== fxSel ? db.cur : (fxSel === 'UZS' ? 'USD' : 'UZS');
     $('fx-note').textContent = uz[fxSel] && uz[pto] ? (pa === Math.round(pa) ? numC(pa, 'UZS') : fxNum(pa)) + ' ' + (I18.cur(fxSel) || CUR[fxSel]) + ' = ' + fxNum(pa * uz[fxSel] / uz[pto]) + ' ' + (I18.cur(pto) || CUR[pto]) : '';
     g.hidden = !have;
     // выбранная валюта и ручной курс
@@ -2790,7 +2793,7 @@ nav.tabs button[aria-current="page"] .ti { background: color-mix(in srgb, var(--
   })();
 
   (function foldState() {
-    [['recent-box', true], ['bud-box', false], ['bk-box', false], ['fx-box', false], ['wal-box', false], ['hp-box', false]].forEach(function (x) {
+    [['recent-box', true], ['bud-box', false], ['bk-box', false], ['fx-box', false], ['wal-box', false]].forEach(function (x) {
       var el = $(x[0]), v = null;
       try { v = localStorage.getItem('moneva-fold-' + x[0]); } catch (e) {}
       el.open = v == null ? x[1] : v === '1';
